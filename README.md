@@ -11,6 +11,6 @@ ATM, this is WIP
 Following the [django tutorial](https://docs.djangoproject.com/en/1.10/intro/tutorial01/)
 ```bash
 pew new FINANCE_BLOTTER -r requirements.txt
-django-admin startproject finance_blotter
-mv finance_blotter app
+django-admin startproject blotter_finance
+mv blotter_finance app
 ```
