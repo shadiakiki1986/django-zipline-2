@@ -13,4 +13,8 @@ Following the [django tutorial](https://docs.djangoproject.com/en/1.10/intro/tut
 pew new FINANCE_BLOTTER -r requirements.txt
 django-admin startproject blotter_finance
 mv blotter_finance app
+cd app
+python manage.py runserver
 ```
+
+arrived at [admin user](https://docs.djangoproject.com/en/1.10/intro/tutorial02/#creating-an-admin-user)
