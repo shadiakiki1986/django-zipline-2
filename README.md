@@ -10,11 +10,15 @@ ATM, this is WIP
 
 Following the [django tutorial](https://docs.djangoproject.com/en/1.10/intro/tutorial01/)
 ```bash
-pew new FINANCE_BLOTTER -r requirements.txt
+pew new FINANCE_BLOTTER
+pip3 install Django datetime
 django-admin startproject blotter_finance
 mv blotter_finance app
 cd app
-python manage.py runserver
+python3 manage.py runserver 0.0.0.0:8000
+...
 ```
 
-arrived at [admin user](https://docs.djangoproject.com/en/1.10/intro/tutorial02/#creating-an-admin-user)
+In [admin user](https://docs.djangoproject.com/en/1.10/intro/tutorial02/#creating-an-admin-user): Admin: user, `!@#$%^&*`
+
+arrived at [more comprehensive tests](https://docs.djangoproject.com/en/1.10/intro/tutorial05/#more-comprehensive-tests)
