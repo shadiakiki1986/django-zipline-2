@@ -3,7 +3,9 @@ import os
 import sys
 
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "blotter_finance.settings")
+    # http://stackoverflow.com/a/27455703/4126114
+    #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "blotter_finance.settings")
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'blotter_finance.settings'
     try:
         from django.core.management import execute_from_command_line
     except ImportError:
