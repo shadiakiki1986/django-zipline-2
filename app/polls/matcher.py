@@ -104,12 +104,12 @@ class Matcher:
 
   def fills2minutes(self,fills):
     minutes = [sid.index.values for _, sid in fills.items()]
-    print("minutes",[type(x).__name__ for x in minutes])
+    #print("minutes",[type(x).__name__ for x in minutes])
     minutes = reduce(lambda a, b: a.concatenate(b), minutes)
     minutes = [pd.Timestamp(x, tz='utc') for x in minutes]
     minutes.sort()
     minutes = list(set(minutes))
-    print("minutes",minutes)
+    #print("minutes",minutes)
     return minutes
 
   def fills2reader(self, tempdir, minutes, fills):
@@ -126,7 +126,7 @@ class Matcher:
         minutes[-1]
       )
     )
-    print("days: %s" % (days))
+    #print("days: %s" % (days))
   
     #path = os.path.join(tempdir.path, "testdata.bcolz")
     path = tempdir.path
@@ -137,11 +137,11 @@ class Matcher:
       end_session=days[-1],
       minutes_per_day=1440
     )
-    print("Writer session labels: %s" % (writer._session_labels))
-    for f in iteritems(fills): print(f)
+    #print("Writer session labels: %s" % (writer._session_labels))
+    #for f in iteritems(fills): print(f)
     writer.write(iteritems(fills))
     
-    print("temp path: %s" % (path))
+    #print("temp path: %s" % (path))
     reader = BcolzMinuteBarReader(path)
 
     return reader
@@ -157,16 +157,16 @@ class Matcher:
       slippage_func=slippage_func
     )
     
-    print("Place orders")
+    #print("Place orders")
     orders2 = []
     for order in orders:
       blotter.set_date(order["dt"])
-      print(blotter.current_dt)
+      #print(blotter.current_dt)
       #print("Order a1 +10")
       #o1=
       blotter.order(order["sid"],order["amount"],order["style"])
 
-    print("Open orders: %s" % ({k.symbol: len(v) for k,v in iteritems(blotter.open_orders)}))
+    #print("Open orders: %s" % ({k.symbol: len(v) for k,v in iteritems(blotter.open_orders)}))
     return blotter
 
   def blotter2bardata(self, equity_minute_reader, blotter):
@@ -191,10 +191,10 @@ class Matcher:
     all_closed = []
     all_txns = []
     for dt in all_minutes:
-        print("========================")
+        #print("========================")
         dt = pd.Timestamp(dt, tz='utc')
         blotter.set_date(dt)
-        print("use data portal to dequeue open orders: %s" % (blotter.current_dt))
+        #print("use data portal to dequeue open orders: %s" % (blotter.current_dt))
         new_transactions, new_commissions, closed_orders = blotter.get_transactions(bar_data)
       
   #      print("Closed orders: %s" % (len(closed_orders)))
