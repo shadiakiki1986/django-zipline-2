@@ -18,9 +18,9 @@ class Order(models.Model):
     was_published_recently.boolean = True
     was_published_recently.short_description = 'Published recently?'
 
-class Choice(models.Model):
+class Fill(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    choice_text = models.CharField(max_length=200)
+    fill_text = models.CharField(max_length=200)
     votes = models.IntegerField(default=0)
     def __str__(self):
-        return self.choice_text
+        return self.fill_text

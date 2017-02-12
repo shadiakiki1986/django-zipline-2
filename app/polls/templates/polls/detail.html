@@ -4,9 +4,9 @@
 
 <form action="{% url 'polls:vote' order.id %}" method="post">
 {% csrf_token %}
-{% for choice in order.choice_set.all %}
-    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
-    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
+{% for fill in order.fill_set.all %}
+    <input type="radio" name="fill" id="fill{{ forloop.counter }}" value="{{ fill.id }}" />
+    <label for="fill{{ forloop.counter }}">{{ fill.fill_text }}</label><br />
 {% endfor %}
 <input type="submit" value="Vote" />
 </form>

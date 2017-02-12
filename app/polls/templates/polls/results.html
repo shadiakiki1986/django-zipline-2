@@ -1,8 +1,8 @@
 <h1>{{ order.order_text }}</h1>
 
 <ul>
-{% for choice in order.choice_set.all %}
-    <li>{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
+{% for fill in order.fill_set.all %}
+    <li>{{ fill.fill_text }} -- {{ fill.votes }} vote{{ fill.votes|pluralize }}</li>
 {% endfor %}
 </ul>
 
