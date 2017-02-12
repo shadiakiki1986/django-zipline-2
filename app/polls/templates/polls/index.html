@@ -49,14 +49,14 @@
 <caption>Matching engine</caption>
 <tr>
 <td>
-{% if zl_open %}
+{% if zl_open|length > 0 %}
     Open orders
     <ul>
     {% for order in zl_open %}
         <li>
             {{order.dt}}:
-            {{order.id}},
-            {{order.amount}}
+            {{order.sid.symbol}},
+            filled {{order.filled}} / {{order.amount}}
         </li>
     {% endfor %}
     </ul>
@@ -66,7 +66,7 @@
 </td>
 
 <td>
-{% if zl_txns %}
+{% if zl_txns|length > 0 %}
     Transactions
     <ul>
     {% for fill in zl_txns %}
@@ -84,14 +84,13 @@
 </td>
 
 <td>
-{% if zl_closed %}
+{% if zl_closed|length > 0 %}
     Closed orders
     <ul>
     {% for fill in zl_closed %}
         <li>
           {{fill.dt}}:
           {{fill.sid.symbol}},
-          {{fill.id}},
           {{fill.amount}},
         </li>
     {% endfor %}

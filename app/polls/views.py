@@ -12,6 +12,8 @@ from .matcher import Matcher
 from testfixtures import TempDirectory
 import pandas as pd
 from zipline.finance.execution import MarketOrder
+from six import iteritems
+from functools import reduce
 
 class IndexView(generic.ListView):
     template_name = 'polls/index.html'
@@ -34,6 +36,10 @@ class IndexView(generic.ListView):
 
         if len(Fill.objects.all())==0:
           return context
+
+        context["zl_open"  ] = []
+        context["zl_closed"] = []
+        context["zl_txns"  ] = []
 
         # run matching engine
         with TempDirectory() as tempdir:
@@ -66,7 +72,7 @@ class IndexView(generic.ListView):
           blotter = matcher.orders2blotter(orders)
           bd = matcher.blotter2bardata(equity_minute_reader, blotter)
           all_closed, all_txns = matcher.match_orders_fills(blotter, bd, all_minutes, fills)
-          context["zl_open"  ] = blotter.open_orders
+          context["zl_open"  ] = reduce(lambda a, b: a.concatenate(b), [v for k,v in blotter.open_orders.items()])
           context["zl_closed"] = all_closed
           context["zl_txns"  ] = [txn.to_dict() for txn in all_txns]
      
