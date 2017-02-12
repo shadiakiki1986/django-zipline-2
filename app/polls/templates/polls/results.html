@@ -11,7 +11,15 @@ Order Details
 Fills
 <ul>
 {% for fill in order.fill_set.all %}
-    <li>{{ fill.fill_text }} -- {{ fill.votes }} vote{{ fill.votes|pluralize }}</li>
+    <li>
+      {{fill.fill_qty}},
+      {{fill.fill_price}},
+      {{fill.pub_date}},
+      {{ fill.fill_text }}
+      --
+      {{ fill.votes }}
+      vote{{ fill.votes|pluralize }}
+    </li>
 {% endfor %}
 </ul>
 

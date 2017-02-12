@@ -28,7 +28,7 @@ class Order(models.Model):
         return now >= self.pub_date >= now - datetime.timedelta(days=1)
 
     def _asZiplineOrder(self):
-      return zlOrder(self.pub_date, self.sid, self.amount, MarketOrder())
+      return zlOrder(dt=self.pub_date, sid=self.sid, amount=self.amount, style=MarketOrder())
 
     was_published_recently.admin_order_field = 'pub_date'
     was_published_recently.boolean = True
@@ -38,5 +38,9 @@ class Fill(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     fill_text = models.CharField(max_length=200)
     votes = models.IntegerField(default=0)
+    fill_qty = models.IntegerField(default=0)
+    fill_price = models.FloatField(default=0)
+    pub_date = models.DateTimeField('date published',default=timezone.now)
+
     def __str__(self):
-        return self.fill_text
+        return "%s, %s (%s)" % (self.fill_qty, self.fill_price, self.fill_text)
