@@ -8,6 +8,7 @@ from django.views import generic
 
 from .models import Order, Fill
 from django.utils import timezone
+from .matcher import match_orders_fills
 
 class IndexView(generic.ListView):
     template_name = 'polls/index.html'
@@ -18,6 +19,16 @@ class IndexView(generic.ListView):
         return Order.objects.filter(
             pub_date__lte=timezone.now()
         ).order_by('-pub_date')[:5]
+
+    # Can I have multiple lists in a Django generic.ListView?
+    # http://stackoverflow.com/a/18813102/4126114
+    def get_context_data(self, *args, **kwargs):
+        context = super(IndexView, self).get_context_data(*args, **kwargs)
+        """Return the last five published fills."""
+        context['latest_fill_list'] = Fill.objects.filter(
+            pub_date__lte=timezone.now()
+        ).order_by('-pub_date')[:5]
+        return context 
 
 class DetailView(generic.DetailView):
     model = Order

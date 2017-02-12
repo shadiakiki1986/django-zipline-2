@@ -1,15 +1,42 @@
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}" />
 
+<table border=1>
+<tr>
+<td>
 {% if latest_order_list %}
     <ul>
     {% for order in latest_order_list %}
         <li>
             {{order.pub_date}}:
-            <a href="{% url 'polls:detail' order.id %}">{{order.sid}}, {{order.amount}}, {{order.pub_date}}, {{ order.order_text }}</a>
+            {{order.order_sid}},
+            {{order.amount}},
+            {{ order.order_text }}
+            <a href="{% url 'polls:detail' order.id %}">Details</a>
         </li>
     {% endfor %}
     </ul>
 {% else %}
-    <p>No polls are available.</p>
+    <p>No orders are available.</p>
 {% endif %}
+</td>
+
+<td>
+{% if latest_fill_list %}
+    <ul>
+    {% for fill in latest_fill_list %}
+        <li>
+          {{fill.pub_date}}:
+          {{fill.fill_sid}},
+          {{fill.fill_qty}},
+          {{fill.fill_price}}
+          ({{ fill.fill_text }})
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No fills are available.</p>
+{% endif %}
+</td>
+</tr>
+</table>
