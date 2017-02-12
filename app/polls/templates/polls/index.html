@@ -5,6 +5,7 @@
 <tr>
 <td>
 {% if latest_order_list %}
+    Orders
     <ul>
     {% for order in latest_order_list %}
         <li>
@@ -23,6 +24,7 @@
 
 <td>
 {% if latest_fill_list %}
+    Fills
     <ul>
     {% for fill in latest_fill_list %}
         <li>
@@ -36,6 +38,66 @@
     </ul>
 {% else %}
     <p>No fills are available.</p>
+{% endif %}
+</td>
+</tr>
+</table>
+
+<br>
+
+<table border=1>
+<caption>Matching engine</caption>
+<tr>
+<td>
+{% if zl_open %}
+    Open orders
+    <ul>
+    {% for order in zl_open %}
+        <li>
+            {{order.dt}}:
+            {{order.id}},
+            {{order.amount}}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No open orders are available.</p>
+{% endif %}
+</td>
+
+<td>
+{% if zl_txns %}
+    Transactions
+    <ul>
+    {% for fill in zl_txns %}
+        <li>
+          {{fill.dt}}:
+          {{fill.sid.symbol}},
+          {{fill.amount}},
+          {{fill.price|floatformat}}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No closed orders are available.</p>
+{% endif %}
+</td>
+
+<td>
+{% if zl_closed %}
+    Closed orders
+    <ul>
+    {% for fill in zl_closed %}
+        <li>
+          {{fill.dt}}:
+          {{fill.sid.symbol}},
+          {{fill.id}},
+          {{fill.amount}},
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No closed orders are available.</p>
 {% endif %}
 </td>
 </tr>

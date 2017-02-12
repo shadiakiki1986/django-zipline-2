@@ -20,9 +20,53 @@ from zipline.data.minute_bars import BcolzMinuteBarReader, BcolzMinuteBarWriter
 from functools import reduce
 
 # constructor
-from zipline.utils.calendars import get_calendar
+from zipline.utils.calendars import (
+  get_calendar,
+  register_calendar
+)
 from zipline.finance.trading import TradingEnvironment
 import zipline.utils.factory as factory
+
+from zipline.utils.calendars import TradingCalendar
+from datetime import time
+from pytz import timezone
+
+from zipline.utils.memoize import lazyval
+from pandas.tseries.offsets import CustomBusinessDay
+
+
+class AlwaysOpenExchange(TradingCalendar):
+    """
+    Exchange calendar for AlwaysOpenExchange
+    """
+    @property
+    def name(self):
+        return "AlwaysOpen"
+
+    @property
+    def tz(self):
+        return timezone("UTC")
+
+    @property
+    def open_time(self):
+        return time(0, 1)
+
+    @property
+    def close_time(self):
+        return time(23, 59)
+
+    @lazyval
+    def day(self):
+        # http://pandas.pydata.org/pandas-docs/stable/timeseries.html#custom-business-days-experimental
+        return CustomBusinessDay(
+            holidays=[],
+            calendar=None,
+            weekmask='Sun Mon Tue Wed Thu Fri Sat'
+        )
+
+#aoe =AlwaysOpenExchange()
+#print('is open',aoe.is_open_on_minute(pd.Timestamp('2013-01-07 15:03:00+0000', tz='UTC')))
+register_calendar("AlwaysOpen",AlwaysOpenExchange())
 
 class Matcher:
   def __init__(self):
@@ -33,8 +77,8 @@ class Matcher:
         {  
           "sid":1,
           "exchange":'exchange name',
-          "symbol":'a1',
-          "asset_name":'a1 name',
+          "symbol":'A1',
+          "asset_name":'A1 name',
         },
         index=[1],
     )
@@ -46,7 +90,7 @@ class Matcher:
     # Also note that in UTC, NYSE starts trading at 14.30
     # TODO tailor for FFA Dubai
     #  start_date=pd.Timestamp('2013-12-08 9:31AM', tz='UTC'),
-    START_DATE = pd.Timestamp('2013-01-07', tz='utc')
+    START_DATE = pd.Timestamp('2013-01-01', tz='utc')
     END_DATE = pd.Timestamp(datetime.now(), tz='utc')
     self.sim_params = factory.create_simulation_parameters(
         start = START_DATE,
@@ -54,18 +98,21 @@ class Matcher:
         data_frequency="minute"
     )
     
-    self.trading_calendar=get_calendar("NYSE")
+    self.trading_calendar=get_calendar("AlwaysOpen")
+  #  self.trading_calendar=get_calendar("NYSE")
+   # self.trading_calendar=get_calendar("ICEUS")
 
   def fills2minutes(self,fills):
     minutes = [sid.index.values for _, sid in fills.items()]
-    minutes = reduce(lambda a, b: a.concatenate(b), minutes, [])
+    print("minutes",[type(x).__name__ for x in minutes])
+    minutes = reduce(lambda a, b: a.concatenate(b), minutes)
     minutes = [pd.Timestamp(x, tz='utc') for x in minutes]
     minutes.sort()
     minutes = list(set(minutes))
+    print("minutes",minutes)
     return minutes
 
   def fills2reader(self, tempdir, minutes, fills):
-    print("minutes",minutes)
     for _,fill in fills.items():
       fill["open"] = fill["close"]
       fill["high"] = fill["close"]
@@ -88,20 +135,14 @@ class Matcher:
       calendar=self.trading_calendar,
       start_session=days[0],
       end_session=days[-1],
-      minutes_per_day=390
+      minutes_per_day=1440
     )
     print("Writer session labels: %s" % (writer._session_labels))
+    for f in iteritems(fills): print(f)
     writer.write(iteritems(fills))
     
     print("temp path: %s" % (path))
     reader = BcolzMinuteBarReader(path)
-
-    # get array of timestamps
-    columns = ['open', 'high', 'low', 'close', 'volume']
-    arrays = list(map(numpy.transpose, reader.load_raw_arrays(
-      columns, minutes[0], minutes[-1], [1],
-    )))
-    print('arrays',arrays)
 
     return reader
 

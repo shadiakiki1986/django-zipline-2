@@ -42,6 +42,13 @@ In [admin user](https://docs.djangoproject.com/en/1.10/intro/tutorial02/#creatin
 
 Finished at [Writing your first Django app, part 7](https://docs.djangoproject.com/en/1.10/intro/tutorial07/)
 
+
+When a model is modified:
+```bash
+python manage.py makemigrations polls
+python manage.py migrate
+```
+
 ### Zipline
 * `pip3 install zipline` currently takes a long time (more than 15 mins on aws ec2)
 * [Order](https://github.com/quantopian/zipline/blob/master/zipline/finance/order.py)

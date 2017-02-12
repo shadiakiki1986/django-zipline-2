@@ -10,6 +10,8 @@ from .models import Order, Fill
 from django.utils import timezone
 from .matcher import Matcher
 from testfixtures import TempDirectory
+import pandas as pd
+from zipline.finance.execution import MarketOrder
 
 class IndexView(generic.ListView):
     template_name = 'polls/index.html'
@@ -30,28 +32,35 @@ class IndexView(generic.ListView):
             pub_date__lte=timezone.now()
         ).order_by('-pub_date')#[:5]
 
+        if len(Fill.objects.all())==0:
+          return context
+
         # run matching engine
         with TempDirectory() as tempdir:
           matcher = Matcher()
 
-          sid = [x.fill_sid for x in Fill.objects.all()]
-          sid = set(sid)
+          sid = {matcher.env.asset_finder.lookup_symbol(symbol=x.fill_sid, as_of_date=None).sid: x.fill_sid for x in Fill.objects.all()}
           fills = {x: pd.DataFrame({}) for x in sid}
           print("sid, fills", sid, fills)
           for x in sid:
-            sub = [z for z in Fill.objects.all() if z.fill_sid==x]
+            sub = [z for z in Fill.objects.all() if z.fill_sid==sid[x]]
             fills[x]["close"] = [y.fill_price for y in sub]
-            fills[x]["volume"] = [y.fill_volume for y in sub]
-            fills[x]["dt"] = [y.pub_date for y in sub]
-            fills[x].set_index("dt")
+            fills[x]["volume"] = [y.fill_qty for y in sub]
+            fills[x]["dt"] = [pd.Timestamp(y.pub_date,tz='utc').round('1Min') for y in sub]
+            fills[x] = fills[x].set_index("dt")
 
           print("data: %s" % (fills))
-        
+
           all_minutes = matcher.fills2minutes(fills)
           equity_minute_reader = matcher.fills2reader(tempdir, all_minutes, fills)
          
           orders = [
-            {"dt": x.pub_date, "sid": x.order_sid, "amount": x.order_qty, "style": MarketOrder()}
+            {
+              "dt": x.pub_date,
+              "sid": matcher.env.asset_finder.lookup_symbol(x.order_sid, as_of_date=None),
+              "amount": x.amount,
+              "style": MarketOrder()
+            }
             for x in Order.objects.all()
           ]
           blotter = matcher.orders2blotter(orders)

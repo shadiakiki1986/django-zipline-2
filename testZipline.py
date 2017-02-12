@@ -14,9 +14,9 @@ with TempDirectory() as tempdir:
  
   # Use same sid as for assets above
   # NOT Multiplying by 1000 as documented in zipline/data/minute_bars.py#L419
-  MID_DATE_1 = pd.Timestamp('2013-01-07 15:01', tz='utc')
-  MID_DATE_2 = pd.Timestamp('2013-01-07 15:02', tz='utc')
-  MID_DATE_3 = pd.Timestamp('2013-01-07 15:03', tz='utc')
+  MID_DATE_1 = pd.Timestamp('2013-01-07 17:01', tz='utc')
+  MID_DATE_2 = pd.Timestamp('2013-01-07 17:02', tz='utc')
+  MID_DATE_3 = pd.Timestamp('2013-01-07 17:03', tz='utc')
   fills = {
       1: pd.DataFrame({
   	"close": [3.5, 4.5, 4],
@@ -29,7 +29,7 @@ with TempDirectory() as tempdir:
   all_minutes = matcher.fills2minutes(fills)
   equity_minute_reader = matcher.fills2reader(tempdir, all_minutes, fills)
  
-  MID_DATE_0 = pd.Timestamp('2013-01-07 15:00', tz='utc')
+  MID_DATE_0 = pd.Timestamp('2013-01-07 17:00', tz='utc')
   orders = [
     {"dt": MID_DATE_0, "sid": a1, "amount": 10, "style": MarketOrder()},
     {"dt": MID_DATE_0, "sid": a1, "amount": 10, "style": MarketOrder()},
