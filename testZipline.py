@@ -140,71 +140,48 @@ with TempDirectory() as tempdir:
     trading_calendar=trading_calendar
   )
 
-  print("========================")
-  blotter.set_date(MID_DATE_1)
-  print("use data portal to dequeue open orders: %s, %s" % (blotter.current_dt, simulation_dt_func()))
-  new_transactions, new_commissions, closed_orders = blotter.get_transactions(bd)
+  import numpy
+  all_closed = []
+  all_txns = []
+  for _,sid in iteritems(assets):
+    for dt in sid.index.values:
+      print("========================")
+      dt = pd.Timestamp(dt, tz='utc')
+      blotter.set_date(dt)
+      print("use data portal to dequeue open orders: %s, %s" % (blotter.current_dt, MID_DATE_1))
+      new_transactions, new_commissions, closed_orders = blotter.get_transactions(bd)
+    
+#      print("Closed orders: %s" % (len(closed_orders)))
+#      for order in closed_orders:
+#        print("Closed orders: %s" % (order))
+#    
+#      print("Transactions: %s" % (len(new_transactions)))
+#      for txn in new_transactions:
+#        print("Transactions: %s" % (txn.to_dict()))
+#    
+#      print("Commissions: %s" % (len(new_commissions)))
+#      for txn in new_commissions:
+#        print("Commissions: %s" % (txn))
+    
+      blotter.prune_orders(closed_orders)
+      print("Open orders: %s" % (len(blotter.open_orders[a1])))
+      print("Open order status: %s" % ([o.open for o in blotter.open_orders[a1]]))
 
-  print("Closed orders: %s" % (len(closed_orders)))
-  for order in closed_orders:
-    print("Closed orders: %s" % (order))
-
-  print("Transactions: %s" % (len(new_transactions)))
-  for txn in new_transactions:
-    print("Transactions: %s" % (txn.to_dict()))
-
-  print("Commissions: %s" % (len(new_commissions)))
-  for txn in new_commissions:
-    print("Commissions: %s" % (txn))
-
-  blotter.prune_orders(closed_orders)
-  print("Open orders: %s" % (len(blotter.open_orders[a1])))
-  print("Open order status: %s" % ([o.open for o in blotter.open_orders[a1]]))
-
-  print("========================")
-  blotter.set_date(MID_DATE_2)
-  print("use data portal to dequeue open orders: %s, %s" % (blotter.current_dt, simulation_dt_func()))
-  new_transactions, new_commissions, closed_orders = blotter.get_transactions(bd)
-
-  print("Closed orders: %s" % (len(closed_orders)))
-  for order in closed_orders:
-    print("Closed orders: %s" % (order))
-
-  print("Transactions: %s" % (len(new_transactions)))
-  for txn in new_transactions:
-    print("Transactions: %s" % (txn.to_dict()))
-
-  print("Commissions: %s" % (len(new_commissions)))
-  for txn in new_commissions:
-    print("Commissions: %s" % (txn))
-
-  blotter.prune_orders(closed_orders)
-  print("Open orders: %s" % (len(blotter.open_orders[a1])))
-  print("Open order status: %s" % ([o.open for o in blotter.open_orders[a1]]))
+      all_closed = numpy.concatenate((all_closed,closed_orders))
+      all_txns = numpy.concatenate((all_txns, new_transactions))
 
   print("========================")
-  blotter.set_date(MID_DATE_3)
-  print("use data portal to dequeue open orders: %s, %s" % (blotter.current_dt, simulation_dt_func()))
-  new_transactions, new_commissions, closed_orders = blotter.get_transactions(bd)
-
-  print("Closed orders: %s" % (len(closed_orders)))
-  for order in closed_orders:
-    print("Closed orders: %s" % (order))
-
-  print("Transactions: %s" % (len(new_transactions)))
-  for txn in new_transactions:
-    print("Transactions: %s" % (txn.to_dict()))
-
-  print("Commissions: %s" % (len(new_commissions)))
-  for txn in new_commissions:
-    print("Commissions: %s" % (txn))
-
-  blotter.prune_orders(closed_orders)
+  print("Remaining open")
+  #blotter.cancel(o3)
   print("Open orders: %s" % (len(blotter.open_orders[a1])))
-  print("Open order status: %s" % ([o.open for o in blotter.open_orders[a1]]))
+  print("Open order status: %s" % ([[o.amount,o.filled,o.open] for o in blotter.open_orders[a1]]))
 
   print("========================")
-  print("Cancel o2")
-  blotter.cancel(o2)
-  print("Open orders: %s" % (len(blotter.open_orders[a1])))
-  print("Open order status: %s" % ([o.open for o in blotter.open_orders[a1]]))
+  print("All closed orders:")
+  for cl in all_closed:
+    print(cl)
+
+  print("========================")
+  print("All transactions:")
+  for txn in [txn.to_dict() for txn in all_txns]:
+    print(txn)
