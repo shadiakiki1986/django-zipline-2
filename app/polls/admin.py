@@ -9,13 +9,13 @@ class FillInline(admin.TabularInline):
 
 class OrderAdmin(admin.ModelAdmin):
     fieldSets = [
-        (None,               {'fields': ['order_text']}),
+        (None,               {'fields': ['order_text', 'sid', 'amount']}),
         ('Date information', {'fields': ['pub_date']}),
     ]
     inlines = [FillInline]
-    list_display = ('order_text', 'pub_date', 'was_published_recently')
+    list_display = ('order_text', 'pub_date', 'was_published_recently', 'sid', 'amount')
     list_filter = ['pub_date']
-    search_fields = ['order_text']
+    search_fields = ['order_text', 'sid']
 
 admin.site.register(Order,OrderAdmin)
 admin.site.register(Fill)

@@ -6,7 +6,7 @@
     {% for order in latest_order_list %}
         <li>
             {{order.pub_date}}:
-            <a href="{% url 'polls:detail' order.id %}">{{ order.order_text }}</a>
+            <a href="{% url 'polls:detail' order.id %}">{{order.sid}}, {{order.amount}}, {{order.pub_date}}, {{ order.order_text }}</a>
         </li>
     {% endfor %}
     </ul>

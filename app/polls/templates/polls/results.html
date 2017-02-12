@@ -1,5 +1,14 @@
 <h1>{{ order.order_text }}</h1>
 
+Order Details
+<ul>
+  <li>{{order.sid}}</li>
+  <li>{{order.amount}}</li>
+  <li>{{order.pub_date}}</li>
+  <li>{{ order.order_text }}</li>
+</ul>
+
+Fills
 <ul>
 {% for fill in order.fill_set.all %}
     <li>{{ fill.fill_text }} -- {{ fill.votes }} vote{{ fill.votes|pluralize }}</li>
