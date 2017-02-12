@@ -16,9 +16,9 @@ with TempDirectory() as tempdir:
   df = pd.DataFrame(
       {  
         "sid":1,
-        "exchange":'bla',
-        "symbol":'bla',
-        "asset_name":'bla',
+        "exchange":'exchange name',
+        "symbol":'a1',
+        "asset_name":'a1 name',
       },
       index=[1],
   )

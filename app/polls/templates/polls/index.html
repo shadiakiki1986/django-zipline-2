@@ -1,12 +1,12 @@
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}" />
 
-{% if latest_question_list %}
+{% if latest_order_list %}
     <ul>
-    {% for question in latest_question_list %}
+    {% for order in latest_order_list %}
         <li>
-            {{question.pub_date}}:
-            <a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a>
+            {{order.pub_date}}:
+            <a href="{% url 'polls:detail' order.id %}">{{ order.order_text }}</a>
         </li>
     {% endfor %}
     </ul>

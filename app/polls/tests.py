@@ -3,120 +3,120 @@ import datetime
 from django.utils import timezone
 from django.test import TestCase
 
-from .models import Question
+from .models import Order
 from django.urls import reverse
 
-def create_question(question_text, days):
+def create_order(order_text, days):
     """
-    Creates a question with the given `question_text` and published the
-    given number of `days` offset to now (negative for questions published
-    in the past, positive for questions that have yet to be published).
+    Creates a order with the given `order_text` and published the
+    given number of `days` offset to now (negative for orders published
+    in the past, positive for orders that have yet to be published).
     """
     time = timezone.now() + datetime.timedelta(days=days)
-    return Question.objects.create(question_text=question_text, pub_date=time)
+    return Order.objects.create(order_text=order_text, pub_date=time)
 
 
-class QuestionMethodTests(TestCase):
+class OrderMethodTests(TestCase):
 
-    def test_was_published_recently_with_future_question(self):
+    def test_was_published_recently_with_future_order(self):
         """
-        was_published_recently() should return False for questions whose
+        was_published_recently() should return False for orders whose
         pub_date is in the future.
         """
-        future_question = create_question(question_text="test?",days=30)
-        self.assertIs(future_question.was_published_recently(), False)
+        future_order = create_order(order_text="test?",days=30)
+        self.assertIs(future_order.was_published_recently(), False)
 
-    def test_was_published_recently_with_old_question(self):
+    def test_was_published_recently_with_old_order(self):
         """
-        was_published_recently() should return False for questions whose
+        was_published_recently() should return False for orders whose
         pub_date is older than 1 day.
         """
-        old_question = create_question(question_text="test?",days=-30)
-        self.assertIs(old_question.was_published_recently(), False)
+        old_order = create_order(order_text="test?",days=-30)
+        self.assertIs(old_order.was_published_recently(), False)
 
-    def test_was_published_recently_with_recent_question(self):
+    def test_was_published_recently_with_recent_order(self):
         """
-        was_published_recently() should return True for questions whose
+        was_published_recently() should return True for orders whose
         pub_date is within the last day.
         """
-        recent_question = create_question(question_text="test?",days=-0.5)
-        self.assertIs(recent_question.was_published_recently(), True)
+        recent_order = create_order(order_text="test?",days=-0.5)
+        self.assertIs(recent_order.was_published_recently(), True)
 
-class QuestionViewTests(TestCase):
+class OrderViewTests(TestCase):
 
-    def test_index_view_with_no_questions(self):
+    def test_index_view_with_no_orders(self):
         """
-        If no questions exist, an appropriate message should be displayed.
+        If no orders exist, an appropriate message should be displayed.
         """
         response = self.client.get(reverse('polls:index'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "No polls are available.")
-        self.assertQuerysetEqual(response.context['latest_question_list'], [])
+        self.assertQuerysetEqual(response.context['latest_order_list'], [])
 
-    def test_index_view_with_a_past_question(self):
+    def test_index_view_with_a_past_order(self):
         """
-        Questions with a pub_date in the past should be displayed on the
+        Orders with a pub_date in the past should be displayed on the
         index page.
         """
-        create_question(question_text="Past question.", days=-30)
+        create_order(order_text="Past order.", days=-30)
         response = self.client.get(reverse('polls:index'))
         self.assertQuerysetEqual(
-            response.context['latest_question_list'],
-            ['<Question: Past question.>']
+            response.context['latest_order_list'],
+            ['<Order: Past order.>']
         )
 
-    def test_index_view_with_a_future_question(self):
+    def test_index_view_with_a_future_order(self):
         """
-        Questions with a pub_date in the future should not be displayed on
+        Orders with a pub_date in the future should not be displayed on
         the index page.
         """
-        create_question(question_text="Future question.", days=30)
+        create_order(order_text="Future order.", days=30)
         response = self.client.get(reverse('polls:index'))
         self.assertContains(response, "No polls are available.")
-        self.assertQuerysetEqual(response.context['latest_question_list'], [])
+        self.assertQuerysetEqual(response.context['latest_order_list'], [])
 
-    def test_index_view_with_future_question_and_past_question(self):
+    def test_index_view_with_future_order_and_past_order(self):
         """
-        Even if both past and future questions exist, only past questions
+        Even if both past and future orders exist, only past orders
         should be displayed.
         """
-        create_question(question_text="Past question.", days=-30)
-        create_question(question_text="Future question.", days=30)
+        create_order(order_text="Past order.", days=-30)
+        create_order(order_text="Future order.", days=30)
         response = self.client.get(reverse('polls:index'))
         self.assertQuerysetEqual(
-            response.context['latest_question_list'],
-            ['<Question: Past question.>']
+            response.context['latest_order_list'],
+            ['<Order: Past order.>']
         )
 
-    def test_index_view_with_two_past_questions(self):
+    def test_index_view_with_two_past_orders(self):
         """
-        The questions index page may display multiple questions.
+        The orders index page may display multiple orders.
         """
-        create_question(question_text="Past question 1.", days=-30)
-        create_question(question_text="Past question 2.", days=-5)
+        create_order(order_text="Past order 1.", days=-30)
+        create_order(order_text="Past order 2.", days=-5)
         response = self.client.get(reverse('polls:index'))
         self.assertQuerysetEqual(
-            response.context['latest_question_list'],
-            ['<Question: Past question 2.>', '<Question: Past question 1.>']
+            response.context['latest_order_list'],
+            ['<Order: Past order 2.>', '<Order: Past order 1.>']
         )
 
-class QuestionIndexDetailTests(TestCase):
-    def test_detail_view_with_a_future_question(self):
+class OrderIndexDetailTests(TestCase):
+    def test_detail_view_with_a_future_order(self):
         """
-        The detail view of a question with a pub_date in the future should
+        The detail view of a order with a pub_date in the future should
         return a 404 not found.
         """
-        future_question = create_question(question_text='Future question.', days=5)
-        url = reverse('polls:detail', args=(future_question.id,))
+        future_order = create_order(order_text='Future order.', days=5)
+        url = reverse('polls:detail', args=(future_order.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
-    def test_detail_view_with_a_past_question(self):
+    def test_detail_view_with_a_past_order(self):
         """
-        The detail view of a question with a pub_date in the past should
-        display the question's text.
+        The detail view of a order with a pub_date in the past should
+        display the order's text.
         """
-        past_question = create_question(question_text='Past Question.', days=-5)
-        url = reverse('polls:detail', args=(past_question.id,))
+        past_order = create_order(order_text='Past Order.', days=-5)
+        url = reverse('polls:detail', args=(past_order.id,))
         response = self.client.get(url)
-        self.assertContains(response, past_question.question_text)
+        self.assertContains(response, past_order.order_text)
