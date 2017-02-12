@@ -43,11 +43,11 @@ with TempDirectory() as tempdir:
   # Use same sid as for assets above
   assets = {
       1: pd.DataFrame({
-  	"open": [10.1] * len(days),
-  	"high": [10.1] * len(days),
-  	"low": [10.1] * len(days),
-  	"close": [10.1] * len(days),
-  	"volume": [100000] * len(days),
+  	"open": [3.5] * len(days),
+  	"high": [3.5] * len(days),
+  	"low": [3.5] * len(days),
+  	"close": [3.5] * len(days),
+  	"volume": [10] * len(days),
   	"day": [day.value for day in days]
       }, index=days)
   }
@@ -56,9 +56,10 @@ with TempDirectory() as tempdir:
   import os
   from zipline.data.us_equity_pricing import BcolzDailyBarReader, BcolzDailyBarWriter
   from zipline.utils.calendars import get_calendar
+  trading_calendar=get_calendar("NYSE")
   
   path = os.path.join(tempdir.path, "testdata.bcolz")
-  BcolzDailyBarWriter(path, get_calendar("NYSE"), days[0], days[-1]).write(
+  BcolzDailyBarWriter(path, trading_calendar, days[0], days[-1]).write(
       assets.items()
   )
   
@@ -69,7 +70,7 @@ with TempDirectory() as tempdir:
   from zipline.data.data_portal import DataPortal
   dp = DataPortal(
     asset_finder=env.asset_finder,
-    trading_calendar=get_calendar("NYSE"),
+    trading_calendar=trading_calendar,
     first_trading_day=equity_daily_reader.first_trading_day,
     equity_daily_reader=equity_daily_reader
   )
@@ -77,10 +78,14 @@ with TempDirectory() as tempdir:
   
   # initialize blotter
   from zipline.finance.blotter import Blotter
-  blotter = Blotter(data_frequency='daily',asset_finder=env.asset_finder)
+  #from zipline.finance.slippage import FixedSlippage
+  #slippage_func = FixedSlippage(spread=0.0)
+  from zipline.finance.slippage import VolumeShareSlippage
+  slippage_func = VolumeShareSlippage(volume_limit=1,price_impact=0)
+  blotter = Blotter(data_frequency='daily',asset_finder=env.asset_finder, slippage_func=slippage_func)
   
   print("Start")
-  blotter.set_date(START_DATE)
+  blotter.set_date(MID_DATE)
   print(blotter.current_dt)
   
   print("Order a1 +10")
@@ -93,17 +98,29 @@ with TempDirectory() as tempdir:
   print("Open orders: %s" % (len(blotter.open_orders[a1])))
   
   def simulation_dt_func(): return blotter.current_dt
-  bd = BarData(data_portal=dp,simulation_dt_func=simulation_dt_func,data_frequency='daily',trading_calendar=get_calendar("NYSE"))
+  bd = BarData(data_portal=dp,simulation_dt_func=simulation_dt_func,data_frequency='daily',trading_calendar=trading_calendar)
 
+  print("========================")
   print("use data portal to dequeue open orders: %s, %s" % (blotter.current_dt, simulation_dt_func()))
   new_transactions, new_commissions, closed_orders = blotter.get_transactions(bd)
+
   print("Closed orders: %s" % (len(closed_orders)))
+  for order in closed_orders:
+    print("Closed orders: %s" % (order))
+
+  print("Transactions: %s" % (len(new_transactions)))
   for txn in new_transactions:
-    print("Transactions: %s" % (blotter.orders[txn.order_id]))
+    print("Transactions: %s" % (txn.to_dict()))
+
+  print("Commissions: %s" % (len(new_commissions)))
+  for txn in new_commissions:
+    print("Commissions: %s" % (txn))
+
   blotter.prune_orders(closed_orders)
   print("Open orders: %s" % (len(blotter.open_orders[a1])))
   print("Open order status: %s" % ([o.open for o in blotter.open_orders[a1]]))
 
+  print("========================")
   print("Cancel o2")
   blotter.cancel(o2)
   print("Open orders: %s" % (len(blotter.open_orders[a1])))
