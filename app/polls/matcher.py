@@ -58,14 +58,14 @@ class Matcher:
 
   def fills2minutes(self,fills):
     minutes = [sid.index.values for _, sid in fills.items()]
-    minutes = reduce(lambda a, b: a.concatenate(b), minutes)
+    minutes = reduce(lambda a, b: a.concatenate(b), minutes, [])
     minutes = [pd.Timestamp(x, tz='utc') for x in minutes]
     minutes.sort()
     minutes = list(set(minutes))
     return minutes
 
   def fills2reader(self, tempdir, minutes, fills):
-    
+    print("minutes",minutes)
     for _,fill in fills.items():
       fill["open"] = fill["close"]
       fill["high"] = fill["close"]
@@ -125,6 +125,7 @@ class Matcher:
       #o1=
       blotter.order(order["sid"],order["amount"],order["style"])
 
+    print("Open orders: %s" % ({k.symbol: len(v) for k,v in iteritems(blotter.open_orders)}))
     return blotter
 
   def blotter2bardata(self, equity_minute_reader, blotter):

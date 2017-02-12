@@ -37,8 +37,7 @@ with TempDirectory() as tempdir:
   ]
 
   blotter = matcher.orders2blotter(orders)
-  print("Open orders: %s" % (len(blotter.open_orders[a1])))
-  
+ 
   bd = matcher.blotter2bardata(equity_minute_reader, blotter)
   all_closed, all_txns = matcher.match_orders_fills(blotter, bd, all_minutes, fills)
 
