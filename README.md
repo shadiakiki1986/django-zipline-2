@@ -1,6 +1,27 @@
 # finance-blotter
 (WIP) Web app serving as an electronic blotter for trading in finance
 
+TODO
+- [x] django app frmo tutorial customized to blotter
+- [x] use zipline as matching enging
+- [x] integrate zipline into django app
+- [ ] display average price (in red like filled) in original orders view
+- [ ] hide matching engine table
+- [ ] original order details page to show transactions filling order
+- [ ] add "working" flag to original order
+- [ ] add inline create new order/fill on index page
+- [ ] username/password
+- [ ] add MF asset name + account name
+- [ ] handle more than just asset A1
+- [ ] add user ID to order
+- [ ] use pusher?
+- [ ] link fills to orders
+- [ ] add broker field
+- [ ] broker can edit/delete his/her own fills/orders
+- [ ] polls view: side-by-side, tabular
+- [ ] sort by "open" first then by date
+- [ ] what about GTC orders and cancel on EOD
+
 ## Installation
 ```bash
 pew new BLOTTER_FINANCE
