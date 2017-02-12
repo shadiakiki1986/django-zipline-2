@@ -11,8 +11,8 @@
         <li>
             {{order.pub_date}}:
             {{order.order_sid}},
-            {{order.amount}},
-            {{ order.order_text }}
+            <font color="red">{{order.filled}}</font>/{{order.amount}},
+            {{ order.order_text }},
             <a href="{% url 'polls:detail' order.id %}">Details</a>
         </li>
     {% endfor %}
@@ -56,7 +56,8 @@
         <li>
             {{order.dt}}:
             {{order.sid.symbol}},
-            filled {{order.filled}} / {{order.amount}}
+            filled {{order.filled}} / {{order.amount}},
+            {{order.id}}
         </li>
     {% endfor %}
     </ul>

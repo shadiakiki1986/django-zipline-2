@@ -133,7 +133,6 @@ class MatcherMethodTests(TestCase):
 
     def test_runs(self):
       with TempDirectory() as tempdir:
-
         matcher = Matcher()
         a1=matcher.env.asset_finder.retrieve_asset(sid=1)
 

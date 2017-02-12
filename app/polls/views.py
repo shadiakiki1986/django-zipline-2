@@ -8,12 +8,6 @@ from django.views import generic
 
 from .models import Order, Fill
 from django.utils import timezone
-from .matcher import Matcher
-from testfixtures import TempDirectory
-import pandas as pd
-from zipline.finance.execution import MarketOrder
-from six import iteritems
-from functools import reduce
 
 class IndexView(generic.ListView):
     template_name = 'polls/index.html'
@@ -34,48 +28,15 @@ class IndexView(generic.ListView):
             pub_date__lte=timezone.now()
         ).order_by('-pub_date')#[:5]
 
-        if len(Fill.objects.all())==0:
-          return context
+        # get matching engine model
+        if len(Order.objects.all())>0:
+          first = Order.objects.all()[0]
+          zlModel = first.zlModel()
+          context["zl_open"]=zlModel["zl_open"]
+          context["zl_closed"]=zlModel["zl_closed"]
+          context["zl_txns"]=zlModel["zl_txns"]
+          context["zl_open_keyed"]=zlModel["zl_open_keyed"]
 
-        context["zl_open"  ] = []
-        context["zl_closed"] = []
-        context["zl_txns"  ] = []
-
-        # run matching engine
-        with TempDirectory() as tempdir:
-          matcher = Matcher()
-
-          sid = {matcher.env.asset_finder.lookup_symbol(symbol=x.fill_sid, as_of_date=None).sid: x.fill_sid for x in Fill.objects.all()}
-          fills = {x: pd.DataFrame({}) for x in sid}
-          print("sid, fills", sid, fills)
-          for x in sid:
-            sub = [z for z in Fill.objects.all() if z.fill_sid==sid[x]]
-            fills[x]["close"] = [y.fill_price for y in sub]
-            fills[x]["volume"] = [y.fill_qty for y in sub]
-            fills[x]["dt"] = [pd.Timestamp(y.pub_date,tz='utc').round('1Min') for y in sub]
-            fills[x] = fills[x].set_index("dt")
-
-          print("data: %s" % (fills))
-
-          all_minutes = matcher.fills2minutes(fills)
-          equity_minute_reader = matcher.fills2reader(tempdir, all_minutes, fills)
-         
-          orders = [
-            {
-              "dt": x.pub_date,
-              "sid": matcher.env.asset_finder.lookup_symbol(x.order_sid, as_of_date=None),
-              "amount": x.amount,
-              "style": MarketOrder()
-            }
-            for x in Order.objects.all()
-          ]
-          blotter = matcher.orders2blotter(orders)
-          bd = matcher.blotter2bardata(equity_minute_reader, blotter)
-          all_closed, all_txns = matcher.match_orders_fills(blotter, bd, all_minutes, fills)
-          context["zl_open"  ] = reduce(lambda a, b: a.concatenate(b), [v for k,v in blotter.open_orders.items()])
-          context["zl_closed"] = all_closed
-          context["zl_txns"  ] = [txn.to_dict() for txn in all_txns]
-     
         return context 
 
 class DetailView(generic.DetailView):

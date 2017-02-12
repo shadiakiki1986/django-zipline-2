@@ -164,7 +164,12 @@ class Matcher:
       #print(blotter.current_dt)
       #print("Order a1 +10")
       #o1=
-      blotter.order(order["sid"],order["amount"],order["style"])
+      blotter.order(
+        sid=order["sid"],
+        amount=order["amount"],
+        style=order["style"],
+        order_id = order["id"] if "id" in order else None
+      )
 
     #print("Open orders: %s" % ({k.symbol: len(v) for k,v in iteritems(blotter.open_orders)}))
     return blotter
