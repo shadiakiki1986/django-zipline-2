@@ -1,9 +1,6 @@
 # https://github.com/quantopian/zipline/blob/3350227f44dcf36b6fe3c509dcc35fe512965183/zipline/finance/blotter.py#L123
 import pandas as pd
-from zipline.finance.execution import (
-    MarketOrder,
-)
-from app.polls.matcher import match_orders_fills
+from app.polls.matcher import Matcher
 
 #####################################
 from zipline.finance.trading import TradingEnvironment
@@ -34,7 +31,6 @@ with TempDirectory() as tempdir:
   # TODO tailor for FFA Dubai
   #  start_date=pd.Timestamp('2013-12-08 9:31AM', tz='UTC'),
   START_DATE = pd.Timestamp('2013-01-07', tz='utc')
-  MID_DATE_0 = pd.Timestamp('2013-01-07 15:00', tz='utc')
   MID_DATE_1 = pd.Timestamp('2013-01-07 15:01', tz='utc')
   MID_DATE_2 = pd.Timestamp('2013-01-07 15:02', tz='utc')
   MID_DATE_3 = pd.Timestamp('2013-01-07 15:03', tz='utc')
@@ -59,7 +55,7 @@ with TempDirectory() as tempdir:
  
   # Use same sid as for assets above
   # NOT Multiplying by 1000 as documented in zipline/data/minute_bars.py#L419
-  assets = {
+  fills = {
       1: pd.DataFrame({
   	"open": [3.5, 4.5, 4],
   	"high": [3.5, 4.5, 4],
@@ -69,7 +65,7 @@ with TempDirectory() as tempdir:
   	"dt": [MID_DATE_1, MID_DATE_2, MID_DATE_3]
       }).set_index("dt")
   }
-  print("data: %s" % (assets))
+  print("data: %s" % (fills))
   
   import os
   #from zipline.data.us_equity_pricing import BcolzDailyBarReader, BcolzDailyBarWriter
@@ -96,7 +92,7 @@ with TempDirectory() as tempdir:
   )
   print("Writer session labels: %s" % (writer._session_labels))
   from six import iteritems
-  writer.write(iteritems(assets))
+  writer.write(iteritems(fills))
   
   print("temp path: %s" % (path))
   equity_minute_reader = BcolzMinuteBarReader(path)
@@ -109,30 +105,14 @@ with TempDirectory() as tempdir:
     first_trading_day=equity_minute_reader.first_trading_day,
     equity_minute_reader=equity_minute_reader
   )
+  
+  orders = []
+
+  matcher = Matcher()
+  blotter = matcher.orders2blotter(sim_params, env, orders)
+  print("Open orders: %s" % (len(blotter.open_orders[a1])))
+  
   from zipline._protocol import BarData
-  
-  # initialize blotter
-  from zipline.finance.blotter import Blotter
-  #from zipline.finance.slippage import FixedSlippage
-  #slippage_func = FixedSlippage(spread=0.0)
-  from zipline.finance.slippage import VolumeShareSlippage
-  slippage_func = VolumeShareSlippage(volume_limit=1,price_impact=0)
-  blotter = Blotter(data_frequency=sim_params.data_frequency,asset_finder=env.asset_finder, slippage_func=slippage_func)
-  
-  print("-----------------------")
-  print("Place orders")
-  blotter.set_date(MID_DATE_0)
-  print(blotter.current_dt)
-  
-  print("Order a1 +10")
-  o1=blotter.order(a1,10,MarketOrder())
-  print("Open orders: %s" % (len(blotter.open_orders[a1])))
-  
-  print("Order a1 +10 and +10")
-  o2=blotter.order(a1,10,MarketOrder())
-  o3=blotter.order(a1,10,MarketOrder())
-  print("Open orders: %s" % (len(blotter.open_orders[a1])))
-  
   def simulation_dt_func(): return blotter.current_dt
   bd = BarData(
     data_portal=dp,
@@ -141,35 +121,7 @@ with TempDirectory() as tempdir:
     trading_calendar=trading_calendar
   )
 
-  import numpy
-  all_closed = []
-  all_txns = []
-  for _,sid in iteritems(assets):
-    for dt in sid.index.values:
-      print("========================")
-      dt = pd.Timestamp(dt, tz='utc')
-      blotter.set_date(dt)
-      print("use data portal to dequeue open orders: %s, %s" % (blotter.current_dt, MID_DATE_1))
-      new_transactions, new_commissions, closed_orders = blotter.get_transactions(bd)
-    
-#      print("Closed orders: %s" % (len(closed_orders)))
-#      for order in closed_orders:
-#        print("Closed orders: %s" % (order))
-#    
-#      print("Transactions: %s" % (len(new_transactions)))
-#      for txn in new_transactions:
-#        print("Transactions: %s" % (txn.to_dict()))
-#    
-#      print("Commissions: %s" % (len(new_commissions)))
-#      for txn in new_commissions:
-#        print("Commissions: %s" % (txn))
-    
-      blotter.prune_orders(closed_orders)
-      print("Open orders: %s" % (len(blotter.open_orders[a1])))
-      print("Open order status: %s" % ([o.open for o in blotter.open_orders[a1]]))
-
-      all_closed = numpy.concatenate((all_closed,closed_orders))
-      all_txns = numpy.concatenate((all_txns, new_transactions))
+  all_closed, all_txns = matcher.match_orders_fills(blotter, bd, fills)
 
   print("========================")
   print("Remaining open")
