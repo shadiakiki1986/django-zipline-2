@@ -12,7 +12,7 @@
         <li>
             {{order.pub_date}}:
             {{order.order_sid}},
-            <font color="red">{{order.filled}}</font>/{{order.amount}},
+            <font color="red">{{order.filled|intcomma}}</font>/{{order.amount|intcomma}},
             {{ order.order_text }},
             <font color="red">{{order.avgPrice|floatformat:"2"|intcomma}}</font>,
             <a href="{% url 'polls:detail' order.id %}">Details</a>
@@ -58,7 +58,7 @@
         <li>
             {{order.dt}}:
             {{order.sid.symbol}},
-            filled {{order.filled}} / {{order.amount}},
+            filled {{order.filled}} / {{order.amount|intcomma}},
             {{order.id}}
         </li>
     {% endfor %}
@@ -76,11 +76,8 @@
         <li>
           {{fill.dt}}:
           {{fill.sid.symbol}},
-          {{fill.amount}},
-          {{fill.price|floatformat:"2"|intcomma}}
-<pre>
-{{fill}}
-</pre>
+          {{fill.amount|intcomma}},
+          {{fill.price|intcomma}}
         </li>
     {% endfor %}
     </ul>
@@ -97,7 +94,7 @@
         <li>
           {{fill.dt}}:
           {{fill.sid.symbol}},
-          {{fill.amount}},
+          {{fill.amount|intcomma}},
         </li>
     {% endfor %}
     </ul>

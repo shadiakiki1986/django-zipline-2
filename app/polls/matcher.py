@@ -25,7 +25,7 @@ from zipline.utils.calendars import (
   register_calendar
 )
 from zipline.finance.trading import TradingEnvironment
-import zipline.utils.factory as factory
+import zipline.utils.factory as zl_factory
 
 from zipline.utils.calendars import TradingCalendar
 from datetime import time
@@ -92,7 +92,7 @@ class Matcher:
     #  start_date=pd.Timestamp('2013-12-08 9:31AM', tz='UTC'),
     START_DATE = pd.Timestamp('2013-01-01', tz='utc')
     END_DATE = pd.Timestamp(datetime.now(), tz='utc')
-    self.sim_params = factory.create_simulation_parameters(
+    self.sim_params = zl_factory.create_simulation_parameters(
         start = START_DATE,
         end = END_DATE,
         data_frequency="minute"
@@ -103,10 +103,11 @@ class Matcher:
    # self.trading_calendar=get_calendar("ICEUS")
 
   def fills2minutes(self,fills):
+    if len(fills)==0:
+      return []
+
     minutes = [sid.index.values for _, sid in fills.items()]
     #print("minutes",[type(x).__name__ for x in minutes])
-    if len(minutes)==0:
-      raise ValueError("No minutes for fills")
     minutes = reduce(lambda a, b: a.concatenate(b), minutes)
     minutes = [pd.Timestamp(x, tz='utc') for x in minutes]
     minutes.sort()
@@ -115,6 +116,9 @@ class Matcher:
     return minutes
 
   def fills2reader(self, tempdir, minutes, fills):
+    if len(minutes)==0:
+      return None
+
     for _,fill in fills.items():
       fill["open"] = fill["close"]
       fill["high"] = fill["close"]
@@ -177,6 +181,9 @@ class Matcher:
     return blotter
 
   def blotter2bardata(self, equity_minute_reader, blotter):
+    if equity_minute_reader is None:
+      return None
+
     dp = DataPortal(
       asset_finder=self.env.asset_finder,
       trading_calendar=self.trading_calendar,
@@ -224,3 +231,15 @@ class Matcher:
         all_txns = numpy.concatenate((all_txns, new_transactions))
 
     return all_closed, all_txns 
+
+from testfixtures import TempDirectory
+
+def factory(matcher, fills, orders):
+  with TempDirectory() as tempdir:
+    all_minutes = matcher.fills2minutes(fills)
+    equity_minute_reader = matcher.fills2reader(tempdir, all_minutes, fills)
+    blotter = matcher.orders2blotter(orders)
+    bd = matcher.blotter2bardata(equity_minute_reader, blotter)
+    all_closed, all_txns = matcher.match_orders_fills(blotter, bd, all_minutes, fills)
+
+  return all_closed, all_txns, blotter.open_orders

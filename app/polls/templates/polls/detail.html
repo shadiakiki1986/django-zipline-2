@@ -1,14 +1,33 @@
+{% load humanize %}
 <h1>{{ order.order_text }}</h1>
 
 Order Details
 <ul>
   <li>{{order.order_sid}}</li>
-  <li>{{order.amount}}</li>
+  <li><font color="red">{{order.filled|intcomma}}</font> / {{order.amount|intcomma}}</li>
   <li>{{order.pub_date}}</li>
   <li>{{ order.order_text }}</li>
 </ul>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<font color="red">
+{% if order.fills|length > 0 %}
+    Current fills
+    <ul>
+    {% for fill in order.fills %}
+        <li>
+          {{fill.dt}}:
+          {{fill.sid.symbol}},
+          {{fill.amount|intcomma}},
+          {{fill.price|intcomma}}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No fills are available.</p>
+{% endif %}
+</font>
 
 Fill
 <form action="{% url 'polls:vote' order.id %}" method="post">
