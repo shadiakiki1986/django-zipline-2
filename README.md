@@ -7,9 +7,10 @@ TODO
 - [x] integrate zipline into django app
 - [x] display average price (in red like filled) in original orders view
 - [x] original order details page to show transactions filling order
+- [x] add nav header
 - [ ] handle more than just asset A1
 - [ ] polls view: side-by-side, tabular
-- [ ] add nav header (contrasted with white background)
+- [ ] UX (nav header contrasted with white background)
 - [ ] hide matching engine table
 - [ ] add "working" flag to original order
 - [ ] add user ID to order
@@ -22,6 +23,7 @@ TODO
 - [ ] broker can edit/delete his/her own fills/orders
 - [ ] sort by "open" first then by date
 - [ ] what about GTC orders and cancel on EOD
+- [ ] default landing page at `/`
 
 ## Installation
 ```bash

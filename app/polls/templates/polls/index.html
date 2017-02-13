@@ -1,7 +1,7 @@
-{% load static %}
+{% extends "polls/base.html" %}
 {% load humanize %}
-<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}" />
 
+{% block content %}
 <table border=1>
 <tr>
 <td>
@@ -104,3 +104,4 @@
 </td>
 </tr>
 </table>
+{% endblock %}

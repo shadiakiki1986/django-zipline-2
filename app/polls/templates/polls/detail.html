@@ -1,4 +1,7 @@
+{% extends "polls/base.html" %}
 {% load humanize %}
+
+{% block content %}
 <h1>{{ order.order_text }}</h1>
 
 Order Details
@@ -42,3 +45,5 @@ Fill
 {% endfor %}
 <input type="submit" value="Vote" />
 </form>
+
+{% endblock %}
