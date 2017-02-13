@@ -105,6 +105,8 @@ class Matcher:
   def fills2minutes(self,fills):
     minutes = [sid.index.values for _, sid in fills.items()]
     #print("minutes",[type(x).__name__ for x in minutes])
+    if len(minutes)==0:
+      raise ValueError("No minutes for fills")
     minutes = reduce(lambda a, b: a.concatenate(b), minutes)
     minutes = [pd.Timestamp(x, tz='utc') for x in minutes]
     minutes.sort()

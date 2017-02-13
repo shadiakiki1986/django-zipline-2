@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
 
-from .models import Order, Fill
+from .models import Order, Fill, ZlModel
 from django.utils import timezone
 
 class IndexView(generic.ListView):
@@ -29,13 +29,10 @@ class IndexView(generic.ListView):
         ).order_by('-pub_date')#[:5]
 
         # get matching engine model
-        if len(Order.objects.all())>0:
-          first = Order.objects.all()[0]
-          zlModel = first.zlModel()
-          context["zl_open"]=zlModel["zl_open"]
-          context["zl_closed"]=zlModel["zl_closed"]
-          context["zl_txns"]=zlModel["zl_txns"]
-          context["zl_open_keyed"]=zlModel["zl_open_keyed"]
+        context["zl_open"]=ZlModel.zl_open
+        context["zl_closed"]=ZlModel.zl_closed
+        context["zl_txns"]=ZlModel.zl_txns
+        context["zl_open_keyed"]=ZlModel.zl_open_keyed
 
         return context 
 

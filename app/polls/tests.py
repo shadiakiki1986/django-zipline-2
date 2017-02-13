@@ -3,7 +3,7 @@ import datetime
 from django.utils import timezone
 from django.test import TestCase
 
-from .models import Order
+from .models import Order, ZlModel
 from django.urls import reverse
 
 def create_order(order_text, days, order_sid, amount):
@@ -41,6 +41,15 @@ class OrderMethodTests(TestCase):
         """
         recent_order = create_order(order_text="test?",days=-0.5, order_sid="A1", amount=10)
         self.assertIs(recent_order.was_published_recently(), True)
+
+    def test_avg_price(self):
+        o = create_order(order_text="test?",days=-0.5, order_sid="A1", amount=10)
+        ZlModel.zl_closed_keyed={o.id: {}}
+        ZlModel.zl_txns=[
+          {"order_id":o.id, "price":1, "amount":1},
+          {"order_id":o.id, "price":1, "amount":1}
+        ]
+        self.assertEqual(o.avgPrice(), 1)
 
 class OrderViewTests(TestCase):
 

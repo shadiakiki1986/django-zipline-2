@@ -1,4 +1,5 @@
 {% load static %}
+{% load humanize %}
 <link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}" />
 
 <table border=1>
@@ -13,6 +14,7 @@
             {{order.order_sid}},
             <font color="red">{{order.filled}}</font>/{{order.amount}},
             {{ order.order_text }},
+            <font color="red">{{order.avgPrice|floatformat:"2"|intcomma}}</font>,
             <a href="{% url 'polls:detail' order.id %}">Details</a>
         </li>
     {% endfor %}
@@ -75,7 +77,10 @@
           {{fill.dt}}:
           {{fill.sid.symbol}},
           {{fill.amount}},
-          {{fill.price|floatformat}}
+          {{fill.price|floatformat:"2"|intcomma}}
+<pre>
+{{fill}}
+</pre>
         </li>
     {% endfor %}
     </ul>

@@ -5,9 +5,11 @@ TODO
 - [x] django app frmo tutorial customized to blotter
 - [x] use zipline as matching enging
 - [x] integrate zipline into django app
-- [ ] display average price (in red like filled) in original orders view
-- [ ] hide matching engine table
+- [x] display average price (in red like filled) in original orders view
 - [ ] original order details page to show transactions filling order
+- [ ] polls view: side-by-side, tabular
+- [ ] add nav header (contrasted with white background)
+- [ ] hide matching engine table
 - [ ] add "working" flag to original order
 - [ ] add inline create new order/fill on index page
 - [ ] username/password
@@ -18,7 +20,6 @@ TODO
 - [ ] link fills to orders
 - [ ] add broker field
 - [ ] broker can edit/delete his/her own fills/orders
-- [ ] polls view: side-by-side, tabular
 - [ ] sort by "open" first then by date
 - [ ] what about GTC orders and cancel on EOD
 
