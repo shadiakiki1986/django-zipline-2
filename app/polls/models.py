@@ -79,7 +79,6 @@ class ZlModel:
         return
     
       print("Run matching engine: "+md5)
-      ZlModel.md5=md5
     
       matcher = mmm_Matcher()
   
@@ -96,7 +95,7 @@ class ZlModel:
         sub = [z for z in Fill.objects.all() if z.fill_sid==sid[x]]
         fills[x]["close"] = [y.fill_price for y in sub]
         fills[x]["volume"] = [y.fill_qty for y in sub]
-        fills[x]["dt"] = [pd.Timestamp(y.pub_date,tz='utc').round('1Min') for y in sub]
+        fills[x]["dt"] = [pd.Timestamp(y.pub_date,tz='utc') for y in sub]
         fills[x] = fills[x].set_index("dt")
   
       #print("data: %s" % (fills))
@@ -123,6 +122,9 @@ class ZlModel:
       ZlModel.zl_txns = [txn.to_dict() for txn in all_txns]
       ZlModel.zl_open_keyed = {v.id: v for v in ZlModel.zl_open}
       ZlModel.zl_closed_keyed = {v.id: v for v in ZlModel.zl_closed}
+
+      # save md5 at the end to ensure re-run if error occured
+      ZlModel.md5=md5
 
 class Fill(models.Model):
     # 2017-01-12: unlink orders from fills and use zipline engine to perform matching

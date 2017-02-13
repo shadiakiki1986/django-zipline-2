@@ -110,10 +110,21 @@ class Matcher:
     #print("minutes",[type(x).__name__ for x in minutes])
     minutes = reduce(lambda a, b: a.concatenate(b), minutes)
     minutes = [pd.Timestamp(x, tz='utc') for x in minutes]
-    minutes.sort()
     minutes = list(set(minutes))
+    minutes.sort()
     #print("minutes",minutes)
     return minutes
+
+  @staticmethod
+  def chopSeconds(fills, orders):
+    for sid in fills:
+      index=[dt.round('1Min') for dt in fills[sid].index]
+      fills[sid].index = index
+      fills[sid].sort_index(inplace=True)
+
+    for order in orders:
+      order["dt"]=pd.Timestamp(order["dt"],tz="utc").round('1Min')
+    return fills, orders
 
   def fills2reader(self, tempdir, minutes, fills):
     if len(minutes)==0:
@@ -124,15 +135,15 @@ class Matcher:
       fill["high"] = fill["close"]
       fill["low"]  = fill["close"]
 
-    days = self.trading_calendar.sessions_in_range(
-      self.trading_calendar.minute_to_session_label(
-        minutes[0]
-      ),
-      self.trading_calendar.minute_to_session_label(
-        minutes[-1]
-      )
+    d1 = self.trading_calendar.minute_to_session_label(
+      minutes[0]
     )
-    #print("days: %s" % (days))
+    d2=self.trading_calendar.minute_to_session_label(
+      minutes[-1]
+    )
+    days = self.trading_calendar.sessions_in_range(d1, d2)
+    #print("minutes",minutes)
+    #print("days: %s, %s, %s" % (d1, d2, days))
   
     #path = os.path.join(tempdir.path, "testdata.bcolz")
     path = tempdir.path
@@ -144,7 +155,7 @@ class Matcher:
       minutes_per_day=1440
     )
     #print("Writer session labels: %s" % (writer._session_labels))
-    #for f in iteritems(fills): print(f)
+    #for f in iteritems(fills): print("fill",f)
     writer.write(iteritems(fills))
     
     #print("temp path: %s" % (path))
@@ -235,6 +246,8 @@ class Matcher:
 from testfixtures import TempDirectory
 
 def factory(matcher, fills, orders):
+  fills, orders = Matcher.chopSeconds(fills, orders)
+
   with TempDirectory() as tempdir:
     all_minutes = matcher.fills2minutes(fills)
     equity_minute_reader = matcher.fills2reader(tempdir, all_minutes, fills)

@@ -151,6 +151,23 @@ from zipline.finance.execution import (
 
 class MatcherMethodTests(TestCase):
 
+    def test_chopSeconds(self):
+        sec_yes = pd.Timestamp('2017-02-13 05:13:23', tz='utc')
+        sec_non = pd.Timestamp('2017-02-13 05:13', tz='utc')
+        fills = {
+            1: pd.DataFrame({
+                "close": [3.5],
+                "dt": [sec_yes]
+            }).set_index("dt")
+        }
+        orders = [
+          {"dt": sec_yes, "sid": "bla"},
+        ]
+        actual_fills, actual_orders = mmm_Matcher.chopSeconds(fills, orders)
+
+        self.assertEqual(actual_fills[1].index, [sec_non])
+        self.assertEqual([x["dt"] for x in actual_orders], [sec_non])
+
     def test_factory_some_orders_and_some_fills(self):
         matcher = mmm_Matcher()
         a1=matcher.env.asset_finder.retrieve_asset(sid=1)
@@ -160,11 +177,13 @@ class MatcherMethodTests(TestCase):
         MID_DATE_1 = pd.Timestamp('2013-01-07 17:01', tz='utc')
         MID_DATE_2 = pd.Timestamp('2013-01-07 17:02', tz='utc')
         MID_DATE_3 = pd.Timestamp('2013-01-07 17:03', tz='utc')
+        # seconds in below timestamp will be rounded
+        MID_DATE_4 = pd.Timestamp('2017-02-13 05:13:23', tz='utc')
         fills = {
             1: pd.DataFrame({
-        	"close": [3.5, 4.5, 4],
-        	"volume": [10, 5, 7],
-        	"dt": [MID_DATE_1,MID_DATE_2,MID_DATE_3]
+                "close": [3.5, 4.5, 4, 2.4],
+                "volume": [10, 5, 7, 1],
+                "dt": [MID_DATE_1,MID_DATE_2,MID_DATE_3,MID_DATE_4]
             }).set_index("dt")
         }
         #print("data: %s" % (fills))
@@ -240,9 +259,9 @@ class MatcherMethodTests(TestCase):
         MID_DATE_3 = pd.Timestamp('2013-01-07 17:03', tz='utc')
         fills = {
             1: pd.DataFrame({
-        	"close": [3.5, 4.5, 4],
-        	"volume": [10, 5, 7],
-        	"dt": [MID_DATE_1,MID_DATE_2,MID_DATE_3]
+                "close": [3.5, 4.5, 4],
+                "volume": [10, 5, 7],
+                "dt": [MID_DATE_1,MID_DATE_2,MID_DATE_3]
             }).set_index("dt")
         }
         #print("data: %s" % (fills))
@@ -255,4 +274,38 @@ class MatcherMethodTests(TestCase):
         self.assertEqual(0,len(all_closed))
         self.assertEqual(0,len(all_txns))
         self.assertEqual(0,len(open_orders))
+
+    def test_factory_unsorted_input(self):
+        matcher = mmm_Matcher()
+        a1=matcher.env.asset_finder.retrieve_asset(sid=1)
+
+        # Use same sid as for assets above
+        # NOT Multiplying by 1000 as documented in zipline/data/minute_bars.py#L419
+        MID_DATE_1 = pd.Timestamp('2013-01-07 17:01', tz='utc')
+        MID_DATE_2 = pd.Timestamp('2013-01-07 17:02', tz='utc')
+        MID_DATE_3 = pd.Timestamp('2013-01-07 17:03', tz='utc')
+        # seconds in below timestamp will be rounded
+        MID_DATE_4 = pd.Timestamp('2017-02-13 05:13:23', tz='utc')
+        fills = {
+            1: pd.DataFrame({
+                "close": [3.5, 4.5, 4, 2.4],
+                "volume": [10, 5, 7, 1],
+                "dt": [MID_DATE_1,MID_DATE_2,MID_DATE_4,MID_DATE_3]
+            }).set_index("dt")
+        }
+        #print("data: %s" % (fills))
+
+        MID_DATE_0 = pd.Timestamp('2013-01-07 17:00', tz='utc')
+        orders = [
+          {"dt": MID_DATE_0, "sid": a1, "amount": 10, "style": MarketOrder()},
+          {"dt": MID_DATE_0, "sid": a1, "amount": 10, "style": MarketOrder()},
+          {"dt": MID_DATE_0, "sid": a1, "amount": 10, "style": MarketOrder()},
+        ]
+
+        all_closed, all_txns, open_orders = mmm_factory(matcher, fills, orders)
+
+        self.assertEqual(2,len(all_closed))
+        self.assertEqual(5,len(all_txns))
+        self.assertEqual(1,len(open_orders))
+        self.assertEqual(1,len(open_orders[a1]))
 
