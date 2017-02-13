@@ -6,14 +6,14 @@ from django.test import TestCase
 from .models import Order, ZlModel
 from django.urls import reverse
 
-def create_order(order_text, days, order_sid, amount):
+def create_order(order_text, days, order_symbol, amount):
     """
     Creates a order with the given `order_text` and published the
     given number of `days` offset to now (negative for orders published
     in the past, positive for orders that have yet to be published).
     """
     time = timezone.now() + datetime.timedelta(days=days)
-    return Order.objects.create(order_text=order_text, pub_date=time, order_sid=order_sid, amount=amount)
+    return Order.objects.create(order_text=order_text, pub_date=time, order_symbol=order_symbol, amount=amount)
 
 
 class OrderMethodTests(TestCase):
@@ -23,7 +23,7 @@ class OrderMethodTests(TestCase):
         was_published_recently() should return False for orders whose
         pub_date is in the future.
         """
-        future_order = create_order(order_text="test?",days=30, order_sid="A1", amount=10)
+        future_order = create_order(order_text="test?",days=30, order_symbol="A1", amount=10)
         self.assertIs(future_order.was_published_recently(), False)
 
     def test_was_published_recently_with_old_order(self):
@@ -31,7 +31,7 @@ class OrderMethodTests(TestCase):
         was_published_recently() should return False for orders whose
         pub_date is older than 1 day.
         """
-        old_order = create_order(order_text="test?",days=-30, order_sid="A1", amount=10)
+        old_order = create_order(order_text="test?",days=-30, order_symbol="A1", amount=10)
         self.assertIs(old_order.was_published_recently(), False)
 
     def test_was_published_recently_with_recent_order(self):
@@ -39,11 +39,11 @@ class OrderMethodTests(TestCase):
         was_published_recently() should return True for orders whose
         pub_date is within the last day.
         """
-        recent_order = create_order(order_text="test?",days=-0.5, order_sid="A1", amount=10)
+        recent_order = create_order(order_text="test?",days=-0.5, order_symbol="A1", amount=10)
         self.assertIs(recent_order.was_published_recently(), True)
 
     def test_avg_price(self):
-        o = create_order(order_text="test?",days=-0.5, order_sid="A1", amount=10)
+        o = create_order(order_text="test?",days=-0.5, order_symbol="A1", amount=10)
         ZlModel.zl_closed_keyed={o.id: {}}
         ZlModel.zl_txns=[
           {"order_id":o.id, "price":1, "amount":1},
@@ -58,7 +58,7 @@ class ZlModelMethodTests(TestCase):
         self.assertEqual(len(ZlModel.zl_closed), 0)
 
     def test_update_no_orders_no_fills(self):
-        o = create_order(order_text="test?",days=-0.5, order_sid="A1", amount=10)
+        o = create_order(order_text="test?",days=-0.5, order_symbol="A1", amount=10)
         ZlModel.update("test")
         self.assertEqual(len(ZlModel.zl_open), 1)
         self.assertEqual(len(ZlModel.zl_closed), 0)
@@ -79,7 +79,7 @@ class OrderViewTests(TestCase):
         Orders with a pub_date in the past should be displayed on the
         index page.
         """
-        create_order(order_text="Past order.", days=-30, order_sid="A1", amount=10)
+        create_order(order_text="Past order.", days=-30, order_symbol="A1", amount=10)
         response = self.client.get(reverse('polls:index'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
@@ -91,7 +91,7 @@ class OrderViewTests(TestCase):
         Orders with a pub_date in the future should not be displayed on
         the index page.
         """
-        create_order(order_text="Future order.", days=30, order_sid="A1", amount=10)
+        create_order(order_text="Future order.", days=30, order_symbol="A1", amount=10)
         response = self.client.get(reverse('polls:index'))
         self.assertContains(response, "No orders are available.")
         self.assertQuerysetEqual(response.context['latest_order_list'], [])
@@ -101,8 +101,8 @@ class OrderViewTests(TestCase):
         Even if both past and future orders exist, only past orders
         should be displayed.
         """
-        create_order(order_text="Past order.", days=-30, order_sid="A1", amount=10)
-        create_order(order_text="Future order.", days=30, order_sid="A1", amount=10)
+        create_order(order_text="Past order.", days=-30, order_symbol="A1", amount=10)
+        create_order(order_text="Future order.", days=30, order_symbol="A1", amount=10)
         response = self.client.get(reverse('polls:index'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
@@ -113,8 +113,8 @@ class OrderViewTests(TestCase):
         """
         The orders index page may display multiple orders.
         """
-        create_order(order_text="Past order 1.", days=-30, order_sid="A1", amount=10)
-        create_order(order_text="Past order 2.", days=-5, order_sid="A1", amount=10)
+        create_order(order_text="Past order 1.", days=-30, order_symbol="A1", amount=10)
+        create_order(order_text="Past order 2.", days=-5, order_symbol="A1", amount=10)
         response = self.client.get(reverse('polls:index'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
@@ -127,7 +127,7 @@ class OrderIndexDetailTests(TestCase):
         The detail view of a order with a pub_date in the future should
         return a 404 not found.
         """
-        future_order = create_order(order_text='Future order.', days=5, order_sid="A1", amount=10)
+        future_order = create_order(order_text='Future order.', days=5, order_symbol="A1", amount=10)
         url = reverse('polls:detail', args=(future_order.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
@@ -137,7 +137,7 @@ class OrderIndexDetailTests(TestCase):
         The detail view of a order with a pub_date in the past should
         display the order's text.
         """
-        past_order = create_order(order_text='Past Order.', days=-5, order_sid="A1", amount=10)
+        past_order = create_order(order_text='Past Order.', days=-5, order_symbol="A1", amount=10)
         url = reverse('polls:detail', args=(past_order.id,))
         response = self.client.get(url)
         self.assertContains(response, past_order.order_text)

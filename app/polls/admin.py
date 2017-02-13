@@ -9,13 +9,13 @@ from .models import Fill, Order
 
 class OrderAdmin(admin.ModelAdmin):
     fieldSets = [
-        (None,               {'fields': ['order_text', 'order_sid', 'amount']}),
+        (None,               {'fields': ['order_text', 'order_symbol', 'amount']}),
         ('Date information', {'fields': ['pub_date']}),
     ]
     #inlines = [FillInline]
-    list_display = ('order_text', 'pub_date', 'was_published_recently', 'order_sid', 'amount')
+    list_display = ('order_text', 'pub_date', 'was_published_recently', 'order_symbol', 'amount')
     list_filter = ['pub_date']
-    search_fields = ['order_text', 'order_sid']
+    search_fields = ['order_text', 'order_symbol']
 
 admin.site.register(Order,OrderAdmin)
 admin.site.register(Fill)

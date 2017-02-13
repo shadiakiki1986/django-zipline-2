@@ -6,18 +6,18 @@ TODO
 - [x] use zipline as matching enging
 - [x] integrate zipline into django app
 - [x] display average price (in red like filled) in original orders view
-- [ ] original order details page to show transactions filling order
+- [x] original order details page to show transactions filling order
+- [ ] handle more than just asset A1
 - [ ] polls view: side-by-side, tabular
 - [ ] add nav header (contrasted with white background)
 - [ ] hide matching engine table
 - [ ] add "working" flag to original order
+- [ ] add user ID to order
 - [ ] add inline create new order/fill on index page
 - [ ] username/password
 - [ ] add MF asset name + account name
-- [ ] handle more than just asset A1
-- [ ] add user ID to order
 - [ ] use pusher?
-- [ ] link fills to orders
+- [ ] link fills to transactions/orders
 - [ ] add broker field
 - [ ] broker can edit/delete his/her own fills/orders
 - [ ] sort by "open" first then by date

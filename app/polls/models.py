@@ -25,13 +25,13 @@ from numpy import average, concatenate
 class Order(models.Model):
     order_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
-    order_sid = models.CharField(max_length=20, default='-')
+    order_symbol = models.CharField(max_length=20, default='-')
     amount = models.IntegerField(default=0)
 
     # static variable
 
     def __str__(self):
-        return "%s, %s (%s)" % (self.order_sid, self.amount, self.order_text)
+        return "%s, %s (%s)" % (self.order_symbol, self.amount, self.order_text)
 
     def was_published_recently(self):
         now = timezone.now()
@@ -84,15 +84,15 @@ class ZlModel:
   
       sid = {
         matcher.env.asset_finder.lookup_symbol(
-          symbol=x.fill_sid,
+          symbol=x.fill_symbol,
           as_of_date=None
-        ).sid: x.fill_sid
+        ).sid: x.fill_symbol
         for x in Fill.objects.all()
       }
       fills = {x: pd.DataFrame({}) for x in sid}
       #print("sid, fills", sid, fills)
       for x in sid:
-        sub = [z for z in Fill.objects.all() if z.fill_sid==sid[x]]
+        sub = [z for z in Fill.objects.all() if z.fill_symbol==sid[x]]
         fills[x]["close"] = [y.fill_price for y in sub]
         fills[x]["volume"] = [y.fill_qty for y in sub]
         fills[x]["dt"] = [pd.Timestamp(y.pub_date,tz='utc') for y in sub]
@@ -103,7 +103,7 @@ class ZlModel:
       orders = [
         {
           "dt": x.pub_date,
-          "sid": matcher.env.asset_finder.lookup_symbol(x.order_sid, as_of_date=None),
+          "sid": matcher.env.asset_finder.lookup_symbol(x.order_symbol, as_of_date=None),
           "amount": x.amount,
           "style": MarketOrder(),
           "id": x.id
@@ -134,10 +134,10 @@ class Fill(models.Model):
     fill_qty = models.IntegerField(default=0)
     fill_price = models.FloatField(default=0)
     pub_date = models.DateTimeField('date published',default=timezone.now)
-    fill_sid = models.CharField(max_length=20, default='-')
+    fill_symbol = models.CharField(max_length=20, default='-')
 
     def __str__(self):
-        return "%s, %s, %s (%s)" % (self.fill_sid, self.fill_qty, self.fill_price, self.fill_text)
+        return "%s, %s, %s (%s)" % (self.fill_symbol, self.fill_qty, self.fill_price, self.fill_text)
 
 # https://docs.djangoproject.com/en/1.11/topics/signals/#connecting-receiver-functions
 #from django.db.models.signals import post_save
