@@ -1,21 +1,25 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Fill, Order
+from .models import Fill, Order, Asset
 
-#class FillInline(admin.TabularInline):
-#    model = Fill
+#class AssetInline(admin.TabularInline):
+#    model = Asset
 #    extra = 3
 
 class OrderAdmin(admin.ModelAdmin):
     fieldSets = [
-        (None,               {'fields': ['order_text', 'order_symbol', 'amount']}),
+        (None,               {'fields': ['order_text', 'asset', 'amount']}),
         ('Date information', {'fields': ['pub_date']}),
     ]
-    #inlines = [FillInline]
-    list_display = ('order_text', 'pub_date', 'was_published_recently', 'order_symbol', 'amount')
+    #inlines = [AssetInline]
+    list_display = ('order_text', 'pub_date', 'was_published_recently', 'asset', 'amount')
     list_filter = ['pub_date']
-    search_fields = ['order_text', 'order_symbol']
+    search_fields = ['order_text', 'asset.asset_symbol']
+
+#class FillAdmin(admin.ModelAdmin):
+#    inlines = [AssetInline]
 
 admin.site.register(Order,OrderAdmin)
 admin.site.register(Fill)
+admin.site.register(Asset)

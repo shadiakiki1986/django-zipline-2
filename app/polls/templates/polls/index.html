@@ -11,7 +11,7 @@
     {% for order in latest_order_list %}
         <li>
             {{order.pub_date}}:
-            {{order.order_symbol}},
+            {{order.asset.asset_symbol}},
             <font color="red">{{order.filled|intcomma}}</font>/{{order.amount|intcomma}},
             {{ order.order_text }},
             <font color="red">{{order.avgPrice|floatformat:"2"|intcomma}}</font>,
@@ -31,7 +31,7 @@
     {% for fill in latest_fill_list %}
         <li>
           {{fill.pub_date}}:
-          {{fill.fill_symbol}},
+          {{fill.asset.asset_symbol}},
           {{fill.fill_qty}},
           {{fill.fill_price}}
           ({{ fill.fill_text }})

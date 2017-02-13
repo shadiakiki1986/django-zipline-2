@@ -71,19 +71,7 @@ register_calendar("AlwaysOpen",AlwaysOpenExchange())
 class Matcher:
   def __init__(self):
     self.env = TradingEnvironment()
-    
-    # save an asset
-    df = pd.DataFrame(
-        {  
-          "sid":1,
-          "exchange":'exchange name',
-          "symbol":'A1',
-          "asset_name":'A1 name',
-        },
-        index=[1],
-    )
-    self.env.write_data(equities=df)
-    
+
     # prepare for data portal
     # from zipline/tests/test_finance.py#L238
     # Note that 2013-01-05 and 2013-01-06 were Sat/Sun
@@ -97,7 +85,7 @@ class Matcher:
         end = END_DATE,
         data_frequency="minute"
     )
-    
+
     self.trading_calendar=get_calendar("AlwaysOpen")
   #  self.trading_calendar=get_calendar("NYSE")
    # self.trading_calendar=get_calendar("ICEUS")
@@ -106,9 +94,10 @@ class Matcher:
     if len(fills)==0:
       return []
 
-    minutes = [sid.index.values for _, sid in fills.items()]
+    minutes = [sid.index.values.tolist() for _, sid in fills.items()]
     #print("minutes",[type(x).__name__ for x in minutes])
-    minutes = reduce(lambda a, b: a.concatenate(b), minutes)
+    #print("minutes",minutes)
+    minutes = reduce(lambda a, b: numpy.concatenate((a,b)), minutes, [])
     minutes = [pd.Timestamp(x, tz='utc') for x in minutes]
     minutes = list(set(minutes))
     minutes.sort()
@@ -124,6 +113,9 @@ class Matcher:
 
     for order in orders:
       order["dt"]=pd.Timestamp(order["dt"],tz="utc").round('1Min')
+
+    #print("chop seconds fills ", fills)
+    #print("chop seconds orders", orders)
     return fills, orders
 
   def fills2reader(self, tempdir, minutes, fills):
@@ -144,7 +136,7 @@ class Matcher:
     days = self.trading_calendar.sessions_in_range(d1, d2)
     #print("minutes",minutes)
     #print("days: %s, %s, %s" % (d1, d2, days))
-  
+
     #path = os.path.join(tempdir.path, "testdata.bcolz")
     path = tempdir.path
     writer = BcolzMinuteBarWriter(
@@ -155,13 +147,38 @@ class Matcher:
       minutes_per_day=1440
     )
     #print("Writer session labels: %s" % (writer._session_labels))
+    #print('last date for sid 1', writer.last_date_in_output_for_sid(1))
+    #print('last date for sid 2', writer.last_date_in_output_for_sid(2))
     #for f in iteritems(fills): print("fill",f)
     writer.write(iteritems(fills))
-    
+
     #print("temp path: %s" % (path))
     reader = BcolzMinuteBarReader(path)
 
     return reader
+
+  # save an asset
+  def orders2writer(self, orders):
+    # unique assets by using sid
+    # http://stackoverflow.com/a/11092590/4126114
+    assets = {order["asset"]["sid"]: order["asset"] for order in orders}
+    assets = list(assets.values())
+
+    if len(assets)==0:
+      #raise ValueError("Got empty orders!")
+      return
+
+    # check zipline/zipline/assets/asset_writer.py#write
+    df = pd.DataFrame(
+        {
+          "sid"       : [asset["sid"] for asset in assets],
+          "exchange"  : [asset["exchange"] for asset in assets],
+          "symbol"    : [asset["symbol"] for asset in assets],
+          "asset_name": [asset["name"] for asset in assets],
+        }
+    ).set_index("sid")
+    print("write data",df)
+    self.env.write_data(equities=df)
 
   def orders2blotter(self, orders):
     slippage_func = VolumeShareSlippage(
@@ -173,16 +190,18 @@ class Matcher:
       asset_finder=self.env.asset_finder,
       slippage_func=slippage_func
     )
-    
+
     #print("Place orders")
-    orders2 = []
     for order in orders:
+      asset = self.env.asset_finder.retrieve_asset(sid=order["asset"]["sid"], default_none=True)
+
+      # move clock/date
       blotter.set_date(order["dt"])
       #print(blotter.current_dt)
       #print("Order a1 +10")
       #o1=
       blotter.order(
-        sid=order["sid"],
+        sid=asset,
         amount=order["amount"],
         style=order["style"],
         order_id = order["id"] if "id" in order else None
@@ -221,32 +240,33 @@ class Matcher:
         blotter.set_date(dt)
         #print("use data portal to dequeue open orders: %s" % (blotter.current_dt))
         new_transactions, new_commissions, closed_orders = blotter.get_transactions(bar_data)
-      
+
   #      print("Closed orders: %s" % (len(closed_orders)))
   #      for order in closed_orders:
   #        print("Closed orders: %s" % (order))
-  #    
+  #
   #      print("Transactions: %s" % (len(new_transactions)))
   #      for txn in new_transactions:
   #        print("Transactions: %s" % (txn.to_dict()))
-  #    
+  #
   #      print("Commissions: %s" % (len(new_commissions)))
   #      for txn in new_commissions:
   #        print("Commissions: %s" % (txn))
-      
+
         blotter.prune_orders(closed_orders)
         #print("Open orders: %s" % (len(blotter.open_orders[a1])))
         #print("Open order status: %s" % ([o.open for o in blotter.open_orders[a1]]))
-  
+
         all_closed = numpy.concatenate((all_closed,closed_orders))
         all_txns = numpy.concatenate((all_txns, new_transactions))
 
-    return all_closed, all_txns 
+    return all_closed, all_txns
 
 from testfixtures import TempDirectory
 
 def factory(matcher, fills, orders):
   fills, orders = Matcher.chopSeconds(fills, orders)
+  matcher.orders2writer(orders)
 
   with TempDirectory() as tempdir:
     all_minutes = matcher.fills2minutes(fills)

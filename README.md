@@ -8,7 +8,8 @@ TODO
 - [x] display average price (in red like filled) in original orders view
 - [x] original order details page to show transactions filling order
 - [x] add nav header
-- [ ] handle more than just asset A1
+- [ ] handle more than just asset A1 (WIP .. currently crashes if two assets added, one order per asset added, and then fill added for 2nd asset)
+- [ ] drop `vote` field and button
 - [ ] polls view: side-by-side, tabular
 - [ ] UX (nav header contrasted with white background)
 - [ ] hide matching engine table
@@ -24,12 +25,15 @@ TODO
 - [ ] sort by "open" first then by date
 - [ ] what about GTC orders and cancel on EOD
 - [ ] default landing page at `/`
+- [ ] alert about extra fills
 
 ## Installation
 ```bash
 pew new BLOTTER_FINANCE
 pip3 install Django datetime zipline
 ```
+
+Apply patch from https://github.com/quantopian/zipline/pull/1683 if not already merged and usable
 
 ## Usage
 ```bash
@@ -62,7 +66,12 @@ django-admin startproject blotter_finance
 mv blotter_finance app
 ```
 
-In [admin user](https://docs.djangoproject.com/en/1.10/intro/tutorial02/#creating-an-admin-user): Admin: admin, `!@#$%^&*`
+In [admin user](https://docs.djangoproject.com/en/1.10/intro/tutorial02/#creating-an-admin-user):
+```bash
+python manage.py createsuperuser
+Admin: admin
+Password: !@#$%^&*
+```
 
 Finished at [Writing your first Django app, part 7](https://docs.djangoproject.com/en/1.10/intro/tutorial07/)
 

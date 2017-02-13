@@ -22,16 +22,32 @@ from numpy import average, concatenate
 
 # Create your models here.
 
+class Asset(models.Model):
+    asset_symbol = models.CharField(max_length=20)
+    asset_exchange = models.CharField(max_length=200)
+    asset_name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return "%s, %s, %s" % (self.asset_symbol, self.asset_exchange, self.asset_name)
+
+    def to_dict(self):
+        return {
+          "sid": self.id,
+          "symbol": self.asset_symbol,
+          "exchange": self.asset_exchange,
+          "name": self.asset_name
+        }
+
 class Order(models.Model):
     order_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
-    order_symbol = models.CharField(max_length=20, default='-')
+    asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
     amount = models.IntegerField(default=0)
 
     # static variable
 
     def __str__(self):
-        return "%s, %s (%s)" % (self.order_symbol, self.amount, self.order_text)
+        return "%s, %s (%s)" % (self.asset.asset_symbol, self.amount, self.order_text)
 
     def was_published_recently(self):
         now = timezone.now()
@@ -73,37 +89,33 @@ class ZlModel:
         "fills":[x.__str__() for x in Fill.objects.all()],
         "orders":[x.__str__() for x in Order.objects.all()]
       }).encode('utf-8')).hexdigest()
-    
+
       if ZlModel.md5==md5:
         print("Model unchanged .. not rerunning engine: "+md5)
         return
-    
+
       print("Run matching engine: "+md5)
-    
+
       matcher = mmm_Matcher()
-  
-      sid = {
-        matcher.env.asset_finder.lookup_symbol(
-          symbol=x.fill_symbol,
-          as_of_date=None
-        ).sid: x.fill_symbol
-        for x in Fill.objects.all()
+
+      fills = {
+          x.asset.id: pd.DataFrame({})
+          for x in Fill.objects.all()
       }
-      fills = {x: pd.DataFrame({}) for x in sid}
       #print("sid, fills", sid, fills)
-      for x in sid:
-        sub = [z for z in Fill.objects.all() if z.fill_symbol==sid[x]]
-        fills[x]["close"] = [y.fill_price for y in sub]
-        fills[x]["volume"] = [y.fill_qty for y in sub]
-        fills[x]["dt"] = [pd.Timestamp(y.pub_date,tz='utc') for y in sub]
-        fills[x] = fills[x].set_index("dt")
-  
+      for sid in fills:
+        sub = [z for z in Fill.objects.all() if z.asset.id==sid]
+        fills[sid]["close"] = [y.fill_price for y in sub]
+        fills[sid]["volume"] = [y.fill_qty for y in sub]
+        fills[sid]["dt"] = [pd.Timestamp(y.pub_date,tz='utc') for y in sub]
+        fills[sid] = fills[sid].set_index("dt")
+
       #print("data: %s" % (fills))
 
       orders = [
         {
           "dt": x.pub_date,
-          "sid": matcher.env.asset_finder.lookup_symbol(x.order_symbol, as_of_date=None),
+          "asset": x.asset.to_dict(),
           "amount": x.amount,
           "style": MarketOrder(),
           "id": x.id
@@ -112,7 +124,7 @@ class ZlModel:
       ]
 
       all_closed, all_txns, open_orders = mmm_factory(matcher,fills,orders)
-  
+
       ZlModel.zl_open = reduce(
         lambda a, b: concatenate((a,b)),
         [v for k,v in open_orders.items()],
@@ -134,10 +146,10 @@ class Fill(models.Model):
     fill_qty = models.IntegerField(default=0)
     fill_price = models.FloatField(default=0)
     pub_date = models.DateTimeField('date published',default=timezone.now)
-    fill_symbol = models.CharField(max_length=20, default='-')
+    asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return "%s, %s, %s (%s)" % (self.fill_symbol, self.fill_qty, self.fill_price, self.fill_text)
+        return "%s, %s, %s (%s)" % (self.asset.asset_symbol, self.fill_qty, self.fill_price, self.fill_text)
 
 # https://docs.djangoproject.com/en/1.11/topics/signals/#connecting-receiver-functions
 #from django.db.models.signals import post_save
