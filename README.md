@@ -1,7 +1,7 @@
 # finance-blotter
 (WIP) Web app serving as an electronic blotter for trading in finance
 
-TODO
+TODO version 0.1
 - [x] django app from tutorial customized to blotter
 - [x] use zipline as matching enging
 - [x] integrate zipline into django app
@@ -18,28 +18,31 @@ TODO
 - [x] handle more than just asset A1 (WIP .. currently crashes if two assets added, one order per asset added, and then fill added for 2nd asset)
 - [x] matcher: test that fills before an order do not fill it
 - [x] alert about extra fills
-- [ ] drop `vote` field and button
+- [x] add account symbols attached to orders
 - [ ] polls view: side-by-side, tabular, select day on top and show orders/fills for one day
   - possibly alert about days with unused fills? (use top right like github alerts?)
 - [ ] UX (nav header contrasted with white background)
 - [ ] hide matching engine table
 - [ ] add "working" flag to original order
-- [ ] add user ID to order
+  - how about an "email" button? possibly rename `vote` field and button
 - [ ] add inline create new order/fill/asset on index page
+  - or maybe just open the admin?
 - [ ] username/password
-- [ ] add MF asset name + account name
-- [ ] use pusher?
 - [ ] add broker field
-- [ ] broker can edit/delete his/her own fills/orders
 - [ ] sort by "open" first then by date (remember that main view will be for one day)
 - [ ] what about GTC orders and cancel on EOD
 - [ ] default landing page at `/`: think of github dashboard
-- [ ] take frequency up to seconds from minutes (and remove chopSeconds)
-  - otherwise constrain the django fields for `pub_date` to be without seconds
-  - also default for order `pub_date` to be now (like fill `pub_date`)
 - ~~link fills to transactions/orders~~
   - ~~but `fills_as_dict_df` loses the original ID's (check `test_fills_as_dict_df`)~~
   - cancelled because transactions have no reference from zipline to the fills
+
+TODO version 0.2
+- [ ] add MF asset name + account name
+- [ ] use pusher?
+- [ ] broker can edit/delete his/her own fills/orders
+- [ ] take frequency up to seconds from minutes (and remove chopSeconds)
+  - otherwise constrain the django fields for `pub_date` to be without seconds
+  - also default for order `pub_date` to be now (like fill `pub_date`)
 
 ## Installation
 ```bash
