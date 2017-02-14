@@ -19,6 +19,12 @@ from functools import reduce
 import json
 import hashlib
 from numpy import average, concatenate
+from django.db import connection
+
+# Django Logging
+# https://docs.djangoproject.com/en/1.10/topics/logging/
+import logging
+logger = logging.getLogger(__name__)
 
 # Create your models here.
 
@@ -47,7 +53,7 @@ class Order(models.Model):
     # static variable
 
     def __str__(self):
-        return "%s, %s (%s)" % (self.asset.asset_symbol, self.amount, self.order_text)
+        return "%s, %s, %s (%s)" % (self.pub_date, self.asset.asset_symbol, self.amount, self.order_text)
 
     def was_published_recently(self):
         now = timezone.now()
@@ -87,7 +93,7 @@ class Fill(models.Model):
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return "%s, %s, %s (%s)" % (self.asset.asset_symbol, self.fill_qty, self.fill_price, self.fill_text)
+        return "%s, %s, %s, %s (%s)" % (self.pub_date, self.asset.asset_symbol, self.fill_qty, self.fill_price, self.fill_text)
 
 
 class ZlModel:
@@ -167,7 +173,18 @@ class ZlModel:
       ZlModel.orders.pop(order.id, None)
 
     @staticmethod
+    def db_ready():
+      tables = connection.introspection.table_names()
+      isready = "polls_fill" in tables
+      if not isready:
+        logger.debug("db tables not available .. skipping zlmodel init")
+      return isready
+
+    @staticmethod
     def init():
+      if not ZlModel.db_ready():
+        return
+
       for fill in Fill.objects.all():
         ZlModel.add_fill(fill)
       for order in Order.objects.all():
@@ -175,16 +192,19 @@ class ZlModel:
 
     @staticmethod
     def update():
+      if not ZlModel.db_ready():
+        return
+
       md5 = hashlib.md5(json.dumps({
         "fills":[x.__str__() for x in Fill.objects.all()],
         "orders":[x.__str__() for x in Order.objects.all()]
       }).encode('utf-8')).hexdigest()
 
       if ZlModel.md5==md5:
-        print("Model unchanged .. not rerunning engine: "+md5)
+        logger.debug("Model unchanged .. not rerunning engine: "+md5)
         return
 
-      print("Run matching engine: "+md5)
+      logger.debug("Run matching engine: "+md5)
 
       matcher = mmm_Matcher()
 
@@ -218,17 +238,19 @@ class SignalProcessor:
   #def post_init(sender, **kwargs):
   #  print("Signal: %s, %s" % ("post_init", sender.__name__))
 
-  def post_save(sender, **kwargs):
-    print("Signal: %s, %s" % ("post_save", sender))
-    if sender.__name__=="Fill": ZlModel.add_fill(kwargs["instance"])
-    if sender.__name__=="Order": ZlModel.add_order(kwargs["instance"])
-    ZlModel.update()
+  def post_save(sender, instance, **kwargs):
+    #logger.debug("Signal: %s, %s" % ("post_save", sender))
+    if sender.__name__=="Fill": ZlModel.add_fill(instance)
+    if sender.__name__=="Order": ZlModel.add_order(instance)
+    if sender.__name__=="Fill" or sender.__name__=="Order":
+      ZlModel.update()
 
   def post_delete(sender, **kwargs):
-    print("Signal: %s, %s" % ("post_delete", sender))
-    if sender.__name__=="Fill": ZlModel.delete_fill(kwargs["instance"])
-    if sender.__name__=="Order": ZlModel.delete_order(kwargs["instance"])
-    ZlModel.update()
+    #print("Signal: %s, %s" % ("post_delete", sender))
+    if sender.__name__=="Fill": ZlModel.delete_fill(instance)
+    if sender.__name__=="Order": ZlModel.delete_order(instance)
+    if sender.__name__=="Fill" or sender.__name__=="Order":
+      ZlModel.update()
 
   def connection_created(sender, **kwargs):
   #  print("Signal: %s, %s" % ("connection_created", sender))

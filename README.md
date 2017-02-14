@@ -16,7 +16,7 @@ TODO
     - `post_save` for editing
     - `post_delete` for deleting
 - [x] handle more than just asset A1 (WIP .. currently crashes if two assets added, one order per asset added, and then fill added for 2nd asset)
-- [ ] matcher: test that fills before an order do not fill it
+- [x] matcher: test that fills before an order do not fill it
 - [ ] drop `vote` field and button
 - [ ] polls view: side-by-side, tabular
 - [ ] UX (nav header contrasted with white background)
@@ -57,8 +57,11 @@ python3 manage.py runserver 0.0.0.0:8000
 ```bash
 pew workon BLOTTER_FINANCE
 cd app
-python manage.py test polls
+POLLS_LOG_LEVEL=DEBUG python manage.py test polls
 ```
+where the `POLLS_LOG_LEVEL` env variable is the django log level desired
+as documented [here](https://docs.djangoproject.com/en/1.10/topics/logging/#loggers)
+(default in `settings.py` is INFO)
 
 If running tests manually, could benefit from
 * http://stackoverflow.com/questions/24011428/django-core-exceptions-improperlyconfigured-requested-setting-caches-but-setti#27455703

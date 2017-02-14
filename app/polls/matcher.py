@@ -34,6 +34,8 @@ from pytz import timezone
 from zipline.utils.memoize import lazyval
 from pandas.tseries.offsets import CustomBusinessDay
 
+import logging
+logger = logging.getLogger(__name__)
 
 class AlwaysOpenExchange(TradingCalendar):
     """
@@ -90,14 +92,22 @@ class Matcher:
   #  self.trading_calendar=get_calendar("NYSE")
    # self.trading_calendar=get_calendar("ICEUS")
 
-  def fills2minutes(self,fills):
-    if len(fills)==0:
+  def get_minutes(self,fills,orders):
+    if len(fills)==0 and len(orders)==0:
       return []
 
+    # get fill minutes
     minutes = [sid.index.values.tolist() for _, sid in fills.items()]
     #print("minutes",[type(x).__name__ for x in minutes])
     #print("minutes",minutes)
     minutes = reduce(lambda a, b: numpy.concatenate((a,b)), minutes, [])
+
+    # append order minutes
+    minutes = numpy.concatenate((
+      minutes,
+      [o["dt"] for o in orders]
+    ))
+
     minutes = [pd.Timestamp(x, tz='utc') for x in minutes]
     minutes = list(set(minutes))
     minutes.sort()
@@ -189,7 +199,7 @@ class Matcher:
     #print("write data",df)
     self.env.write_data(equities=df)
 
-  def orders2blotter(self, orders):
+  def get_blotter(self):
     slippage_func = VolumeShareSlippage(
       volume_limit=1,
       price_impact=0
@@ -199,21 +209,28 @@ class Matcher:
       asset_finder=self.env.asset_finder,
       slippage_func=slippage_func
     )
+    return blotter
 
+  def _orders2blotter(self, orders, blotter):
     #print("Place orders")
     for order in orders:
+      # skip orders in the future
+      if order["dt"] > blotter.current_dt:
+        #logger.debug("Order in future skipped: %s" % order)
+        continue
+
+      if order["id"] in blotter.orders:
+        #logger.debug("Order already included: %s" % order)
+        continue
+
+      #logger.debug("Order included: %s" % order)
       asset = self.env.asset_finder.retrieve_asset(sid=order["asset"]["sid"], default_none=True)
 
-      # move clock/date
-      blotter.set_date(order["dt"])
-      #print(blotter.current_dt)
-      #print("Order a1 +10")
-      #o1=
       blotter.order(
         sid=asset,
         amount=order["amount"],
         style=order["style"],
-        order_id = order["id"] if "id" in order else None
+        order_id = order["id"]
       )
 
     #print("Open orders: %s" % ({k.symbol: len(v) for k,v in iteritems(blotter.open_orders)}))
@@ -230,24 +247,25 @@ class Matcher:
       equity_minute_reader=equity_minute_reader
     )
 
-    def simulation_dt_func(): return blotter.current_dt
     bd = BarData(
       data_portal=dp,
-      simulation_dt_func=simulation_dt_func,
+      simulation_dt_func=lambda: blotter.current_dt,
       data_frequency=self.sim_params.data_frequency,
       trading_calendar=self.trading_calendar
     )
 
     return bd
 
-  def match_orders_fills(self, blotter, bar_data, all_minutes, fills):
+  def match_orders_fills(self, blotter, bar_data, all_minutes, orders):
     all_closed = []
     all_txns = []
     for dt in all_minutes:
         #print("========================")
         dt = pd.Timestamp(dt, tz='utc')
         blotter.set_date(dt)
-        #print("use data portal to dequeue open orders: %s" % (blotter.current_dt))
+        self._orders2blotter(orders,blotter)
+        #print("DQ1: %s" % (blotter.current_dt))
+        #print("DQ6", blotter.open_orders)
         new_transactions, new_commissions, closed_orders = blotter.get_transactions(bar_data)
 
   #      print("Closed orders: %s" % (len(closed_orders)))
@@ -278,10 +296,10 @@ def factory(matcher, fills, orders):
   matcher.orders2writer(orders)
 
   with TempDirectory() as tempdir:
-    all_minutes = matcher.fills2minutes(fills)
+    all_minutes = matcher.get_minutes(fills,orders)
     equity_minute_reader = matcher.fills2reader(tempdir, all_minutes, fills, orders)
-    blotter = matcher.orders2blotter(orders)
+    blotter = matcher.get_blotter()
     bd = matcher.blotter2bardata(equity_minute_reader, blotter)
-    all_closed, all_txns = matcher.match_orders_fills(blotter, bd, all_minutes, fills)
+    all_closed, all_txns = matcher.match_orders_fills(blotter, bd, all_minutes, orders)
 
   return all_closed, all_txns, blotter.open_orders

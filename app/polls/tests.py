@@ -299,10 +299,10 @@ class MatcherMethodTests(TestCase):
 
         MID_DATE_0 = pd.Timestamp('2013-01-07 17:00', tz='utc')
         orders = [
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder()},
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder()},
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder()},
-          {"dt": MID_DATE_0, "asset": a2, "amount": 10, "style": MarketOrder()},
+          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 1},
+          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 2},
+          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 3},
+          {"dt": MID_DATE_0, "asset": a2, "amount": 10, "style": MarketOrder(), "id": 4},
         ]
 
         all_closed, all_txns, open_orders = mmm_factory(matcher, fills, orders)
@@ -347,9 +347,9 @@ class MatcherMethodTests(TestCase):
 
         MID_DATE_0 = pd.Timestamp('2013-01-07 17:00', tz='utc')
         orders = [
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder()},
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder()},
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder()},
+          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 1},
+          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 2},
+          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 3},
         ]
 
         all_closed, all_txns, open_orders = mmm_factory(matcher, fills, orders)
@@ -408,9 +408,9 @@ class MatcherMethodTests(TestCase):
 
         MID_DATE_0 = pd.Timestamp('2013-01-07 17:00', tz='utc')
         orders = [
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder()},
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder()},
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder()},
+          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 1},
+          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 2},
+          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 3},
         ]
 
         all_closed, all_txns, open_orders = mmm_factory(matcher, fills, orders)
@@ -435,3 +435,32 @@ class MatcherMethodTests(TestCase):
 
         found = matcher.env.asset_finder.lookup_symbol(symbol=a2["symbol"], as_of_date=None)
         self.assertEqual(a2["symbol"],found.symbol)
+
+    def test_factory_fills_before_orders(self):
+        matcher = mmm_Matcher()
+
+        # Use same sid as for assets above
+        # NOT Multiplying by 1000 as documented in zipline/data/minute_bars.py#L419
+        MID_DATE_1 = pd.Timestamp('2013-01-07 17:01', tz='utc')
+        MID_DATE_2 = pd.Timestamp('2013-01-07 17:03', tz='utc')
+        fills = {
+            1: pd.DataFrame({
+                "close": [1, 2],
+                "volume": [5, 5],
+                "dt": [MID_DATE_1,MID_DATE_2]
+            }).set_index("dt"),
+        }
+
+        MID_DATE_0 = pd.Timestamp('2013-01-07 17:02', tz='utc')
+        orders = [
+          {"dt": MID_DATE_0, "asset": a1, "amount": 5, "style": MarketOrder(), "id": 1},
+        ]
+
+        all_closed, all_txns, open_orders = mmm_factory(matcher, fills, orders)
+
+        self.assertEqual(1,len(all_closed))
+        self.assertEqual(1,len(all_txns))
+        self.assertEqual(0,len(open_orders))
+
+        txn = all_txns[0].to_dict()
+        self.assertEqual(txn["price"], 2)
