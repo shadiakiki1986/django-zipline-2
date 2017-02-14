@@ -35,7 +35,6 @@ def create_order(order_text, days, asset, amount):
     time = timezone.now() + datetime.timedelta(days=days)
     return Order.objects.create(order_text=order_text, pub_date=time, asset=asset, amount=amount)
 
-
 class OrderMethodTests(TestCase):
 
     def test_was_published_recently_with_future_order(self):
@@ -81,17 +80,62 @@ class OrderMethodTests(TestCase):
         self.assertEqual(o.asset.to_dict(), a1)
 
 class ZlModelMethodTests(TestCase):
+    def setUp(self):
+      ZlModel.clear()
+
     def test_update_no_orders_no_fills(self):
-        ZlModel.update("test")
+        ZlModel.update()
         self.assertEqual(len(ZlModel.zl_open), 0)
         self.assertEqual(len(ZlModel.zl_closed), 0)
 
     def test_update_some_orders_no_fills(self):
         asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
         o = create_order(order_text="test?",days=-0.5, asset=asset, amount=10)
-        ZlModel.update("test")
+        ZlModel.update()
         self.assertEqual(len(ZlModel.zl_open), 1)
         self.assertEqual(len(ZlModel.zl_closed), 0)
+    def test_update_no_orders_no_fills_again(self):
+        """
+        To make sure that eventhough ZlModel has static methods/fields,
+        it gets reset automatically for each test,
+        especially after the create_order above
+        """
+        ZlModel.update()
+        self.assertEqual(len(ZlModel.zl_open), 0)
+        self.assertEqual(len(ZlModel.zl_closed), 0)
+    def test_fills_as_dict_df(self):
+        ZlModel.fills={
+          1: {
+            1: { "dt": "2015-01-01", "close": 1, "volume": 1 },
+            2: { "dt": "2015-01-01", "close": 2, "volume": 2 }
+          },
+          2: {}
+        }
+        expected = {
+          1: pd.DataFrame({
+            "dt": ["2015-01-01","2015-01-01"],
+            "close": [1, 2],
+            "volume": [1, 2]
+          }).set_index("dt"),
+          2: pd.DataFrame({
+            "dt": [],
+            "close": [],
+            "volume": []
+          }).set_index("dt")
+        }
+        actual = ZlModel.fills_as_dict_df()
+        pd.util.testing.assert_frame_equal(actual[1], expected[1])
+        pd.util.testing.assert_frame_equal(actual[2], expected[2])
+
+    def test_create_delete(self):
+        """
+        Test that creating an order sends the signal and adds the order in the static variable
+        """
+        asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
+        o = create_order(order_text="test?",days=-0.5, asset=asset, amount=10)
+        self.assertEqual(len(ZlModel.orders.items()), 1)
+        o.delete()
+        self.assertEqual(len(ZlModel.orders.items()), 0)
 
 class OrderViewTests(TestCase):
 

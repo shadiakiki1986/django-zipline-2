@@ -2,12 +2,20 @@
 (WIP) Web app serving as an electronic blotter for trading in finance
 
 TODO
-- [x] django app frmo tutorial customized to blotter
+- [x] django app from tutorial customized to blotter
 - [x] use zipline as matching enging
 - [x] integrate zipline into django app
 - [x] display average price (in red like filled) in original orders view
 - [x] original order details page to show transactions filling order
 - [x] add nav header
+- [x] change architecture of running matching engine: currently re-run if needed on every request
+  - change to adding a class with methods `{add,edit,delete}_{order,fill}` being static
+  - this class should use [django signals](https://docs.djangoproject.com/en/1.10/ref/signals/):
+    - `connection_created` for an initial load of what is in the database (existing `ZlModel.update`)
+    - `post_init` for adding orders/fills/assets
+    - `post_save` for editing
+    - `post_delete` for deleting
+- [ ] matcher: test that fills before an order do not fill it
 - [ ] handle more than just asset A1 (WIP .. currently crashes if two assets added, one order per asset added, and then fill added for 2nd asset)
 - [ ] drop `vote` field and button
 - [ ] polls view: side-by-side, tabular
@@ -20,6 +28,7 @@ TODO
 - [ ] add MF asset name + account name
 - [ ] use pusher?
 - [ ] link fills to transactions/orders
+  - but `fills_as_dict_df` loses the original ID's (check `test_fills_as_dict_df`)
 - [ ] add broker field
 - [ ] broker can edit/delete his/her own fills/orders
 - [ ] sort by "open" first then by date
