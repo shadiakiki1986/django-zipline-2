@@ -4,16 +4,15 @@ from django.utils import timezone
 from django.test import TestCase
 
 from .models import Order, ZlModel, Asset, Fill
+from .matcher import reduce_concatenate
 from django.urls import reverse
 
 a1 = {
-  "sid":1,
   "exchange":'exchange name',
   "symbol":'A1',
   "name":'A1 name',
 }
 a2 = {
-  "sid":2,
   "exchange":'exchange name',
   "symbol":'A2',
   "name":'A2 name',
@@ -265,13 +264,16 @@ class MatcherMethodTests(TestCase):
                 "dt": [sec_yes]
             }).set_index("dt")
         }
-        orders = [
-          {"dt": sec_yes, "asset": "bla"},
-        ]
+        orders = {
+          1: {
+            1: {"dt": sec_yes},
+          }
+        }
         actual_fills, actual_orders = mmm_Matcher.chopSeconds(fills, orders)
 
         self.assertEqual(actual_fills[1].index, [sec_non])
-        self.assertEqual([x["dt"] for x in actual_orders], [sec_non])
+        asList = reduce_concatenate([list(o.values()) for o in list(actual_orders.values())])
+        self.assertEqual([x["dt"] for x in asList], [sec_non])
 
     def test_factory_some_orders_and_some_fills(self):
         matcher = mmm_Matcher()
@@ -298,14 +300,20 @@ class MatcherMethodTests(TestCase):
         #print("data: %s" % (fills))
 
         MID_DATE_0 = pd.Timestamp('2013-01-07 17:00', tz='utc')
-        orders = [
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 1},
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 2},
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 3},
-          {"dt": MID_DATE_0, "asset": a2, "amount": 10, "style": MarketOrder(), "id": 4},
-        ]
+        orders = {
+          1: {
+            1: {"dt": MID_DATE_0, "amount": 10, "style": MarketOrder()},
+            2: {"dt": MID_DATE_0, "amount": 10, "style": MarketOrder()},
+            3: {"dt": MID_DATE_0, "amount": 10, "style": MarketOrder()},
+          },
+          2: {
+            4: {"dt": MID_DATE_0, "amount": 10, "style": MarketOrder()},
+          }
+        }
 
-        all_closed, all_txns, open_orders = mmm_factory(matcher, fills, orders)
+        assets = {1: a1, 2: a2}
+
+        all_closed, all_txns, open_orders, unused = mmm_factory(matcher, fills, orders, assets)
 
         self.assertEqual(2,len(all_closed))
         self.assertEqual(6,len(all_txns))
@@ -333,8 +341,9 @@ class MatcherMethodTests(TestCase):
     def test_factory_no_orders_and_no_fills(self):
         matcher = mmm_Matcher()
         fills = {}
-        orders = []
-        all_closed, all_txns, open_orders = mmm_factory(matcher, fills, orders)
+        orders = {}
+        assets = {}
+        all_closed, all_txns, open_orders, unused = mmm_factory(matcher, fills, orders, assets)
 
         self.assertEqual(0,len(all_closed))
         self.assertEqual(0,len(all_txns))
@@ -346,13 +355,17 @@ class MatcherMethodTests(TestCase):
         fills={}
 
         MID_DATE_0 = pd.Timestamp('2013-01-07 17:00', tz='utc')
-        orders = [
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 1},
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 2},
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 3},
-        ]
+        orders = {
+          1: {
+            1: {"dt": MID_DATE_0, "amount": 10, "style": MarketOrder()},
+            2: {"dt": MID_DATE_0, "amount": 10, "style": MarketOrder()},
+            3: {"dt": MID_DATE_0, "amount": 10, "style": MarketOrder()},
+          }
+        }
 
-        all_closed, all_txns, open_orders = mmm_factory(matcher, fills, orders)
+        assets = {1:a1}
+
+        all_closed, all_txns, open_orders, unused = mmm_factory(matcher, fills, orders, assets)
 
         self.assertEqual(0,len(all_closed))
         self.assertEqual(0,len(all_txns))
@@ -378,10 +391,12 @@ class MatcherMethodTests(TestCase):
         }
         #print("data: %s" % (fills))
 
-        orders = [
-        ]
+        orders = {
+        }
 
-        all_closed, all_txns, open_orders = mmm_factory(matcher, fills, orders)
+        assets = {1:a1}
+
+        all_closed, all_txns, open_orders, unused = mmm_factory(matcher, fills, orders, assets)
 
         self.assertEqual(0,len(all_closed))
         self.assertEqual(0,len(all_txns))
@@ -407,13 +422,17 @@ class MatcherMethodTests(TestCase):
         #print("data: %s" % (fills))
 
         MID_DATE_0 = pd.Timestamp('2013-01-07 17:00', tz='utc')
-        orders = [
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 1},
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 2},
-          {"dt": MID_DATE_0, "asset": a1, "amount": 10, "style": MarketOrder(), "id": 3},
-        ]
+        orders = {
+          1: {
+            1: {"dt": MID_DATE_0, "amount": 10, "style": MarketOrder()},
+            2: {"dt": MID_DATE_0, "amount": 10, "style": MarketOrder()},
+            3: {"dt": MID_DATE_0, "amount": 10, "style": MarketOrder()},
+          }
+        }
 
-        all_closed, all_txns, open_orders = mmm_factory(matcher, fills, orders)
+        assets = {1:a1}
+
+        all_closed, all_txns, open_orders, unused = mmm_factory(matcher, fills, orders, assets)
 
         self.assertEqual(2,len(all_closed))
         self.assertEqual(5,len(all_txns))
@@ -422,13 +441,10 @@ class MatcherMethodTests(TestCase):
         a1a=matcher.env.asset_finder.retrieve_asset(sid=1)
         self.assertEqual(1,len(open_orders[a1a]))
 
-    def test_orders2writer(self):
+    def test_write_assets(self):
         matcher = mmm_Matcher()
-        orders = [
-          {"asset": a1},
-          {"asset": a2}
-        ]
-        matcher.orders2writer(orders)
+        assets = {1:a1, 2:a2}
+        matcher.write_assets(assets)
         # the below would fail if not found .. shouldnt fail in this case
         found = matcher.env.asset_finder.lookup_symbol(symbol=a1["symbol"], as_of_date=None)
         self.assertEqual(a1["symbol"],found.symbol)
@@ -452,11 +468,15 @@ class MatcherMethodTests(TestCase):
         }
 
         MID_DATE_0 = pd.Timestamp('2013-01-07 17:02', tz='utc')
-        orders = [
-          {"dt": MID_DATE_0, "asset": a1, "amount": 5, "style": MarketOrder(), "id": 1},
-        ]
+        orders = {
+          1: {
+            1: {"dt": MID_DATE_0, "amount": 5, "style": MarketOrder()},
+          }
+        }
 
-        all_closed, all_txns, open_orders = mmm_factory(matcher, fills, orders)
+        assets = {1:a1}
+
+        all_closed, all_txns, open_orders, unused = mmm_factory(matcher, fills, orders, assets)
 
         self.assertEqual(1,len(all_closed))
         self.assertEqual(1,len(all_txns))
@@ -464,3 +484,6 @@ class MatcherMethodTests(TestCase):
 
         txn = all_txns[0].to_dict()
         self.assertEqual(txn["price"], 2)
+
+        a1a=matcher.env.asset_finder.retrieve_asset(sid=1)
+        self.assertEqual(unused, {a1a:5})

@@ -37,6 +37,13 @@ from pandas.tseries.offsets import CustomBusinessDay
 import logging
 logger = logging.getLogger(__name__)
 
+def reduce_concatenate(list_of_lists):
+  return reduce(
+    lambda a, b: numpy.concatenate((a,b)),
+    list_of_lists,
+    []
+  )
+
 class AlwaysOpenExchange(TradingCalendar):
     """
     Exchange calendar for AlwaysOpenExchange
@@ -97,15 +104,19 @@ class Matcher:
       return []
 
     # get fill minutes
-    minutes = [sid.index.values.tolist() for _, sid in fills.items()]
+    minutes_fills = [sid.index.values.tolist() for _, sid in fills.items()]
+    minutes_fills = reduce_concatenate(minutes_fills)
+
+    # get order minutes
+    minutes_orders = [list(o.values()) for o in list(orders.values())]
+    minutes_orders = [o["dt"] for o in reduce_concatenate(minutes_orders)]
+
+    # concatenate
     #print("minutes",[type(x).__name__ for x in minutes])
     #print("minutes",minutes)
-    minutes = reduce(lambda a, b: numpy.concatenate((a,b)), minutes, [])
-
-    # append order minutes
     minutes = numpy.concatenate((
-      minutes,
-      [o["dt"] for o in orders]
+      minutes_fills,
+      minutes_orders
     ))
 
     minutes = [pd.Timestamp(x, tz='utc') for x in minutes]
@@ -121,8 +132,9 @@ class Matcher:
       fills[sid].index = index
       fills[sid].sort_index(inplace=True)
 
-    for order in orders:
-      order["dt"]=pd.Timestamp(order["dt"],tz="utc").round('1Min')
+    for sid in orders:
+      for oid,order in orders[sid].items():
+        order["dt"]=pd.Timestamp(order["dt"],tz="utc").round('1Min')
 
     #print("chop seconds fills ", fills)
     #print("chop seconds orders", orders)
@@ -138,11 +150,9 @@ class Matcher:
       fill["low"]  = fill["close"]
 
     # append empty OHLC dataframes for sid's in orders but not (yet) in fills
-    orders_sid = [o["asset"]["sid"] for o in orders]
-    orders_sid = set(orders_sid)
     # dummy OHLC data with volume=0 so as not to affect orders
     empty = {"open":[0], "high":[0], "low":[0], "close":[0], "volume":[0], "dt":[minutes[0]]}
-    for sid in orders_sid:
+    for sid in orders:
       if sid not in fills:
         fills[sid]=pd.DataFrame(empty).set_index("dt")
 
@@ -177,23 +187,20 @@ class Matcher:
     return reader
 
   # save an asset
-  def orders2writer(self, orders):
+  def write_assets(self, assets: dict):
     # unique assets by using sid
     # http://stackoverflow.com/a/11092590/4126114
-    assets = {order["asset"]["sid"]: order["asset"] for order in orders}
-    assets = list(assets.values())
-
-    if len(assets)==0:
+    if not any(assets):
       #raise ValueError("Got empty orders!")
       return
 
     # check zipline/zipline/assets/asset_writer.py#write
     df = pd.DataFrame(
         {
-          "sid"       : [asset["sid"] for asset in assets],
-          "exchange"  : [asset["exchange"] for asset in assets],
-          "symbol"    : [asset["symbol"] for asset in assets],
-          "asset_name": [asset["name"] for asset in assets],
+          "sid"       : list(assets.keys()),
+          "exchange"  : [asset["exchange"] for asset in list(assets.values())],
+          "symbol"    : [asset["symbol"] for asset in list(assets.values())],
+          "asset_name": [asset["name"] for asset in list(assets.values())],
         }
     ).set_index("sid")
     #print("write data",df)
@@ -213,25 +220,26 @@ class Matcher:
 
   def _orders2blotter(self, orders, blotter):
     #print("Place orders")
-    for order in orders:
-      # skip orders in the future
-      if order["dt"] > blotter.current_dt:
-        #logger.debug("Order in future skipped: %s" % order)
-        continue
+    for sid in orders:
+      for oid, order in orders[sid].items():
+        # skip orders in the future
+        if order["dt"] > blotter.current_dt:
+          #logger.debug("Order in future skipped: %s" % order)
+          continue
 
-      if order["id"] in blotter.orders:
-        #logger.debug("Order already included: %s" % order)
-        continue
+        if oid in blotter.orders:
+          #logger.debug("Order already included: %s" % order)
+          continue
 
-      #logger.debug("Order included: %s" % order)
-      asset = self.env.asset_finder.retrieve_asset(sid=order["asset"]["sid"], default_none=True)
+        #logger.debug("Order included: %s" % order)
+        asset = self.env.asset_finder.retrieve_asset(sid=sid, default_none=True)
 
-      blotter.order(
-        sid=asset,
-        amount=order["amount"],
-        style=order["style"],
-        order_id = order["id"]
-      )
+        blotter.order(
+          sid=asset,
+          amount=order["amount"],
+          style=order["style"],
+          order_id = oid
+        )
 
     #print("Open orders: %s" % ({k.symbol: len(v) for k,v in iteritems(blotter.open_orders)}))
     return blotter
@@ -289,11 +297,22 @@ class Matcher:
 
     return all_closed, all_txns
 
+  # check if any volume was not used for the orders yet
+  def unused_fills(self,all_txns,fills):
+    unused = {}
+    for sid, fill in fills.items():
+      sub = [x.amount for x in all_txns if x.sid.sid==sid]
+      extra = fill.volume.sum() - sum(sub)
+      if extra>0:
+        asset = self.env.asset_finder.retrieve_asset(sid=sid)
+        unused[asset]=extra
+    return unused
+
 from testfixtures import TempDirectory
 
-def factory(matcher, fills, orders):
+def factory(matcher: Matcher, fills: dict, orders: dict, assets: dict):
   fills, orders = Matcher.chopSeconds(fills, orders)
-  matcher.orders2writer(orders)
+  matcher.write_assets(assets)
 
   with TempDirectory() as tempdir:
     all_minutes = matcher.get_minutes(fills,orders)
@@ -301,5 +320,6 @@ def factory(matcher, fills, orders):
     blotter = matcher.get_blotter()
     bd = matcher.blotter2bardata(equity_minute_reader, blotter)
     all_closed, all_txns = matcher.match_orders_fills(blotter, bd, all_minutes, orders)
+    unused = matcher.unused_fills(all_txns,fills)
 
-  return all_closed, all_txns, blotter.open_orders
+  return all_closed, all_txns, blotter.open_orders, unused

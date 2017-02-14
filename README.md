@@ -17,7 +17,7 @@ TODO
     - `post_delete` for deleting
 - [x] handle more than just asset A1 (WIP .. currently crashes if two assets added, one order per asset added, and then fill added for 2nd asset)
 - [x] matcher: test that fills before an order do not fill it
-- [ ] alert about extra fills
+- [x] alert about extra fills
 - [ ] drop `vote` field and button
 - [ ] polls view: side-by-side, tabular
 - [ ] UX (nav header contrasted with white background)

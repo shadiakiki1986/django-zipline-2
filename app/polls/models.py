@@ -41,7 +41,6 @@ class Asset(models.Model):
 
     def to_dict(self):
         return {
-          "sid": self.id,
           "symbol": self.asset_symbol,
           "exchange": self.asset_exchange,
           "name": self.asset_name
@@ -88,7 +87,6 @@ class Order(models.Model):
     was_published_recently.boolean = True
     was_published_recently.short_description = 'Published recently?'
 
-
 class Fill(models.Model):
     # 2017-01-12: unlink orders from fills and use zipline engine to perform matching
     # order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -106,6 +104,9 @@ class Fill(models.Model):
         string = "%s, %s, %s, %s (%s)" % (self.pub_date, self.asset.asset_symbol, self.fill_qty, self.fill_price, self.fill_text)
         return md5_wrap(string)
 
+    def has_unused(self):
+      return self.asset.id in ZlModel.zl_unused
+
 class ZlModel:
     md5 = None
     zl_open       = []
@@ -115,6 +116,8 @@ class ZlModel:
     zl_closed_keyed = {}
     fills={}
     orders={}
+    assets={}
+    zl_unused = {}
 
     @staticmethod
     def clear():
@@ -126,6 +129,13 @@ class ZlModel:
       ZlModel.zl_closed_keyed = {}
       ZlModel.fills={}
       ZlModel.orders={}
+      ZlModel.assets={}
+      ZlModel.zl_unused = {}
+
+    @staticmethod
+    def add_asset(asset: Asset):
+      #print("adding asset",asset,asset.id)
+      ZlModel.assets[asset.id]=asset.to_dict()
 
     @staticmethod
     def add_fill(fill: Fill):
@@ -156,17 +166,19 @@ class ZlModel:
 
     @staticmethod
     def add_order(order: Order):
-      ZlModel.orders[order.id] = {
+      if order.asset.id not in ZlModel.orders:
+        ZlModel.orders[order.asset.id]={}
+
+      ZlModel.orders[order.asset.id][order.id] = {
         "dt": order.pub_date,
-        "asset": order.asset.to_dict(),
+        "asset": order.asset.id,
         "amount": order.amount,
-        "style": MarketOrder(),
-        "id": order.id
+        "style": MarketOrder()
       }
 
     @staticmethod
-    def orders_as_list():
-      return ZlModel.orders.values()
+    def delete_asset(asset: Asset):
+      ZlModel.assets.pop(asset.id, None)
 
     @staticmethod
     def delete_fill(fill: Fill):
@@ -199,6 +211,8 @@ class ZlModel:
         ZlModel.add_fill(fill)
       for order in Order.objects.all():
         ZlModel.add_order(order)
+      for asset in Asset.objects.all():
+        ZlModel.add_asset(asset)
 
     @staticmethod
     def update():
@@ -207,7 +221,8 @@ class ZlModel:
 
       md5 = md5_wrap(json.dumps({
         "fills":[x.md5() for x in Fill.objects.all()],
-        "orders":[x.md5() for x in Order.objects.all()]
+        "orders":[x.md5() for x in Order.objects.all()],
+        "assets":{x.id: x.to_dict() for x in Asset.objects.all()},
       }))
 
       if ZlModel.md5==md5:
@@ -218,10 +233,11 @@ class ZlModel:
 
       matcher = mmm_Matcher()
 
-      all_closed, all_txns, open_orders = mmm_factory(
+      all_closed, all_txns, open_orders, unused = mmm_factory(
         matcher,
         ZlModel.fills_as_dict_df(),
-        ZlModel.orders_as_list()
+        ZlModel.orders,
+        ZlModel.assets
       )
 
       ZlModel.zl_open = reduce(
@@ -233,6 +249,7 @@ class ZlModel:
       ZlModel.zl_txns = [txn.to_dict() for txn in all_txns]
       ZlModel.zl_open_keyed = {v.id: v for v in ZlModel.zl_open}
       ZlModel.zl_closed_keyed = {v.id: v for v in ZlModel.zl_closed}
+      ZlModel.zl_unused = unused
 
       # save md5 at the end to ensure re-run if error occured
       ZlModel.md5=md5
@@ -248,19 +265,24 @@ class SignalProcessor:
   #def post_init(sender, **kwargs):
   #  print("Signal: %s, %s" % ("post_init", sender.__name__))
 
+  def update_if_mine(sender):
+    condition = sender.__name__=="Fill" or sender.__name__=="Order" or sender.__name__=="Asset"
+    if condition:
+      ZlModel.update()
+
   def post_save(sender, instance, **kwargs):
     #logger.debug("Signal: %s, %s" % ("post_save", sender))
     if sender.__name__=="Fill": ZlModel.add_fill(instance)
     if sender.__name__=="Order": ZlModel.add_order(instance)
-    if sender.__name__=="Fill" or sender.__name__=="Order":
-      ZlModel.update()
+    if sender.__name__=="Asset": ZlModel.add_asset(instance)
+    SignalProcessor.update_if_mine(sender)
 
   def post_delete(sender, instance, **kwargs):
     #print("Signal: %s, %s" % ("post_delete", sender))
     if sender.__name__=="Fill": ZlModel.delete_fill(instance)
     if sender.__name__=="Order": ZlModel.delete_order(instance)
-    if sender.__name__=="Fill" or sender.__name__=="Order":
-      ZlModel.update()
+    if sender.__name__=="Asset": ZlModel.delete_asset(instance)
+    SignalProcessor.update_if_mine(sender)
 
   def connection_created(sender, **kwargs):
   #  print("Signal: %s, %s" % ("connection_created", sender))

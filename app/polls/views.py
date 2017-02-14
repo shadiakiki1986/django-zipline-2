@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
 
-from .models import Order, Fill, ZlModel
+from .models import Order, Fill, ZlModel, Asset
 from django.utils import timezone
 
 class IndexView(generic.ListView):
@@ -33,6 +33,7 @@ class IndexView(generic.ListView):
         context["zl_closed"]=ZlModel.zl_closed
         context["zl_txns"]=ZlModel.zl_txns
         context["zl_open_keyed"]=ZlModel.zl_open_keyed
+        context["zl_unused"] = ZlModel.zl_unused.items()
 
         return context 
 
