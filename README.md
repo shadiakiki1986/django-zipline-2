@@ -19,7 +19,8 @@ TODO
 - [x] matcher: test that fills before an order do not fill it
 - [x] alert about extra fills
 - [ ] drop `vote` field and button
-- [ ] polls view: side-by-side, tabular
+- [ ] polls view: side-by-side, tabular, select day on top and show orders/fills for one day
+  - possibly alert about days with unused fills? (use top right like github alerts?)
 - [ ] UX (nav header contrasted with white background)
 - [ ] hide matching engine table
 - [ ] add "working" flag to original order
@@ -28,16 +29,17 @@ TODO
 - [ ] username/password
 - [ ] add MF asset name + account name
 - [ ] use pusher?
-- [ ] link fills to transactions/orders
-  - but `fills_as_dict_df` loses the original ID's (check `test_fills_as_dict_df`)
 - [ ] add broker field
 - [ ] broker can edit/delete his/her own fills/orders
-- [ ] sort by "open" first then by date
+- [ ] sort by "open" first then by date (remember that main view will be for one day)
 - [ ] what about GTC orders and cancel on EOD
-- [ ] default landing page at `/`
+- [ ] default landing page at `/`: think of github dashboard
 - [ ] take frequency up to seconds from minutes (and remove chopSeconds)
   - otherwise constrain the django fields for `pub_date` to be without seconds
   - also default for order `pub_date` to be now (like fill `pub_date`)
+- ~~link fills to transactions/orders~~
+  - ~~but `fills_as_dict_df` loses the original ID's (check `test_fills_as_dict_df`)~~
+  - cancelled because transactions have no reference from zipline to the fills
 
 ## Installation
 ```bash
@@ -46,6 +48,14 @@ pip3 install Django datetime zipline
 ```
 
 Apply patch from https://github.com/quantopian/zipline/pull/1683 if not already merged and usable
+
+```bash
+pip3 manage.py migrate
+pip3 manage.py test polls
+pip3 manage.py createsuperuser
+```
+Reference
+* [creating an admin user](https://docs.djangoproject.com/en/1.10/intro/tutorial02/#creating-an-admin-user)
 
 ## Usage
 ```bash
@@ -80,16 +90,6 @@ pew workon BLOTTER_FINANCE
 django-admin startproject blotter_finance
 mv blotter_finance app
 ```
-
-In [admin user](https://docs.djangoproject.com/en/1.10/intro/tutorial02/#creating-an-admin-user):
-```bash
-python manage.py createsuperuser
-Admin: admin
-Password: !@#$%^&*
-```
-
-Finished at [Writing your first Django app, part 7](https://docs.djangoproject.com/en/1.10/intro/tutorial07/)
-
 
 When a model is modified:
 ```bash

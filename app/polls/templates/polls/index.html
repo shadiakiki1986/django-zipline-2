@@ -12,7 +12,9 @@
         <li>
             {{order.pub_date}}:
             {{order.asset.asset_symbol}},
-            <font color="red">{{order.filled|intcomma}}</font>/{{order.amount|intcomma}},
+            <font color="red">{{order.filled|intcomma}}</font>
+            /{{order.amount|intcomma}},
+            {{order.account.account_symbol}},
             {{ order.order_text }},
             <font color="red">{{order.avgPrice|floatformat:"2"|intcomma}}</font>,
             <a href="{% url 'polls:detail' order.id %}">Details</a>

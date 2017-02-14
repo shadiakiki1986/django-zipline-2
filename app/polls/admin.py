@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Fill, Order, Asset
+from .models import Fill, Order, Asset, Account
 
 #class AssetInline(admin.TabularInline):
 #    model = Asset
@@ -23,3 +23,4 @@ class OrderAdmin(admin.ModelAdmin):
 admin.site.register(Order,OrderAdmin)
 admin.site.register(Fill)
 admin.site.register(Asset)
+admin.site.register(Account)

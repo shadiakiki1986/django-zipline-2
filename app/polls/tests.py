@@ -3,7 +3,7 @@ import datetime
 from django.utils import timezone
 from django.test import TestCase
 
-from .models import Order, ZlModel, Asset, Fill
+from .models import Order, ZlModel, Asset, Fill, Account
 from .matcher import reduce_concatenate
 from django.urls import reverse
 
@@ -18,6 +18,11 @@ a2 = {
   "name":'A2 name',
 }
 
+def create_account(symbol):
+    return Account.objects.create(
+      account_symbol=symbol
+    )
+
 def create_asset(symbol, exchange, name):
     return Asset.objects.create(
       asset_exchange=exchange,
@@ -25,28 +30,38 @@ def create_asset(symbol, exchange, name):
       asset_name=name
     )
 
-def create_order(order_text, days, asset, amount):
+def create_order(order_text, days, asset, amount, account):
     """
     Creates a order with the given `order_text` and published the
     given number of `days` offset to now (negative for orders published
     in the past, positive for orders that have yet to be published).
     """
     time = timezone.now() + datetime.timedelta(days=days)
-    return Order.objects.create(order_text=order_text, pub_date=time, asset=asset, amount=amount)
+    return Order.objects.create(
+      order_text=order_text,
+      pub_date=time,
+      asset=asset,
+      amount=amount,
+      account=account
+    )
 
 def create_fill(fill_text, days, asset, fill_qty, fill_price):
     time = timezone.now() + datetime.timedelta(days=days)
     return Fill.objects.create(fill_text=fill_text, pub_date=time, asset=asset, fill_qty=fill_qty, fill_price=fill_price)
 
 class OrderMethodTests(TestCase):
+    def setUp(self):
+      ZlModel.clear()
+      self.acc1 = create_account(symbol="TEST01")
+      self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
+      self.a2a = create_asset(a2["symbol"],a2["exchange"],a2["name"])
 
     def test_was_published_recently_with_future_order(self):
         """
         was_published_recently() should return False for orders whose
         pub_date is in the future.
         """
-        asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-        future_order = create_order(order_text="test?",days=30, asset=asset, amount=10)
+        future_order = create_order(order_text="test?",days=30, asset=self.a1a, amount=10, account=self.acc1)
         self.assertIs(future_order.was_published_recently(), False)
 
     def test_was_published_recently_with_old_order(self):
@@ -54,8 +69,7 @@ class OrderMethodTests(TestCase):
         was_published_recently() should return False for orders whose
         pub_date is older than 1 day.
         """
-        asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-        old_order = create_order(order_text="test?",days=-30, asset=asset, amount=10)
+        old_order = create_order(order_text="test?",days=-30, asset=self.a1a, amount=10, account=self.acc1)
         self.assertIs(old_order.was_published_recently(), False)
 
     def test_was_published_recently_with_recent_order(self):
@@ -63,13 +77,11 @@ class OrderMethodTests(TestCase):
         was_published_recently() should return True for orders whose
         pub_date is within the last day.
         """
-        asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-        recent_order = create_order(order_text="test?",days=-0.5, asset=asset, amount=10)
+        recent_order = create_order(order_text="test?",days=-0.5, asset=self.a1a, amount=10, account=self.acc1)
         self.assertIs(recent_order.was_published_recently(), True)
 
     def test_avg_price(self):
-        asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-        o = create_order(order_text="test?",days=-0.5, asset=asset, amount=10)
+        o = create_order(order_text="test?",days=-0.5, asset=self.a1a, amount=10, account=self.acc1)
         ZlModel.zl_closed_keyed={o.id: {}}
         ZlModel.zl_txns=[
           {"order_id":o.id, "price":1, "amount":1},
@@ -78,21 +90,22 @@ class OrderMethodTests(TestCase):
         self.assertEqual(o.avgPrice(), 1)
 
     def test_asset_to_dict(self):
-        asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-        o = create_order(order_text="test?",days=-0.5, asset=asset, amount=10)
+        o = create_order(order_text="test?",days=-0.5, asset=self.a1a, amount=10, account=self.acc1)
         self.assertEqual(o.asset.to_dict(), a1)
 
 class ZlModelMethodTests(TestCase):
     def setUp(self):
       ZlModel.clear()
+      self.acc1 = create_account(symbol="TEST01")
+      self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
+      self.a2a = create_asset(a2["symbol"],a2["exchange"],a2["name"])
 
     def test_update_no_orders_no_fills(self):
         self.assertEqual(len(ZlModel.zl_open), 0)
         self.assertEqual(len(ZlModel.zl_closed), 0)
 
     def test_update_some_orders_no_fills(self):
-        asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-        o = create_order(order_text="test?",days=-0.5, asset=asset, amount=10)
+        o = create_order(order_text="test?",days=-0.5, asset=self.a1a, amount=10, account=self.acc1)
         self.assertEqual(len(ZlModel.zl_open), 1)
         self.assertEqual(len(ZlModel.zl_closed), 0)
 
@@ -133,35 +146,34 @@ class ZlModelMethodTests(TestCase):
         """
         Test that creating an order sends the signal and adds the order in the static variable
         """
-        asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-        o = create_order(order_text="test?",days=-0.5, asset=asset, amount=10)
+        o = create_order(order_text="test?",days=-0.5, asset=self.a1a, amount=10, account=self.acc1)
         self.assertEqual(len(ZlModel.orders.items()), 1)
         o.delete()
         self.assertEqual(len(ZlModel.orders.items()), 0)
 
     def test_update_some_orders_some_fills(self):
-        a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-        a2a = create_asset(a2["symbol"],a2["exchange"],a2["name"])
-        o1 = create_order(order_text="test?",days=-0.5, asset=a1a, amount=10)
-        o2 = create_order(order_text="test?",days=-0.5, asset=a2a, amount=10)
-        f1 = create_fill(fill_text="test?",days=-0.5, asset=a1a, fill_qty=2, fill_price=2)
-        f2 = create_fill(fill_text="test?",days=-0.5, asset=a2a, fill_qty=2, fill_price=2)
+        o1 = create_order(order_text="test?",days=-0.5, asset=self.a1a, amount=10, account=self.acc1)
+        o2 = create_order(order_text="test?",days=-0.5, asset=self.a2a, amount=10, account=self.acc1)
+        f1 = create_fill(fill_text="test?",days=-0.5, asset=self.a1a, fill_qty=2, fill_price=2)
+        f2 = create_fill(fill_text="test?",days=-0.5, asset=self.a2a, fill_qty=2, fill_price=2)
 
         self.assertEqual(len(ZlModel.zl_open), 2)
         self.assertEqual(len(ZlModel.zl_closed), 0)
 
     def test_update_fills_then_orders(self):
-        a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-        a2a = create_asset(a2["symbol"],a2["exchange"],a2["name"])
-        f1 = create_fill(fill_text="test?",days=-0.5, asset=a1a, fill_qty=20, fill_price=2)
-        f2 = create_fill(fill_text="test?",days=-0.5, asset=a2a, fill_qty=20, fill_price=2)
-        o1 = create_order(order_text="test?",days=-0.5, asset=a1a, amount=10)
-        o2 = create_order(order_text="test?",days=-0.5, asset=a2a, amount=10)
+        f1 = create_fill(fill_text="test?",days=-0.5, asset=self.a1a, fill_qty=20, fill_price=2)
+        f2 = create_fill(fill_text="test?",days=-0.5, asset=self.a2a, fill_qty=20, fill_price=2)
+        o1 = create_order(order_text="test?",days=-0.5, asset=self.a1a, amount=10, account=self.acc1)
+        o2 = create_order(order_text="test?",days=-0.5, asset=self.a2a, amount=10, account=self.acc1)
 
         self.assertEqual(len(ZlModel.zl_open), 0)
         self.assertEqual(len(ZlModel.zl_closed), 2)
 
 class OrderViewTests(TestCase):
+
+    def setUp(self):
+      self.acc1 = create_account(symbol="TEST01")
+      self.asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
 
     def test_index_view_with_no_orders(self):
         """
@@ -177,12 +189,11 @@ class OrderViewTests(TestCase):
         Orders with a pub_date in the past should be displayed on the
         index page.
         """
-        asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-        create_order(order_text="Past order.", days=-30, asset=asset, amount=10)
+        create_order(order_text="Past order.", days=-30, asset=self.asset, amount=10, account=self.acc1)
         response = self.client.get(reverse('polls:index'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
-            ['<Order: A1, 10 (Past order.)>']
+            ['<Order: A1, 10 (TEST01, Past order.)>']
         )
 
     def test_index_view_with_a_future_order(self):
@@ -190,8 +201,7 @@ class OrderViewTests(TestCase):
         Orders with a pub_date in the future should not be displayed on
         the index page.
         """
-        asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-        create_order(order_text="Future order.", days=30, asset=asset, amount=10)
+        create_order(order_text="Future order.", days=30, asset=self.asset, amount=10, account=self.acc1)
         response = self.client.get(reverse('polls:index'))
         self.assertContains(response, "No orders are available.")
         self.assertQuerysetEqual(response.context['latest_order_list'], [])
@@ -201,36 +211,37 @@ class OrderViewTests(TestCase):
         Even if both past and future orders exist, only past orders
         should be displayed.
         """
-        asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-        create_order(order_text="Past order.", days=-30, asset=asset, amount=10)
-        create_order(order_text="Future order.", days=30, asset=asset, amount=10)
+        create_order(order_text="Past order.", days=-30, asset=self.asset, amount=10, account=self.acc1)
+        create_order(order_text="Future order.", days=30, asset=self.asset, amount=10, account=self.acc1)
         response = self.client.get(reverse('polls:index'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
-            ['<Order: A1, 10 (Past order.)>']
+            ['<Order: A1, 10 (TEST01, Past order.)>']
         )
 
     def test_index_view_with_two_past_orders(self):
         """
         The orders index page may display multiple orders.
         """
-        asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-        create_order(order_text="Past order 1.", days=-30, asset=asset, amount=10)
-        create_order(order_text="Past order 2.", days=-5, asset=asset, amount=10)
+        create_order(order_text="Past order 1.", days=-30, asset=self.asset, amount=10, account=self.acc1)
+        create_order(order_text="Past order 2.", days=-5, asset=self.asset, amount=10, account=self.acc1)
         response = self.client.get(reverse('polls:index'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
-            ['<Order: A1, 10 (Past order 2.)>', '<Order: A1, 10 (Past order 1.)>']
+            ['<Order: A1, 10 (TEST01, Past order 2.)>', '<Order: A1, 10 (TEST01, Past order 1.)>']
         )
 
 class OrderIndexDetailTests(TestCase):
+    def setUp(self):
+      self.acc1 = create_account(symbol="TEST01")
+      self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
+
     def test_detail_view_with_a_future_order(self):
         """
         The detail view of a order with a pub_date in the future should
         return a 404 not found.
         """
-        asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-        future_order = create_order(order_text='Future order.', days=5, asset=asset, amount=10)
+        future_order = create_order(order_text='Future order.', days=5, asset=self.a1a, amount=10, account=self.acc1)
         url = reverse('polls:detail', args=(future_order.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
@@ -240,8 +251,7 @@ class OrderIndexDetailTests(TestCase):
         The detail view of a order with a pub_date in the past should
         display the order's text.
         """
-        asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-        past_order = create_order(order_text='Past Order.', days=-5, asset=asset, amount=10)
+        past_order = create_order(order_text='Past Order.', days=-5, asset=self.a1a, amount=10, account=self.acc1)
         url = reverse('polls:detail', args=(past_order.id,))
         response = self.client.get(url)
         self.assertContains(response, past_order.order_text)

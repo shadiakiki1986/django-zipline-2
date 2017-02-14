@@ -46,19 +46,25 @@ class Asset(models.Model):
           "name": self.asset_name
         }
 
+class Account(models.Model):
+    account_symbol = models.CharField(max_length=20)
+    def __str__(self):
+      return self.account_symbol
+ 
 class Order(models.Model):
     order_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
     amount = models.IntegerField(default=0)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
     # static variable
 
     def __str__(self):
-        return "%s, %s (%s)" % (self.asset.asset_symbol, self.amount, self.order_text)
+        return "%s, %s (%s, %s)" % (self.asset.asset_symbol, self.amount, self.account.account_symbol, self.order_text)
 
     def md5(self):
-        string = "%s, %s, %s (%s)" % (self.pub_date, self.asset.asset_symbol, self.amount, self.order_text)
+        string = "%s, %s, %s (%s, %s)" % (self.pub_date, self.asset.asset_symbol, self.amount, self.account.account_symbol, self.order_text)
         return md5_wrap(string)
 
     def was_published_recently(self):
