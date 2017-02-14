@@ -28,6 +28,9 @@ logger = logging.getLogger(__name__)
 
 # Create your models here.
 
+def md5_wrap(string):
+  return hashlib.md5(string.encode('utf-8')).hexdigest()
+
 class Asset(models.Model):
     asset_symbol = models.CharField(max_length=20)
     asset_exchange = models.CharField(max_length=200)
@@ -53,7 +56,11 @@ class Order(models.Model):
     # static variable
 
     def __str__(self):
-        return "%s, %s, %s (%s)" % (self.pub_date, self.asset.asset_symbol, self.amount, self.order_text)
+        return "%s, %s (%s)" % (self.asset.asset_symbol, self.amount, self.order_text)
+
+    def md5(self):
+        string = "%s, %s, %s (%s)" % (self.pub_date, self.asset.asset_symbol, self.amount, self.order_text)
+        return md5_wrap(string)
 
     def was_published_recently(self):
         now = timezone.now()
@@ -93,8 +100,11 @@ class Fill(models.Model):
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return "%s, %s, %s, %s (%s)" % (self.pub_date, self.asset.asset_symbol, self.fill_qty, self.fill_price, self.fill_text)
+        return "%s, %s, %s (%s)" % (self.asset.asset_symbol, self.fill_qty, self.fill_price, self.fill_text)
 
+    def md5(self):
+        string = "%s, %s, %s, %s (%s)" % (self.pub_date, self.asset.asset_symbol, self.fill_qty, self.fill_price, self.fill_text)
+        return md5_wrap(string)
 
 class ZlModel:
     md5 = None
@@ -195,10 +205,10 @@ class ZlModel:
       if not ZlModel.db_ready():
         return
 
-      md5 = hashlib.md5(json.dumps({
-        "fills":[x.__str__() for x in Fill.objects.all()],
-        "orders":[x.__str__() for x in Order.objects.all()]
-      }).encode('utf-8')).hexdigest()
+      md5 = md5_wrap(json.dumps({
+        "fills":[x.md5() for x in Fill.objects.all()],
+        "orders":[x.md5() for x in Order.objects.all()]
+      }))
 
       if ZlModel.md5==md5:
         logger.debug("Model unchanged .. not rerunning engine: "+md5)
@@ -245,7 +255,7 @@ class SignalProcessor:
     if sender.__name__=="Fill" or sender.__name__=="Order":
       ZlModel.update()
 
-  def post_delete(sender, **kwargs):
+  def post_delete(sender, instance, **kwargs):
     #print("Signal: %s, %s" % ("post_delete", sender))
     if sender.__name__=="Fill": ZlModel.delete_fill(instance)
     if sender.__name__=="Order": ZlModel.delete_order(instance)

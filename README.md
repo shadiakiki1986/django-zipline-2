@@ -17,6 +17,7 @@ TODO
     - `post_delete` for deleting
 - [x] handle more than just asset A1 (WIP .. currently crashes if two assets added, one order per asset added, and then fill added for 2nd asset)
 - [x] matcher: test that fills before an order do not fill it
+- [ ] alert about extra fills
 - [ ] drop `vote` field and button
 - [ ] polls view: side-by-side, tabular
 - [ ] UX (nav header contrasted with white background)
@@ -34,7 +35,6 @@ TODO
 - [ ] sort by "open" first then by date
 - [ ] what about GTC orders and cancel on EOD
 - [ ] default landing page at `/`
-- [ ] alert about extra fills
 - [ ] take frequency up to seconds from minutes (and remove chopSeconds)
   - otherwise constrain the django fields for `pub_date` to be without seconds
   - also default for order `pub_date` to be now (like fill `pub_date`)
