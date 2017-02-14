@@ -113,7 +113,7 @@ class ZlModel:
 
     @staticmethod
     def add_fill(fill: Fill):
-      print("Adding fill: %s" % fill)
+      #print("Adding fill: %s" % fill)
       if fill.asset.id not in ZlModel.fills:
         ZlModel.fills[fill.asset.id]={}
 
@@ -167,6 +167,13 @@ class ZlModel:
       ZlModel.orders.pop(order.id, None)
 
     @staticmethod
+    def init():
+      for fill in Fill.objects.all():
+        ZlModel.add_fill(fill)
+      for order in Order.objects.all():
+        ZlModel.add_order(order)
+
+    @staticmethod
     def update():
       md5 = hashlib.md5(json.dumps({
         "fills":[x.__str__() for x in Fill.objects.all()],
@@ -180,30 +187,6 @@ class ZlModel:
       print("Run matching engine: "+md5)
 
       matcher = mmm_Matcher()
-
-# Commenting out since added function `add_{fill,order}` and calling it from signals at bottom of this file
-#      fills = {
-#          x.asset.id: pd.DataFrame({})
-#          for x in Fill.objects.all()
-#      }
-#      #print("sid, fills", sid, fills)
-#      for sid in fills:
-#        sub = [z for z in Fill.objects.all() if z.asset.id==sid]
-#        fills[sid]["close"] = [y.fill_price for y in sub]
-#        fills[sid]["volume"] = [y.fill_qty for y in sub]
-#        fills[sid]["dt"] = [pd.Timestamp(y.pub_date,tz='utc') for y in sub]
-#        fills[sid] = fills[sid].set_index("dt")
-#      #print("data: %s" % (fills))
-#      orders = [
-#        {
-#          "dt": x.pub_date,
-#          "asset": x.asset.to_dict(),
-#          "amount": x.amount,
-#          "style": MarketOrder(),
-#          "id": x.id
-#        }
-#        for x in Order.objects.all()
-#      ]
 
       all_closed, all_txns, open_orders = mmm_factory(
         matcher,
@@ -236,24 +219,26 @@ class SignalProcessor:
   #  print("Signal: %s, %s" % ("post_init", sender.__name__))
 
   def post_save(sender, **kwargs):
-    #print("Signal: %s, %s" % ("post_save", sender))
+    print("Signal: %s, %s" % ("post_save", sender))
     if sender.__name__=="Fill": ZlModel.add_fill(kwargs["instance"])
     if sender.__name__=="Order": ZlModel.add_order(kwargs["instance"])
     ZlModel.update()
 
   def post_delete(sender, **kwargs):
-    #print("Signal: %s, %s" % ("post_delete", sender))
+    print("Signal: %s, %s" % ("post_delete", sender))
     if sender.__name__=="Fill": ZlModel.delete_fill(kwargs["instance"])
     if sender.__name__=="Order": ZlModel.delete_order(kwargs["instance"])
     ZlModel.update()
 
-  #def connection_created(sender, **kwargs):
+  def connection_created(sender, **kwargs):
   #  print("Signal: %s, %s" % ("connection_created", sender))
+    ZlModel.init()
+    ZlModel.update()
 
 senders=("polls.Order", "polls.Fill", "polls.Asset")
 for sender in senders:
   #models.signals.post_init.connect(SignalProcessor.post_init, sender=sender)
   models.signals.post_save.connect(SignalProcessor.post_save, sender=sender)
   models.signals.post_delete.connect(SignalProcessor.post_delete, sender=sender)
-#connection_created.connect(SignalProcessor.connection_created)
+connection_created.connect(SignalProcessor.connection_created)
 

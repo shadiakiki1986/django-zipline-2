@@ -3,7 +3,7 @@ import datetime
 from django.utils import timezone
 from django.test import TestCase
 
-from .models import Order, ZlModel, Asset
+from .models import Order, ZlModel, Asset, Fill
 from django.urls import reverse
 
 a1 = {
@@ -34,6 +34,10 @@ def create_order(order_text, days, asset, amount):
     """
     time = timezone.now() + datetime.timedelta(days=days)
     return Order.objects.create(order_text=order_text, pub_date=time, asset=asset, amount=amount)
+
+def create_fill(fill_text, days, asset, fill_qty, fill_price):
+    time = timezone.now() + datetime.timedelta(days=days)
+    return Fill.objects.create(fill_text=fill_text, pub_date=time, asset=asset, fill_qty=fill_qty, fill_price=fill_price)
 
 class OrderMethodTests(TestCase):
 
@@ -84,25 +88,24 @@ class ZlModelMethodTests(TestCase):
       ZlModel.clear()
 
     def test_update_no_orders_no_fills(self):
-        ZlModel.update()
         self.assertEqual(len(ZlModel.zl_open), 0)
         self.assertEqual(len(ZlModel.zl_closed), 0)
 
     def test_update_some_orders_no_fills(self):
         asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
         o = create_order(order_text="test?",days=-0.5, asset=asset, amount=10)
-        ZlModel.update()
         self.assertEqual(len(ZlModel.zl_open), 1)
         self.assertEqual(len(ZlModel.zl_closed), 0)
+
     def test_update_no_orders_no_fills_again(self):
         """
         To make sure that eventhough ZlModel has static methods/fields,
         it gets reset automatically for each test,
         especially after the create_order above
         """
-        ZlModel.update()
         self.assertEqual(len(ZlModel.zl_open), 0)
         self.assertEqual(len(ZlModel.zl_closed), 0)
+
     def test_fills_as_dict_df(self):
         ZlModel.fills={
           1: {
@@ -136,6 +139,28 @@ class ZlModelMethodTests(TestCase):
         self.assertEqual(len(ZlModel.orders.items()), 1)
         o.delete()
         self.assertEqual(len(ZlModel.orders.items()), 0)
+
+    def test_update_some_orders_some_fills(self):
+        a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
+        a2a = create_asset(a2["symbol"],a2["exchange"],a2["name"])
+        o1 = create_order(order_text="test?",days=-0.5, asset=a1a, amount=10)
+        o2 = create_order(order_text="test?",days=-0.5, asset=a2a, amount=10)
+        f1 = create_fill(fill_text="test?",days=-0.5, asset=a1a, fill_qty=2, fill_price=2)
+        f2 = create_fill(fill_text="test?",days=-0.5, asset=a2a, fill_qty=2, fill_price=2)
+
+        self.assertEqual(len(ZlModel.zl_open), 2)
+        self.assertEqual(len(ZlModel.zl_closed), 0)
+
+    def test_update_fills_then_orders(self):
+        a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
+        a2a = create_asset(a2["symbol"],a2["exchange"],a2["name"])
+        f1 = create_fill(fill_text="test?",days=-0.5, asset=a1a, fill_qty=20, fill_price=2)
+        f2 = create_fill(fill_text="test?",days=-0.5, asset=a2a, fill_qty=20, fill_price=2)
+        o1 = create_order(order_text="test?",days=-0.5, asset=a1a, amount=10)
+        o2 = create_order(order_text="test?",days=-0.5, asset=a2a, amount=10)
+
+        self.assertEqual(len(ZlModel.zl_open), 0)
+        self.assertEqual(len(ZlModel.zl_closed), 2)
 
 class OrderViewTests(TestCase):
 

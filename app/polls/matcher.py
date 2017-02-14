@@ -118,7 +118,7 @@ class Matcher:
     #print("chop seconds orders", orders)
     return fills, orders
 
-  def fills2reader(self, tempdir, minutes, fills):
+  def fills2reader(self, tempdir, minutes, fills, orders):
     if len(minutes)==0:
       return None
 
@@ -126,6 +126,15 @@ class Matcher:
       fill["open"] = fill["close"]
       fill["high"] = fill["close"]
       fill["low"]  = fill["close"]
+
+    # append empty OHLC dataframes for sid's in orders but not (yet) in fills
+    orders_sid = [o["asset"]["sid"] for o in orders]
+    orders_sid = set(orders_sid)
+    # dummy OHLC data with volume=0 so as not to affect orders
+    empty = {"open":[0], "high":[0], "low":[0], "close":[0], "volume":[0], "dt":[minutes[0]]}
+    for sid in orders_sid:
+      if sid not in fills:
+        fills[sid]=pd.DataFrame(empty).set_index("dt")
 
     d1 = self.trading_calendar.minute_to_session_label(
       minutes[0]
@@ -177,7 +186,7 @@ class Matcher:
           "asset_name": [asset["name"] for asset in assets],
         }
     ).set_index("sid")
-    print("write data",df)
+    #print("write data",df)
     self.env.write_data(equities=df)
 
   def orders2blotter(self, orders):
@@ -270,7 +279,7 @@ def factory(matcher, fills, orders):
 
   with TempDirectory() as tempdir:
     all_minutes = matcher.fills2minutes(fills)
-    equity_minute_reader = matcher.fills2reader(tempdir, all_minutes, fills)
+    equity_minute_reader = matcher.fills2reader(tempdir, all_minutes, fills, orders)
     blotter = matcher.orders2blotter(orders)
     bd = matcher.blotter2bardata(equity_minute_reader, blotter)
     all_closed, all_txns = matcher.match_orders_fills(blotter, bd, all_minutes, fills)

@@ -15,15 +15,15 @@ TODO
     - `post_init` for adding orders/fills/assets
     - `post_save` for editing
     - `post_delete` for deleting
+- [x] handle more than just asset A1 (WIP .. currently crashes if two assets added, one order per asset added, and then fill added for 2nd asset)
 - [ ] matcher: test that fills before an order do not fill it
-- [ ] handle more than just asset A1 (WIP .. currently crashes if two assets added, one order per asset added, and then fill added for 2nd asset)
 - [ ] drop `vote` field and button
 - [ ] polls view: side-by-side, tabular
 - [ ] UX (nav header contrasted with white background)
 - [ ] hide matching engine table
 - [ ] add "working" flag to original order
 - [ ] add user ID to order
-- [ ] add inline create new order/fill on index page
+- [ ] add inline create new order/fill/asset on index page
 - [ ] username/password
 - [ ] add MF asset name + account name
 - [ ] use pusher?
@@ -35,6 +35,9 @@ TODO
 - [ ] what about GTC orders and cancel on EOD
 - [ ] default landing page at `/`
 - [ ] alert about extra fills
+- [ ] take frequency up to seconds from minutes (and remove chopSeconds)
+  - otherwise constrain the django fields for `pub_date` to be without seconds
+  - also default for order `pub_date` to be now (like fill `pub_date`)
 
 ## Installation
 ```bash
