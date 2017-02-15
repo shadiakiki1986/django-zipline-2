@@ -1,12 +1,13 @@
 {% extends "polls/base.html" %}
 
+
 {% block content %}
 <h1>Assets</h1>
 
 <a href="{% url 'polls:assets-new' %}">New</a>
 
 <ul>
-    {% for asset in object_list %}
+    {% for asset in asset_list %}
     <li>
       {{ asset.id }},
       {{ asset.asset_symbol }},
@@ -17,4 +18,32 @@
 {% empty %}
     <li>No assets yet.</li>
 {% endfor %}
+
+{% include "polls/_asset_form.html" %}
+
+<div id="MESSAGE-DIV"></div>
+
+<script type="text/javascript">
+    var frm = $('#FORM-ID');
+    frm.each(function() { this.reset() });
+    frm.submit(function () {
+       $("#MESSAGE-DIV").html("Loading...");
+       $("#FORM-ID :input").prop('disabled', true);
+        $.ajax({
+            type: frm.attr('method'),
+            url: "{% url 'polls:assets-new' %}", //frm.attr('action'),
+            data: frm.serialize(),
+            success: function (data) {
+                // $("#SOME-DIV").html(data);
+                location.reload();
+            },
+            error: function(data) {
+               $("#MESSAGE-DIV").html("Something went wrong: "+data.responseText);
+               $("#FORM-ID :input").prop('disabled', false);
+            }
+        });
+        return false;
+    });
+</script>
+
 {% endblock %}

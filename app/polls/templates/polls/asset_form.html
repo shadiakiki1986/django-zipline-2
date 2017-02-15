@@ -1,10 +1,5 @@
 {% extends "polls/base.html" %}
 
 {% block content %}
-
-<form action="" method="post">{% csrf_token %}
-  {{ form.as_p }}
-  <input type="submit" value="Save" />
-</form>
-
+{% include "polls/_asset_form.html" %}
 {% endblock %}

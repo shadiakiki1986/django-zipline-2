@@ -22,6 +22,8 @@ TODO version 0.1
   - [x] nav header contrasted with white background
   - [x] side-by-side view: asset, order, fill
   - [x] tabular for printing
+- [ ] new asset inline from assets list + new asset separate page still available
+  - works with generic view form, but not yet with bootstrap form (csrf error)
 - [ ] new asset form should check that symbol is not already defined (zipline constraint)
 - [ ] add inline create new order/fill/asset on index page
   - or maybe just open the admin?
