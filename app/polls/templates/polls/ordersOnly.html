@@ -1,0 +1,147 @@
+{% extends "polls/base.html" %}
+{% load humanize %}
+
+{% block content %}
+{% if latest_order_list %}
+    <table class="table">
+      <caption>Orders</caption>
+      <thead>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+        <th>Asset</th>
+        <th>Filled</th>
+        <th>Amount</th>
+        <th>Account</th>
+        <th>Price</th>
+        <th>Comment</th>
+        <th>&nbsp;</th>
+      </thead>
+      {% for order in latest_order_list %}
+        <tr>
+          <td width="10%">&nbsp;&nbsp;&nbsp;</td>
+          <td width="10%" nowrap>{{order.pub_date}}</td>
+          <td width="10%">{{order.asset.asset_symbol}}</td>
+          <td width="10%"><font color="red">{{order.filled|intcomma}}</font></td>
+          <td width="10%">{{order.amount|intcomma}}</td>
+          <td width="10%">{{order.account.account_symbol}}</td>
+          <td width="10%"><font color="red">{{order.avgPrice|floatformat:"2"|intcomma}}</font></td>
+          <td width="10%" nowrap>{{ order.order_text }}</td>
+          <td width="10%"><a href="{% url 'polls:detail' order.id %}">Details</a></td>
+        </tr>
+      {% endfor %}
+    </table>
+{% else %}
+    <p>No orders are available.</p>
+{% endif %}
+
+<br>
+
+{% if latest_fill_list %}
+  <table class="table">
+    <caption>Fills</caption>
+    <thead>
+      <th>&nbsp;</th>
+      <th>&nbsp;</th>
+      <th>Asset</th>
+      <th>Fills</th>
+      <th>&nbsp;</th>
+      <th>&nbsp;</th>
+      <th>Price</th>
+      <th>Comment</th>
+      <th>&nbsp;</th>
+    </thead>
+    {% for fill in latest_fill_list %}
+      <tr>
+        <td width="10%">
+          {% if fill.has_unused %}
+            <font color="red">!!!</font>
+          {% endif %}
+        </td>
+        <td width="10%" nowrap>{{fill.pub_date}}</td>
+        <td width="10%">{{fill.asset.asset_symbol}}</td>
+        <td width="10%">{{fill.fill_qty}}</td>
+        <td width="10%">&nbsp;</td>
+        <td width="10%">&nbsp;</td>
+        <td width="10%">{{fill.fill_price}}</td>
+        <td width="10%" nowrap>{{ fill.fill_text }}</td>
+        <td width="10%">&nbsp;</td>
+      </tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <p>No fills are available.</p>
+{% endif %}
+
+<br>
+
+{% if zl_unused|length > 0 %}
+  Assets with extra fills:
+  <ul>
+  {% for asset,qty in zl_unused %}
+    <li>{{asset.symbol}}: {{qty}}</li>
+  {% endfor %}
+  </ul>
+{% endif %}
+<br>
+
+<font color="gray">
+<table border=1>
+<caption>Matching engine</caption>
+<tr>
+<td>
+{% if zl_open|length > 0 %}
+    Open orders
+    <ul>
+    {% for order in zl_open %}
+        <li>
+            {{order.dt}}:
+            {{order.sid.symbol}},
+            filled {{order.filled}} / {{order.amount|intcomma}},
+            {{order.id}}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No open orders are available.</p>
+{% endif %}
+</td>
+
+<td>
+{% if zl_txns|length > 0 %}
+    Transactions
+    <ul>
+    {% for fill in zl_txns %}
+        <li>
+          {{fill.dt}}:
+          {{fill.sid.symbol}},
+          {{fill.amount|intcomma}},
+          {{fill.price|intcomma}}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No closed orders are available.</p>
+{% endif %}
+</td>
+
+<td>
+{% if zl_closed|length > 0 %}
+    Closed orders
+    <ul>
+    {% for fill in zl_closed %}
+        <li>
+          {{fill.dt}}:
+          {{fill.sid.symbol}},
+          {{fill.amount|intcomma}},
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No closed orders are available.</p>
+{% endif %}
+</td>
+</tr>
+</table>
+</font>
+
+{% endblock %}

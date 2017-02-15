@@ -17,19 +17,16 @@ TODO version 0.1
     - `post_delete` for deleting
 - [x] handle more than just asset A1 (WIP .. currently crashes if two assets added, one order per asset added, and then fill added for 2nd asset)
 - [x] matcher: test that fills before an order do not fill it
-- [x] alert about extra fills
 - [x] add account symbols attached to orders
-- [ ] polls view: side-by-side, tabular, select day on top and show orders/fills for one day
-  - possibly alert about days with unused fills? (use top right like github alerts?)
-- [ ] UX (nav header contrasted with white background)
-- [ ] hide matching engine table
+- [x] UX with [django-bootstrap3](https://github.com/dyve/django-bootstrap3)
+  - [x] nav header contrasted with white background
+  - [x] side-by-side view: asset, order, fill
+  - [x] tabular for printing
 - [ ] add "working" flag to original order
-  - how about an "email" button? possibly rename `vote` field and button
 - [ ] add inline create new order/fill/asset on index page
   - or maybe just open the admin?
 - [ ] username/password
 - [ ] add broker field
-- [ ] sort by "open" first then by date (remember that main view will be for one day)
 - [ ] what about GTC orders and cancel on EOD
 - [ ] default landing page at `/`: think of github dashboard
 - ~~link fills to transactions/orders~~
@@ -37,6 +34,14 @@ TODO version 0.1
   - cancelled because transactions have no reference from zipline to the fills
 
 TODO version 0.2
+- [ ] sort by "open" first then by date (remember that main view will be for one day)
+- [ ] how about an "email" order button? possibly rename `vote` field and button
+- [ ] email notification on order/fill
+- [ ] select day on top and show orders/fills for one day
+- [ ] alert about eariler days with open orders or unused fills
+    - use top right like github alerts?
+    - or show side bar like travis?
+    - or `django.contrib.messages`?
 - [ ] add MF asset name + account name
 - [ ] use pusher?
 - [ ] broker can edit/delete his/her own fills/orders

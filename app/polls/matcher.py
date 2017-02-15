@@ -128,13 +128,13 @@ class Matcher:
   @staticmethod
   def chopSeconds(fills, orders):
     for sid in fills:
-      index=[dt.round('1Min') for dt in fills[sid].index]
+      index=[dt.floor('1Min') for dt in fills[sid].index]
       fills[sid].index = index
       fills[sid].sort_index(inplace=True)
 
     for sid in orders:
       for oid,order in orders[sid].items():
-        order["dt"]=pd.Timestamp(order["dt"],tz="utc").round('1Min')
+        order["dt"]=pd.Timestamp(order["dt"],tz="utc").floor('1Min')
 
     #print("chop seconds fills ", fills)
     #print("chop seconds orders", orders)
@@ -322,4 +322,4 @@ def factory(matcher: Matcher, fills: dict, orders: dict, assets: dict):
     all_closed, all_txns = matcher.match_orders_fills(blotter, bd, all_minutes, orders)
     unused = matcher.unused_fills(all_txns,fills)
 
-  return all_closed, all_txns, blotter.open_orders, unused
+  return all_closed, all_txns, blotter.open_orders, unused, all_minutes

@@ -53,7 +53,7 @@ class Account(models.Model):
  
 class Order(models.Model):
     order_text = models.CharField(max_length=200)
-    pub_date = models.DateTimeField('date published')
+    pub_date = models.DateTimeField('date published',default=timezone.now)
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
     amount = models.IntegerField(default=0)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
@@ -239,7 +239,7 @@ class ZlModel:
 
       matcher = mmm_Matcher()
 
-      all_closed, all_txns, open_orders, unused = mmm_factory(
+      all_closed, all_txns, open_orders, ZlModel.zl_unused, ZlModel.all_minutes = mmm_factory(
         matcher,
         ZlModel.fills_as_dict_df(),
         ZlModel.orders,
@@ -255,7 +255,6 @@ class ZlModel:
       ZlModel.zl_txns = [txn.to_dict() for txn in all_txns]
       ZlModel.zl_open_keyed = {v.id: v for v in ZlModel.zl_open}
       ZlModel.zl_closed_keyed = {v.id: v for v in ZlModel.zl_closed}
-      ZlModel.zl_unused = unused
 
       # save md5 at the end to ensure re-run if error occured
       ZlModel.md5=md5

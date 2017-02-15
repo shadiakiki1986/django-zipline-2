@@ -6,6 +6,7 @@ from django.test import TestCase
 from .models import Order, ZlModel, Asset, Fill, Account
 from .matcher import reduce_concatenate
 from django.urls import reverse
+from time import sleep
 
 a1 = {
   "exchange":'exchange name',
@@ -175,60 +176,98 @@ class OrderViewTests(TestCase):
       self.acc1 = create_account(symbol="TEST01")
       self.asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
 
-    def test_index_view_with_no_orders(self):
+    def test_ordersOnly_view_with_no_orders(self):
         """
         If no orders exist, an appropriate message should be displayed.
         """
-        response = self.client.get(reverse('polls:index'))
+        response = self.client.get(reverse('polls:ordersOnly'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "No orders are available.")
         self.assertQuerysetEqual(response.context['latest_order_list'], [])
 
-    def test_index_view_with_a_past_order(self):
+    def test_ordersOnly_view_with_a_past_order(self):
         """
         Orders with a pub_date in the past should be displayed on the
-        index page.
+        ordersOnly page.
         """
         create_order(order_text="Past order.", days=-30, asset=self.asset, amount=10, account=self.acc1)
-        response = self.client.get(reverse('polls:index'))
+        response = self.client.get(reverse('polls:ordersOnly'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
             ['<Order: A1, 10 (TEST01, Past order.)>']
         )
 
-    def test_index_view_with_a_future_order(self):
+    def test_ordersOnly_view_with_a_future_order(self):
         """
         Orders with a pub_date in the future should not be displayed on
-        the index page.
+        the ordersOnly page.
         """
         create_order(order_text="Future order.", days=30, asset=self.asset, amount=10, account=self.acc1)
-        response = self.client.get(reverse('polls:index'))
+        response = self.client.get(reverse('polls:ordersOnly'))
         self.assertContains(response, "No orders are available.")
         self.assertQuerysetEqual(response.context['latest_order_list'], [])
 
-    def test_index_view_with_future_order_and_past_order(self):
+    def test_ordersOnly_view_with_future_order_and_past_order(self):
         """
         Even if both past and future orders exist, only past orders
         should be displayed.
         """
         create_order(order_text="Past order.", days=-30, asset=self.asset, amount=10, account=self.acc1)
         create_order(order_text="Future order.", days=30, asset=self.asset, amount=10, account=self.acc1)
-        response = self.client.get(reverse('polls:index'))
+        response = self.client.get(reverse('polls:ordersOnly'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
             ['<Order: A1, 10 (TEST01, Past order.)>']
         )
 
-    def test_index_view_with_two_past_orders(self):
+    def test_ordersOnly_view_with_two_past_orders(self):
         """
-        The orders index page may display multiple orders.
+        The orders ordersOnly page may display multiple orders.
         """
         create_order(order_text="Past order 1.", days=-30, asset=self.asset, amount=10, account=self.acc1)
         create_order(order_text="Past order 2.", days=-5, asset=self.asset, amount=10, account=self.acc1)
-        response = self.client.get(reverse('polls:index'))
+        response = self.client.get(reverse('polls:ordersOnly'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
             ['<Order: A1, 10 (TEST01, Past order 2.)>', '<Order: A1, 10 (TEST01, Past order 1.)>']
+        )
+
+    def test_index_view_combined(self):
+        """
+        This test sometimes fails and then passes when re-run
+        .. not sure why yet
+        .. seems to be solved by sleep 50 ms
+        """
+        o1 = create_order(order_text="Past order 1.", days=-30, asset=self.asset, amount=10, account=self.acc1)
+        o2 = create_order(order_text="Past order 2.", days=-5, asset=self.asset, amount=10, account=self.acc1)
+        f1 = create_fill(fill_text="test?",days=-30, asset=self.asset, fill_qty=20, fill_price=2)
+        f2 = create_fill(fill_text="test?",days=-0.5, asset=self.asset, fill_qty=20, fill_price=2)
+        sleep(0.05)
+        response = self.client.get(reverse('polls:index'))
+
+        pointer = response.context['combined'][2]
+        self.assertEqual(
+            pointer["minute"],
+            pd.Timestamp(o1.pub_date,tz='utc').floor('1Min')
+        )
+
+        pointer = pointer["duos"][0]
+        self.assertEqual(
+          pointer["asset"],
+          o1.asset
+        )
+
+        self.assertQuerysetEqual(
+            pointer['orders'],
+            [
+              '<Order: A1, 10 (TEST01, Past order 1.)>',
+            ]
+        )
+        self.assertQuerysetEqual(
+            pointer['fills'],
+            [
+              '<Fill: A1, 20, 2.0 (test?)>',
+            ]
         )
 
 class OrderIndexDetailTests(TestCase):
@@ -293,7 +332,7 @@ class MatcherMethodTests(TestCase):
         MID_DATE_1 = pd.Timestamp('2013-01-07 17:01', tz='utc')
         MID_DATE_2 = pd.Timestamp('2013-01-07 17:02', tz='utc')
         MID_DATE_3 = pd.Timestamp('2013-01-07 17:03', tz='utc')
-        # seconds in below timestamp will be rounded
+        # seconds in below timestamp will be floored
         MID_DATE_4 = pd.Timestamp('2017-02-13 05:13:23', tz='utc')
         fills = {
             1: pd.DataFrame({
@@ -323,7 +362,7 @@ class MatcherMethodTests(TestCase):
 
         assets = {1: a1, 2: a2}
 
-        all_closed, all_txns, open_orders, unused = mmm_factory(matcher, fills, orders, assets)
+        all_closed, all_txns, open_orders, unused, all_minutes = mmm_factory(matcher, fills, orders, assets)
 
         self.assertEqual(2,len(all_closed))
         self.assertEqual(6,len(all_txns))
@@ -353,7 +392,7 @@ class MatcherMethodTests(TestCase):
         fills = {}
         orders = {}
         assets = {}
-        all_closed, all_txns, open_orders, unused = mmm_factory(matcher, fills, orders, assets)
+        all_closed, all_txns, open_orders, unused, all_minutes = mmm_factory(matcher, fills, orders, assets)
 
         self.assertEqual(0,len(all_closed))
         self.assertEqual(0,len(all_txns))
@@ -375,7 +414,7 @@ class MatcherMethodTests(TestCase):
 
         assets = {1:a1}
 
-        all_closed, all_txns, open_orders, unused = mmm_factory(matcher, fills, orders, assets)
+        all_closed, all_txns, open_orders, unused, all_minutes = mmm_factory(matcher, fills, orders, assets)
 
         self.assertEqual(0,len(all_closed))
         self.assertEqual(0,len(all_txns))
@@ -406,7 +445,7 @@ class MatcherMethodTests(TestCase):
 
         assets = {1:a1}
 
-        all_closed, all_txns, open_orders, unused = mmm_factory(matcher, fills, orders, assets)
+        all_closed, all_txns, open_orders, unused, all_minutes = mmm_factory(matcher, fills, orders, assets)
 
         self.assertEqual(0,len(all_closed))
         self.assertEqual(0,len(all_txns))
@@ -420,7 +459,7 @@ class MatcherMethodTests(TestCase):
         MID_DATE_1 = pd.Timestamp('2013-01-07 17:01', tz='utc')
         MID_DATE_2 = pd.Timestamp('2013-01-07 17:02', tz='utc')
         MID_DATE_3 = pd.Timestamp('2013-01-07 17:03', tz='utc')
-        # seconds in below timestamp will be rounded
+        # seconds in below timestamp will be floored
         MID_DATE_4 = pd.Timestamp('2017-02-13 05:13:23', tz='utc')
         fills = {
             1: pd.DataFrame({
@@ -442,7 +481,7 @@ class MatcherMethodTests(TestCase):
 
         assets = {1:a1}
 
-        all_closed, all_txns, open_orders, unused = mmm_factory(matcher, fills, orders, assets)
+        all_closed, all_txns, open_orders, unused, all_minutes = mmm_factory(matcher, fills, orders, assets)
 
         self.assertEqual(2,len(all_closed))
         self.assertEqual(5,len(all_txns))
@@ -486,7 +525,7 @@ class MatcherMethodTests(TestCase):
 
         assets = {1:a1}
 
-        all_closed, all_txns, open_orders, unused = mmm_factory(matcher, fills, orders, assets)
+        all_closed, all_txns, open_orders, unused, all_minutes = mmm_factory(matcher, fills, orders, assets)
 
         self.assertEqual(1,len(all_closed))
         self.assertEqual(1,len(all_txns))

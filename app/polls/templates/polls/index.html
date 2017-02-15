@@ -1,123 +1,122 @@
 {% extends "polls/base.html" %}
 {% load humanize %}
+{% load poll_extras %}
 
 {% block content %}
-<table border=1>
-<tr>
-<td>
-{% if latest_order_list %}
-    Orders
-    <ul>
-    {% for order in latest_order_list %}
-        <li>
-            {{order.pub_date}}:
-            {{order.asset.asset_symbol}},
-            <font color="red">{{order.filled|intcomma}}</font>
-            /{{order.amount|intcomma}},
-            {{order.account.account_symbol}},
-            {{ order.order_text }},
-            <font color="red">{{order.avgPrice|floatformat:"2"|intcomma}}</font>,
-            <a href="{% url 'polls:detail' order.id %}">Details</a>
-        </li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No orders are available.</p>
-{% endif %}
-</td>
 
-<td>
-{% if latest_fill_list %}
-    Fills
-    <ul>
-    {% for fill in latest_fill_list %}
-        <li>
-          {% if fill.has_unused %}
-            <font color="red">!!!</font>
-          {% endif %}
-          {{fill.pub_date}}:
-          {{fill.asset.asset_symbol}},
-          {{fill.fill_qty}},
-          {{fill.fill_price}}
-          ({{ fill.fill_text }})
-        </li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No fills are available.</p>
-{% endif %}
-</td>
-</tr>
-</table>
-
-<br>
 {% if zl_unused|length > 0 %}
+<div class="alert alert-danger">
   Assets with extra fills:
   <ul>
   {% for asset,qty in zl_unused %}
     <li>{{asset.symbol}}: {{qty}}</li>
   {% endfor %}
   </ul>
+</div>
 {% endif %}
-<br>
 
-<font color="gray">
-<table border=1>
-<caption>Matching engine</caption>
-<tr>
-<td>
-{% if zl_open|length > 0 %}
-    Open orders
-    <ul>
-    {% for order in zl_open %}
-        <li>
-            {{order.dt}}:
-            {{order.sid.symbol}},
-            filled {{order.filled}} / {{order.amount|intcomma}},
-            {{order.id}}
-        </li>
-    {% endfor %}
-    </ul>
+{% if combined|length == 0 %}
+  No orders are available.
 {% else %}
-    <p>No open orders are available.</p>
-{% endif %}
-</td>
+  <div class="container">
+    <em>
+      <div class="row">
+        <div class="col-xs-1">&nbsp;</div>
+        <div class="col-xs-1">&nbsp;</div>
+        <div class="col-xs-5 text-left"><b>Order</b></div>
+        <div class="col-xs-1">&nbsp;</div>
+        <div class="col-xs-4 text-left"><b>Fill</b></div>
+      </div>
 
-<td>
-{% if zl_txns|length > 0 %}
-    Transactions
-    <ul>
-    {% for fill in zl_txns %}
-        <li>
-          {{fill.dt}}:
-          {{fill.sid.symbol}},
-          {{fill.amount|intcomma}},
-          {{fill.price|intcomma}}
-        </li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No closed orders are available.</p>
-{% endif %}
-</td>
+      <div class="row">
+        <div class="col-xs-1">&nbsp;</div>
+        <div class="col-xs-1"><b>Symbol</b></div>
 
-<td>
-{% if zl_closed|length > 0 %}
-    Closed orders
-    <ul>
-    {% for fill in zl_closed %}
-        <li>
-          {{fill.dt}}:
-          {{fill.sid.symbol}},
-          {{fill.amount|intcomma}},
-        </li>
+        <div class="col-xs-5">
+          <div class="row">
+            <div class="col-xs-1">&nbsp;</div>
+            <div class="col-xs-1">Account</div>
+            <div class="col-xs-2 text-right"><abbr title="Quantity">Q</abbr></div>
+            <div class="col-xs-2 text-right"><abbr title="Filled">F</abbr></div>
+            <div class="col-xs-2 text-right"><abbr title="Average Price">P</abbr></div>
+            <div class="col-xs-4">Note</div>
+          </div>
+        </div>
+
+        <div class="col-xs-1">Symbol</div>
+
+        <div class="col-xs-4">
+          <div class="row">
+            <div class="col-xs-1">&nbsp;</div>
+            <div class="col-xs-2 text-right"><abbr title="Quantity">Q</abbr></div>
+            <div class="col-xs-2 text-right"><abbr title="Price">P</abbr></div>
+            <div class="col-xs-7 text-nowrap">Note</div>
+          </div>
+        </div>
+
+      </div>
+    </em>
+
+    {% for minute in combined %}
+    <hr style="margin-top:5px;margin-bottom:5px">
+    <div class="row">
+        <div class="col-xs-1 text-right">
+          <em>
+            <div class="row"><b>{{minute.minute|strftime:"%H:%M"}}</b></div>
+            <div class="row small text-muted">{{minute.minute|strftime:"%Y-%m-%d"}}</div>
+          </em>
+        </div>
+
+        {% for duo in minute.duos %}
+            <div class="col-xs-1">
+              {% if duo.orders|length > 0 %}
+              {{duo.asset.asset_symbol}}
+              {% endif %}
+            </div>
+
+            <div class="col-xs-5">
+              {% for order in duo.orders %}
+              <div class="row {% if order.filled != order.amount %}bg-warning{% endif %}">
+                <div class="col-xs-1">
+                  <abbr title="Order">
+                    <a href="{% url 'polls:detail' order.id %}">
+                      #{{order.id}}
+                    </a>
+                  </abbr>
+                </div>
+                <div class="col-xs-1">{{order.account.account_symbol}}</div>
+                <div class="col-xs-2 text-right">{{order.amount|intcomma}}</div>
+                <div class="col-xs-2 text-right text-warning">{{order.filled|intcomma}}</div>
+                <div class="col-xs-2 text-right text-warning">{{order.avgPrice|floatformat:"2"|intcomma}}</div>
+                <div class="col-xs-4 text-muted">{{ order.order_text }}</div>
+              </div>
+              {% endfor %}
+            </div>
+
+            <div class="col-xs-1">
+              {% if duo.fills|length > 0 %}
+              {{duo.asset.asset_symbol}}
+              {% endif %}
+            </div>
+
+            <div class="col-xs-4">
+              {% for fill in duo.fills %}
+              <div class="row {% if fill.has_unused %}bg-danger{% endif %}">
+                <div class="col-xs-1">
+                  #{{fill.id}}
+                </div>
+                <div class="col-xs-2 text-warning text-right">{{fill.fill_qty}}</div>
+                <div class="col-xs-2 text-warning text-right">{{fill.fill_price}}</div>
+                <div class="col-xs-7 text-muted">{{ fill.fill_text }}</div>
+              </div>
+              {% endfor %}
+            </div>
+
+        {% endfor %}
+    </div>
     {% endfor %}
-    </ul>
-{% else %}
-    <p>No closed orders are available.</p>
+
+  </div>
 {% endif %}
-</td>
-</tr>
-</table>
-</font>
+
 {% endblock %}
