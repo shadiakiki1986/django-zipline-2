@@ -3,7 +3,7 @@
 
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import generic
 
 from .models import Order, Fill, ZlModel, Asset
@@ -44,6 +44,17 @@ class OrdersOnlyView(generic.ListView):
         context["zl_unused"] = ZlModel.zl_unused.items()
 
         return context
+
+class AssetList(generic.ListView):
+    model = Asset
+
+class AssetCreate(generic.CreateView):
+  model = Asset
+  fields = ['asset_symbol','asset_name','asset_exchange']
+
+class AssetDelete(generic.DeleteView):
+    model = Asset
+    success_url = reverse_lazy('polls:assets-list')
 
 class IndexView(generic.ListView):
     template_name = 'polls/index.html'

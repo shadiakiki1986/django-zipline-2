@@ -295,6 +295,23 @@ class OrderIndexDetailTests(TestCase):
         response = self.client.get(url)
         self.assertContains(response, past_order.order_text)
 
+class AssetViewsTests(TestCase):
+    def test_list(self):
+        url = reverse('polls:assets-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_new(self):
+        url = reverse('polls:assets-new')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_delete(self):
+        a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
+        url = reverse('polls:assets-delete', args=(a1a.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
 #####################################
 import pandas as pd
 from .matcher import factory as mmm_factory, Matcher as mmm_Matcher

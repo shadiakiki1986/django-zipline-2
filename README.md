@@ -22,9 +22,10 @@ TODO version 0.1
   - [x] nav header contrasted with white background
   - [x] side-by-side view: asset, order, fill
   - [x] tabular for printing
-- [ ] add "working" flag to original order
+- [ ] new asset form should check that symbol is not already defined (zipline constraint)
 - [ ] add inline create new order/fill/asset on index page
   - or maybe just open the admin?
+- [ ] add "working" flag to original order
 - [ ] username/password
 - [ ] add broker field
 - [ ] what about GTC orders and cancel on EOD

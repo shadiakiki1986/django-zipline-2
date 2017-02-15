@@ -26,6 +26,8 @@ from django.db import connection
 import logging
 logger = logging.getLogger(__name__)
 
+from django.urls import reverse
+
 # Create your models here.
 
 def md5_wrap(string):
@@ -45,6 +47,11 @@ class Asset(models.Model):
           "exchange": self.asset_exchange,
           "name": self.asset_name
         }
+
+    def get_absolute_url(self):
+      return reverse('polls:assets-list')
+#      return reverse('polls:assets-list', kwargs={'pk': self.pk})
+
 
 class Account(models.Model):
     account_symbol = models.CharField(max_length=20)

@@ -1,0 +1,20 @@
+{% extends "polls/base.html" %}
+
+{% block content %}
+<h1>Assets</h1>
+
+<a href="{% url 'polls:assets-new' %}">New</a>
+
+<ul>
+    {% for asset in object_list %}
+    <li>
+      {{ asset.id }},
+      {{ asset.asset_symbol }},
+      {{ asset.asset_name }},
+      {{ asset.asset_exchange }},
+      <a href="{% url 'polls:assets-delete' asset.id %}">Delete</a>
+    </li>
+{% empty %}
+    <li>No assets yet.</li>
+{% endfor %}
+{% endblock %}

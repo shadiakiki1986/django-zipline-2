@@ -194,6 +194,16 @@ class Matcher:
       #raise ValueError("Got empty orders!")
       return
 
+    # make assets unique by "symbol" field also
+    assets2 = { a["symbol"]: {"k":k,"a":a} for k,a in assets.items() }
+    assets2  = {v["k"]: v["a"] for v in assets2.values() }
+
+    # log dropped sid's
+    dropped = [k for k in assets.keys() if k not in assets2.keys()]
+    if len(dropped)>0: logger.error("Dropped asset ID with duplicated symbol: %s" % dropped)
+
+    assets = assets2
+
     # check zipline/zipline/assets/asset_writer.py#write
     df = pd.DataFrame(
         {

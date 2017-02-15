@@ -15,9 +15,6 @@
 </div>
 {% endif %}
 
-{% if combined|length == 0 %}
-  No orders are available.
-{% else %}
   <div class="container">
     <em>
       <div class="row">
@@ -129,9 +126,10 @@
 
         {% endfor %}
     </div>
+    {% empty %}
+      No orders are available.
     {% endfor %}
 
   </div>
-{% endif %}
 
 {% endblock %}
