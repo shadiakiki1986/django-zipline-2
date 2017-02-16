@@ -37,6 +37,7 @@ Version 0.1
 - [ ] move files to match structure of zipline
 - [ ] new asset inline from assets list + new asset separate page still available
   - works with generic view form, but not yet with bootstrap form (csrf error)
+- [ ] if fill entered before order, make it easy to re-attach to order timestamp
 
 - [ ] new asset form should check that symbol is not already defined (zipline constraint)
 - [ ] add inline create new order/fill/asset on index page

@@ -6,7 +6,9 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
-from .models import Order, Fill, ZlModel, Asset
+from .models.polls.polls import Order, Fill, ZlModel
+from .models.polls.asset import Asset
+
 from django.utils import timezone
 
 from django.contrib import messages

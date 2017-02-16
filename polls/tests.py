@@ -3,7 +3,8 @@ import datetime
 from django.utils import timezone
 from django.test import TestCase
 
-from .models import Order, ZlModel, Asset, Fill, Account
+from .models.polls.polls import Order, ZlModel, Fill, Account
+from .models.polls.asset import Asset
 from .matcher import reduce_concatenate
 from django.urls import reverse
 from time import sleep

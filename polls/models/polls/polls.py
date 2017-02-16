@@ -11,7 +11,7 @@ from zipline.finance.execution import (
     StopOrder,
 )
 
-from .matcher import factory as mmm_factory, Matcher as mmm_Matcher
+from ...matcher import factory as mmm_factory, Matcher as mmm_Matcher
 import pandas as pd
 from six import iteritems
 from functools import reduce
@@ -27,30 +27,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 from django.urls import reverse
+from .asset import Asset
 
 # Create your models here.
 
 def md5_wrap(string):
   return hashlib.md5(string.encode('utf-8')).hexdigest()
-
-class Asset(models.Model):
-    asset_symbol = models.CharField(max_length=20)
-    asset_exchange = models.CharField(max_length=200)
-    asset_name = models.CharField(max_length=200)
-
-    def __str__(self):
-        return "%s, %s, %s" % (self.asset_symbol, self.asset_exchange, self.asset_name)
-
-    def to_dict(self):
-        return {
-          "symbol": self.asset_symbol,
-          "exchange": self.asset_exchange,
-          "name": self.asset_name
-        }
-
-    def get_absolute_url(self):
-      return reverse('polls:assets-list')
-#      return reverse('polls:assets-list', kwargs={'pk': self.pk})
 
 
 class Account(models.Model):

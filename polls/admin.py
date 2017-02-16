@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Fill, Order, Asset, Account
+from .models.polls.polls import Fill, Order, Account
+from .models.polls.asset import Asset
 
 #class AssetInline(admin.TabularInline):
 #    model = Asset
