@@ -2,6 +2,8 @@
 
 {% for fill in duo.fills %}
 <div class="row {% if fill.has_unused %}text-danger{% endif %}">
+  <div class="col-xs-4 text-primary text-right">{{fill.fill_qty}}</div>
+  <div class="col-xs-4 text-primary text-right">{{fill.fill_price}}</div>
   <div class="col-xs-4">
     <div class="row">
       <div class="col-xs-6">
@@ -11,16 +13,13 @@
         </abbr>
         {% endif %}
       </div>
-      <div class="col-xs-6">#{{fill.id}}</div>
+      <div class="col-xs-6 text-right">#{{fill.id}}</div>
     </div>
   </div>
-  <div class="col-xs-4 text-primary text-right">{{fill.fill_qty}}</div>
-  <div class="col-xs-4 text-primary text-right">{{fill.fill_price}}</div>
 </div>
 {%if fill.fill_text %}
 <div class="row">
-  <div class="col-xs-2"></div>
-  <div class="col-xs-10 text-muted">{{ fill.fill_text }}</div>
+  <div class="col-xs-12 text-muted text-right">{{ fill.fill_text }}</div>
 </div>
 {% endif %}
 {% endfor %}
