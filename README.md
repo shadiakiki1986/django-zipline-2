@@ -33,8 +33,11 @@ Version 0.1
   - [x] nav header contrasted with white background
   - [x] side-by-side view: asset, order, fill
   - [x] tabular for printing
+- [x] rename project to django-zipline
+- [ ] move files to match structure of zipline
 - [ ] new asset inline from assets list + new asset separate page still available
   - works with generic view form, but not yet with bootstrap form (csrf error)
+
 - [ ] new asset form should check that symbol is not already defined (zipline constraint)
 - [ ] add inline create new order/fill/asset on index page
   - or maybe just open the admin?
@@ -44,13 +47,12 @@ Version 0.1
 - [ ] what about GTC orders and cancel on EOD
 - [ ] default landing page at `/`: think of github dashboard
 
-- [ ] rename project to zipline-django
-- [ ] move files to match structure of zipline
-- [ ] fix async asset create (the one inline with assets list)
 - [ ] how to move to async? Decide between
   - [django-angular](http://django-angular.readthedocs.io/en/latest/angular-model-form.html)
     - [django-channels](https://channels.readthedocs.io/en/stable/concepts.html)
     - [ ] inline alert of unmatched fills in side-by-side view has a popup that could display the number of unused fills
+
+- [ ] replace my `order_text` and `fill_text` with [django-review](https://github.com/bitlabstudio/django-review)
 
 - ~~link fills to transactions/orders~~
   - ~~but `fills_as_dict_df` loses the original ID's (check `test_fills_as_dict_df`)~~
