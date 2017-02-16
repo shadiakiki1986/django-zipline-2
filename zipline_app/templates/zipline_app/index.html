@@ -21,10 +21,23 @@
         <div class="col-xs-1">&nbsp;</div>
         <div class="col-xs-10">
           <div class="row">
-            <div class="col-xs-1">&nbsp;</div>
-            <div class="col-xs-5 text-left"><b>Orders</b></div>
-            <div class="col-xs-1">&nbsp;</div>
-            <div class="col-xs-5 text-left"><b>Fills</b></div>
+            <div class="col-xs-7">
+              <div class="row">
+                <div class="col-xs-2">&nbsp;</div>
+                <div class="col-xs-10 text-left"><b>Orders</b></div>
+              </div>
+            </div>
+            <div class="col-xs-5">
+              <div class="row">
+                <div class="col-xs-2"></div>
+                <div class="col-xs-10">
+                  <div class="row">
+                    <div class="col-xs-2">&nbsp;</div>
+                    <div class="col-xs-10 text-left"><b>Fills</b></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="col-xs-1">&nbsp;</div>
@@ -34,36 +47,32 @@
         <div class="col-xs-1">&nbsp;</div>
         <div class="col-xs-10">
           <div class="row">
-            <div class="col-xs-1"><b>Symbol</b></div>
-            <div class="col-xs-5">
+            <div class="col-xs-7">
               <div class="row">
-                <div class="col-xs-2">
+                <div class="col-xs-2"><b>Symbol</b></div>
+                <div class="col-xs-10">
                   <div class="row">
-                    <div class="col-xs-6">&nbsp;</div>
-                    <div class="col-xs-6">&nbsp;</div>
+                    <div class="col-xs-3">Account</div>
+                    <div class="col-xs-2"></div>
+                    <div class="col-xs-2 text-right"><abbr title="Quantity">Q</abbr></div>
+                    <div class="col-xs-2 text-right"><abbr title="Filled">F</abbr></div>
+                    <div class="col-xs-3 text-right"><abbr title="Average Price">P</abbr></div>
                   </div>
                 </div>
-                <div class="col-xs-1">Account</div>
-                <div class="col-xs-2 text-right"><abbr title="Quantity">Q</abbr></div>
-                <div class="col-xs-2 text-right"><abbr title="Filled">F</abbr></div>
-                <div class="col-xs-2 text-right"><abbr title="Average Price">P</abbr></div>
-                <div class="col-xs-3">Note</div>
               </div>
             </div>
 
-            <div class="col-xs-1">Symbol</div>
-
             <div class="col-xs-5">
               <div class="row">
-                <div class="col-xs-2">
+                <div class="col-xs-2">Symbol</div>
+
+                <div class="col-xs-10">
                   <div class="row">
-                    <div class="col-xs-6">&nbsp;</div>
-                    <div class="col-xs-6">&nbsp;</div>
+                    <div class="col-xs-4"></div>
+                    <div class="col-xs-4 text-right"><abbr title="Quantity">Q</abbr></div>
+                    <div class="col-xs-4 text-right"><abbr title="Price">P</abbr></div>
                   </div>
                 </div>
-                <div class="col-xs-2 text-right"><abbr title="Quantity">Q</abbr></div>
-                <div class="col-xs-2 text-right"><abbr title="Price">P</abbr></div>
-                <div class="col-xs-6 text-nowrap">Note</div>
               </div>
             </div>
 
@@ -86,7 +95,7 @@
         <div class="col-xs-10">
           {% for duo in minute.duos %}
           <div class="row">
-            <div class="col-xs-6">
+            <div class="col-xs-7">
               <div class="row">
                 <div class="col-xs-2">
                   {% if duo.orders|length > 0 %}
@@ -99,7 +108,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-xs-6">
+            <div class="col-xs-5">
               <div class="row">
                 <div class="col-xs-2">
                   {% if duo.fills|length > 0 %}

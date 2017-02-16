@@ -14,7 +14,7 @@ from .zlmodel import ZlModel
 class Fill(models.Model):
     # 2017-01-12: unlink orders from fills and use zipline engine to perform matching
     # order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    fill_text = models.CharField(max_length=200)
+    fill_text = models.CharField(max_length=200, blank=True)
     votes = models.IntegerField(default=0)
     fill_qty = models.IntegerField(default=0)
     fill_price = models.FloatField(default=0)

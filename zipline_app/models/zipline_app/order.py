@@ -13,7 +13,7 @@ from numpy import average
 # Create your models here.
 
 class Order(models.Model):
-    order_text = models.CharField(max_length=200)
+    order_text = models.CharField(max_length=200, blank=True)
     pub_date = models.DateTimeField('date published',default=timezone.now)
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
     amount = models.IntegerField(default=0)
