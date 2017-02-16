@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 import datetime
+from django.urls import reverse
+
 from .asset import Asset
 from .account import Account
 from .zlmodel import ZlModel
@@ -50,3 +52,6 @@ class Order(models.Model):
     was_published_recently.boolean = True
     was_published_recently.short_description = 'Published recently?'
 
+    def get_absolute_url(self):
+      return reverse('zipline_app:orders-list') # TODO rename to orders
+#      return reverse('zipline_app:orders-list', kwargs={'pk': self.pk})

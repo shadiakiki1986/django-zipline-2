@@ -5,3 +5,7 @@ class Account(models.Model):
     account_symbol = models.CharField(max_length=20)
     def __str__(self):
       return self.account_symbol
+
+    def get_absolute_url(self):
+      return reverse('zipline_app:accounts-list') # TODO rename to accounts
+#      return reverse('zipline_app:accounts-list', kwargs={'pk': self.pk})

@@ -1,10 +1,28 @@
 from django.views import generic
-
+from django.utils import timezone
+from django.contrib import messages
+from django.urls import  reverse_lazy
 from ...models.zipline_app.zipline_app import Order, Fill, ZlModel, Asset
 
-from django.utils import timezone
+class OrderCreate(generic.CreateView):
+  model = Order
+  fields = ['pub_date','asset','amount','account','order_text']
+  template_name = 'zipline_app/order/order_form.html'
 
-from django.contrib import messages
+# inheriting from create+get_context with order_list instead of inheriting from listview
+# so that I can have the inline in create
+# http://stackoverflow.com/a/12883683/4126114
+class OrderList(OrderCreate):
+  template_name = 'zipline_app/order/order_list.html'
+  def get_context_data(self, *args, **kwargs):
+    context = super(OrderList, self).get_context_data(*args, **kwargs)
+    context["order_list"] = Order.objects.all()
+    return context
+
+class OrderDelete(generic.DeleteView):
+    model = Order
+    success_url = reverse_lazy('zipline_app:orders-list')
+    template_name = 'zipline_app/order/order_confirm_delete.html'
 
 class OrdersOnlyView(generic.ListView):
     template_name = 'zipline_app/ordersOnly.html'

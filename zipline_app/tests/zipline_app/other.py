@@ -1,12 +1,10 @@
 import datetime
-
 from django.utils import timezone
 from django.test import TestCase
-
-from ...models.zipline_app.zipline_app import Order, ZlModel, Fill, Account, Asset
 from django.urls import reverse
 from time import sleep
 import pandas as pd
+from ...models.zipline_app.zipline_app import Order, ZlModel, Fill, Account, Asset
 
 a1 = {
   "exchange":'exchange name',

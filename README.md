@@ -34,28 +34,31 @@ Version 0.1
   - [x] side-by-side view: asset, order, fill
   - [x] tabular for printing
 - [x] rename project to django-zipline
-- [ ] move files to match structure of zipline
-- [ ] if no open orders on A1 and new fill on A1, not getting alerted about unused fill
-- [ ] new asset inline from assets list + new asset separate page still available
-  - works with generic view form, but not yet with bootstrap form (csrf error)
+- [x] move files to match structure of zipline
+- [ ] new asset: works with generic view form, but not yet with bootstrap form (csrf error)
 - [ ] if fill entered before order, make it easy to re-attach to order timestamp
-
 - [ ] new asset form should check that symbol is not already defined (zipline constraint)
 - [ ] add inline create new order/fill/asset on index page
-  - or maybe just open the admin?
+  - ~~or maybe just open the admin?~~
 - [ ] add "working" flag to original order
 - [ ] username/password
+  - single sign-on? (use ldap?)
 - [ ] add broker field
 - [ ] what about GTC orders and cancel on EOD
-- [ ] default landing page at `/`: think of github dashboard
+- [ ] default landing page at `/`
+  - think of github dashboard
+  - redirect to log in if not logged in
+  - how to manage authentication / authorization
 
 - [ ] how to move to async? Decide between
   - [django-angular](http://django-angular.readthedocs.io/en/latest/angular-model-form.html)
     - [django-channels](https://channels.readthedocs.io/en/stable/concepts.html)
     - [ ] inline alert of unmatched fills in side-by-side view has a popup that could display the number of unused fills
 
-- [ ] replace my `order_text` and `fill_text` with [django-review](https://github.com/bitlabstudio/django-review)
+- [ ] rename my `order_text` and `fill_text` to `...comment`
 - [ ] add section "fills required to close open orders"
+- [ ] bug: create order at t1, then create at `t2>t1`, then drop the one at t1, but the minute t1 is still there in combined view
+- [ ] bug: if no open orders on A1 and new fill on A1, not getting alerted about unused fill
 
 - ~~link fills to transactions/orders~~
   - ~~but `fills_as_dict_df` loses the original ID's (check `test_fills_as_dict_df`)~~
@@ -76,6 +79,7 @@ Version 0.2
 - [ ] take frequency up to seconds from minutes (and remove chopSeconds)
   - otherwise constrain the django fields for `pub_date` to be without seconds
   - also default for order `pub_date` to be now (like fill `pub_date`)
+- [ ] could also add [django-review](https://github.com/bitlabstudio/django-review)
 
 ## Installation
 ```bash

@@ -1,0 +1,52 @@
+{% extends "zipline_app/base.html" %}
+
+
+{% block content %}
+<h1>Orders</h1>
+
+<a href="{% url 'zipline_app:orders-new' %}">New</a>
+
+<ul>
+    {% for order in order_list %}
+    <li>
+      {{ order.id }},
+      {{ order.pub_date }},
+      <a href="{% url 'zipline_app:assets-list' %}">{{ order.asset.symbol }}</a>,
+      {{ order.amount }},
+{#      <a href="{% url 'zipline_app:accounts-list' %}">{{ order.account.account_symbol }}</a>,#}
+      {{order.account.account_symbol}},
+      {{ order.order_text }},
+      <a href="{% url 'zipline_app:orders-delete' order.id %}">Delete</a>
+    </li>
+{% empty %}
+    <li>No orders yet.</li>
+{% endfor %}
+
+{% include "zipline_app/order/_order_form.html" %}
+
+<div id="MESSAGE-DIV"></div>
+
+<script type="text/javascript">
+    var frm = $('#FORM-ID');
+    frm.each(function() { this.reset() });
+    frm.submit(function () {
+       $("#MESSAGE-DIV").html("Loading...");
+       $("#FORM-ID :input").prop('disabled', true);
+        $.ajax({
+            type: frm.attr('method'),
+            url: "{% url 'zipline_app:orders-new' %}", //frm.attr('action'),
+            data: frm.serialize(),
+            success: function (data) {
+                // $("#SOME-DIV").html(data);
+                location.reload();
+            },
+            error: function(data) {
+               $("#MESSAGE-DIV").html("Something went wrong: "+data.responseText);
+               $("#FORM-ID :input").prop('disabled', false);
+            }
+        });
+        return false;
+    });
+</script>
+
+{% endblock %}

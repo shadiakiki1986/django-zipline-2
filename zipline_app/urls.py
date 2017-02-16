@@ -1,14 +1,13 @@
 from django.conf.urls import url
 
 from .views.zipline_app import zipline_app as views
-from .views.zipline_app import orders, asset, fill
+from .views.zipline_app import order, asset, fill
 
 app_name='zipline_app'
 urlpatterns = [
     # ex: /zipline_app/
     url(r'^$', views.IndexView.as_view(), name='index'),
-    # ex: /zipline_app/ordersOnly/
-    url(r'^ordersOnly/$', orders.OrdersOnlyView.as_view(), name='ordersOnly'),
+
     # ex: /zipline_app/5/
     url(r'^(?P<pk>[0-9]+)/$', views.DetailView.as_view(), name='detail'),
     # ex: /zipline_app/5/results/
@@ -30,4 +29,13 @@ urlpatterns = [
     # ex: /zipline_app/fills/1/delete/
     url(r'^fills/(?P<pk>[0-9]+)/delete/$', fill.FillDelete.as_view(), name='fills-delete'),
 
+    # ex: /zipline_app/orders/
+    url(r'^orders/$', order.OrderList.as_view(), name='orders-list'),
+    # ex: /zipline_app/orders/new/
+    url(r'^orders/new/$', order.OrderCreate.as_view(), name='orders-new'),
+    # ex: /zipline_app/orders/1/delete/
+    url(r'^orders/(?P<pk>[0-9]+)/delete/$', order.OrderDelete.as_view(), name='orders-delete'),
+
+    # ex: /zipline_app/ordersOnly/
+    url(r'^ordersOnly/$', order.OrdersOnlyView.as_view(), name='ordersOnly'),
 ]
