@@ -35,6 +35,7 @@ Version 0.1
   - [x] tabular for printing
 - [x] rename project to django-zipline
 - [ ] move files to match structure of zipline
+- [ ] if no open orders on A1 and new fill on A1, not getting alerted about unused fill
 - [ ] new asset inline from assets list + new asset separate page still available
   - works with generic view form, but not yet with bootstrap form (csrf error)
 - [ ] if fill entered before order, make it easy to re-attach to order timestamp
@@ -110,6 +111,16 @@ If running tests manually, could benefit from
 * http://stackoverflow.com/questions/24011428/django-core-exceptions-improperlyconfigured-requested-setting-caches-but-setti#27455703
 * http://stackoverflow.com/questions/26276397/django-1-7-upgrade-error-appregistrynotready-apps-arent-loaded-yet#26278999
 
+To access deeper namespace, use
+```bash
+> python manage.py test zipline_app # will not test anything because I dont use tests.py anymore
+> python manage.py test zipline_app.tests # will not test anything also
+
+> python manage.py test zipline_app.tests.zipline_app.asset
+> python manage.py test zipline_app.tests.zipline_app.other
+> python manage.py test zipline_app.tests.zipline_app.matcher
+> python manage.py test zipline_app.tests.zipline_app.zlmodel
+```
 ## Under the hood
 
 * [django](https://www.djangoproject.com/)

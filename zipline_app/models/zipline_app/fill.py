@@ -26,3 +26,7 @@ class Fill(models.Model):
 
     def has_unused(self):
       return self.asset.id in ZlModel.zl_unused
+
+    def get_absolute_url(self):
+      return reverse('zipline_app:fills-list') # TODO rename to fills
+#      return reverse('zipline_app:fills-list', kwargs={'pk': self.pk})

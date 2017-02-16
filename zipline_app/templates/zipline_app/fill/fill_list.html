@@ -1,0 +1,51 @@
+{% extends "zipline_app/base.html" %}
+
+
+{% block content %}
+<h1>Fills</h1>
+
+<a href="{% url 'zipline_app:fills-new' %}">New</a>
+
+<ul>
+    {% for fill in fill_list %}
+    <li>
+      {{ fill.id }},
+      {{ fill.pub_date }},
+      <a href="{% url 'zipline_app:assets-list' %}">{{ fill.asset.symbol }}</a>,
+      {{ fill.fill_qty }},
+      {{ fill.fill_price }},
+      {{ fill.fill_text }},
+      <a href="{% url 'zipline_app:fills-delete' fill.id %}">Delete</a>
+    </li>
+{% empty %}
+    <li>No fills yet.</li>
+{% endfor %}
+
+{% include "zipline_app/fill/_fill_form.html" %}
+
+<div id="MESSAGE-DIV"></div>
+
+<script type="text/javascript">
+    var frm = $('#FORM-ID');
+    frm.each(function() { this.reset() });
+    frm.submit(function () {
+       $("#MESSAGE-DIV").html("Loading...");
+       $("#FORM-ID :input").prop('disabled', true);
+        $.ajax({
+            type: frm.attr('method'),
+            url: "{% url 'zipline_app:fills-new' %}", //frm.attr('action'),
+            data: frm.serialize(),
+            success: function (data) {
+                // $("#SOME-DIV").html(data);
+                location.reload();
+            },
+            error: function(data) {
+               $("#MESSAGE-DIV").html("Something went wrong: "+data.responseText);
+               $("#FORM-ID :input").prop('disabled', false);
+            }
+        });
+        return false;
+    });
+</script>
+
+{% endblock %}
