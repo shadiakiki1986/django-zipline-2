@@ -24,7 +24,7 @@ this yields a csrf token error
 
 <!--
 {# Display a form #}
-<form class="form-inline" id="FORM-ID" method="post" action="{% url 'polls:assets-new' %}">
+<form class="form-inline" id="FORM-ID" method="post" action="{% url 'zipline_app:assets-new' %}">
   {% csrf_token %}
   <div class="form-group">
     <label for="asset_symbol">Symbol</label>

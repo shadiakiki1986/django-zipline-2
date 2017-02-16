@@ -1,4 +1,4 @@
-{% extends "polls/base.html" %}
+{% extends "zipline_app/base.html" %}
 {% load humanize %}
 {% load poll_extras %}
 
@@ -86,7 +86,7 @@
 
                 <div class="col-xs-1">
                   <abbr title="Order">
-                    <a href="{% url 'polls:detail' order.id %}">
+                    <a href="{% url 'zipline_app:detail' order.id %}">
                       #{{order.id}}
                     </a>
                   </abbr>

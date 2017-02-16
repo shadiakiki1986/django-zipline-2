@@ -85,7 +85,7 @@ Apply patch from https://github.com/quantopian/zipline/pull/1683 if not already 
 
 ```bash
 python3 manage.py migrate
-python3 manage.py test polls
+python3 manage.py test zipline_app
 python3 manage.py createsuperuser
 ```
 Reference
@@ -99,7 +99,7 @@ python3 manage.py runserver 0.0.0.0:8000
 ## Testing
 ```bash
 pew workon DJANGO_ZIPLINE
-POLLS_LOG_LEVEL=DEBUG python manage.py test polls
+POLLS_LOG_LEVEL=DEBUG python manage.py test zipline_app
 ```
 where the `POLLS_LOG_LEVEL` env variable is the django log level desired
 as documented [here](https://docs.djangoproject.com/en/1.10/topics/logging/#loggers)
@@ -129,7 +129,7 @@ git add *
 
 When a model is modified:
 ```bash
-python manage.py makemigrations polls
+python manage.py makemigrations zipline_app
 python manage.py migrate
 ```
 

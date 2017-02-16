@@ -192,7 +192,7 @@ class ZlModel:
     @staticmethod
     def db_ready():
       tables = connection.introspection.table_names()
-      isready = "polls_fill" in tables
+      isready = "zipline_app_fill" in tables
       if not isready:
         logger.debug("db tables not available .. skipping zlmodel init")
       return isready
@@ -283,7 +283,7 @@ class SignalProcessor:
     ZlModel.init()
     ZlModel.update()
 
-senders=("polls.Order", "polls.Fill", "polls.Asset")
+senders=("zipline_app.Order", "zipline_app.Fill", "zipline_app.Asset")
 for sender in senders:
   #models.signals.post_init.connect(SignalProcessor.post_init, sender=sender)
   models.signals.post_save.connect(SignalProcessor.post_save, sender=sender)

@@ -1,10 +1,10 @@
-{% extends "polls/base.html" %}
+{% extends "zipline_app/base.html" %}
 
 
 {% block content %}
 <h1>Assets</h1>
 
-<a href="{% url 'polls:assets-new' %}">New</a>
+<a href="{% url 'zipline_app:assets-new' %}">New</a>
 
 <ul>
     {% for asset in asset_list %}
@@ -13,13 +13,13 @@
       {{ asset.asset_symbol }},
       {{ asset.asset_name }},
       {{ asset.asset_exchange }},
-      <a href="{% url 'polls:assets-delete' asset.id %}">Delete</a>
+      <a href="{% url 'zipline_app:assets-delete' asset.id %}">Delete</a>
     </li>
 {% empty %}
     <li>No assets yet.</li>
 {% endfor %}
 
-{% include "polls/_asset_form.html" %}
+{% include "zipline_app/_asset_form.html" %}
 
 <div id="MESSAGE-DIV"></div>
 
@@ -31,7 +31,7 @@
        $("#FORM-ID :input").prop('disabled', true);
         $.ajax({
             type: frm.attr('method'),
-            url: "{% url 'polls:assets-new' %}", //frm.attr('action'),
+            url: "{% url 'zipline_app:assets-new' %}", //frm.attr('action'),
             data: frm.serialize(),
             success: function (data) {
                 // $("#SOME-DIV").html(data);

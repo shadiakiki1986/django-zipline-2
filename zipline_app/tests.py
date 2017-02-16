@@ -3,8 +3,8 @@ import datetime
 from django.utils import timezone
 from django.test import TestCase
 
-from .models.polls.polls import Order, ZlModel, Fill, Account
-from .models.polls.asset import Asset
+from .models.zipline_app.zipline_app import Order, ZlModel, Fill, Account
+from .models.zipline_app.asset import Asset
 from .matcher import reduce_concatenate
 from django.urls import reverse
 from time import sleep
@@ -181,7 +181,7 @@ class OrderViewTests(TestCase):
         """
         If no orders exist, an appropriate message should be displayed.
         """
-        response = self.client.get(reverse('polls:ordersOnly'))
+        response = self.client.get(reverse('zipline_app:ordersOnly'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "No orders are available.")
         self.assertQuerysetEqual(response.context['latest_order_list'], [])
@@ -192,7 +192,7 @@ class OrderViewTests(TestCase):
         ordersOnly page.
         """
         create_order(order_text="Past order.", days=-30, asset=self.asset, amount=10, account=self.acc1)
-        response = self.client.get(reverse('polls:ordersOnly'))
+        response = self.client.get(reverse('zipline_app:ordersOnly'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
             ['<Order: A1, 10 (TEST01, Past order.)>']
@@ -204,7 +204,7 @@ class OrderViewTests(TestCase):
         the ordersOnly page.
         """
         create_order(order_text="Future order.", days=30, asset=self.asset, amount=10, account=self.acc1)
-        response = self.client.get(reverse('polls:ordersOnly'))
+        response = self.client.get(reverse('zipline_app:ordersOnly'))
         self.assertContains(response, "No orders are available.")
         self.assertQuerysetEqual(response.context['latest_order_list'], [])
 
@@ -215,7 +215,7 @@ class OrderViewTests(TestCase):
         """
         create_order(order_text="Past order.", days=-30, asset=self.asset, amount=10, account=self.acc1)
         create_order(order_text="Future order.", days=30, asset=self.asset, amount=10, account=self.acc1)
-        response = self.client.get(reverse('polls:ordersOnly'))
+        response = self.client.get(reverse('zipline_app:ordersOnly'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
             ['<Order: A1, 10 (TEST01, Past order.)>']
@@ -227,7 +227,7 @@ class OrderViewTests(TestCase):
         """
         create_order(order_text="Past order 1.", days=-30, asset=self.asset, amount=10, account=self.acc1)
         create_order(order_text="Past order 2.", days=-5, asset=self.asset, amount=10, account=self.acc1)
-        response = self.client.get(reverse('polls:ordersOnly'))
+        response = self.client.get(reverse('zipline_app:ordersOnly'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
             ['<Order: A1, 10 (TEST01, Past order 2.)>', '<Order: A1, 10 (TEST01, Past order 1.)>']
@@ -244,7 +244,7 @@ class OrderViewTests(TestCase):
         f1 = create_fill(fill_text="test?",days=-30, asset=self.asset, fill_qty=20, fill_price=2)
         f2 = create_fill(fill_text="test?",days=-0.5, asset=self.asset, fill_qty=20, fill_price=2)
         sleep(0.05)
-        response = self.client.get(reverse('polls:index'))
+        response = self.client.get(reverse('zipline_app:index'))
 
         pointer = response.context['combined'][2]
         self.assertEqual(
@@ -282,7 +282,7 @@ class OrderIndexDetailTests(TestCase):
         return a 404 not found.
         """
         future_order = create_order(order_text='Future order.', days=5, asset=self.a1a, amount=10, account=self.acc1)
-        url = reverse('polls:detail', args=(future_order.id,))
+        url = reverse('zipline_app:detail', args=(future_order.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
@@ -292,24 +292,24 @@ class OrderIndexDetailTests(TestCase):
         display the order's text.
         """
         past_order = create_order(order_text='Past Order.', days=-5, asset=self.a1a, amount=10, account=self.acc1)
-        url = reverse('polls:detail', args=(past_order.id,))
+        url = reverse('zipline_app:detail', args=(past_order.id,))
         response = self.client.get(url)
         self.assertContains(response, past_order.order_text)
 
 class AssetViewsTests(TestCase):
     def test_list(self):
-        url = reverse('polls:assets-list')
+        url = reverse('zipline_app:assets-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_new(self):
-        url = reverse('polls:assets-new')
+        url = reverse('zipline_app:assets-new')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_delete(self):
         a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-        url = reverse('polls:assets-delete', args=(a1a.id,))
+        url = reverse('zipline_app:assets-delete', args=(a1a.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 

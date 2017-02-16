@@ -1,4 +1,4 @@
-{% extends "polls/base.html" %}
+{% extends "zipline_app/base.html" %}
 {% load humanize %}
 
 {% block content %}
@@ -34,7 +34,7 @@ Order Details
 </font>
 
 Fill
-<form action="{% url 'polls:vote' order.id %}" method="post">
+<form action="{% url 'zipline_app:vote' order.id %}" method="post">
 {% csrf_token %}
 {% for fill in order.fill_set.all %}
     <input type="radio" name="fill" id="fill{{ forloop.counter }}" value="{{ fill.id }}" />

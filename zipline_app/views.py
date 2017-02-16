@@ -6,8 +6,8 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
-from .models.polls.polls import Order, Fill, ZlModel
-from .models.polls.asset import Asset
+from .models.zipline_app.zipline_app import Order, Fill, ZlModel
+from .models.zipline_app.asset import Asset
 
 from django.utils import timezone
 
@@ -16,7 +16,7 @@ from pandas import Timedelta
 from numpy import concatenate
 
 class OrdersOnlyView(generic.ListView):
-    template_name = 'polls/ordersOnly.html'
+    template_name = 'zipline_app/ordersOnly.html'
     context_object_name = 'latest_order_list'
 
     def get_queryset(self):
@@ -55,7 +55,7 @@ class AssetCreate(generic.CreateView):
 # so that I can have the inline in create
 # http://stackoverflow.com/a/12883683/4126114
 class AssetList(AssetCreate):
-  template_name = 'polls/asset_list.html'
+  template_name = 'zipline_app/asset_list.html'
   def get_context_data(self, *args, **kwargs):
     context = super(AssetList, self).get_context_data(*args, **kwargs)
     context["asset_list"] = Asset.objects.all()
@@ -63,10 +63,10 @@ class AssetList(AssetCreate):
 
 class AssetDelete(generic.DeleteView):
     model = Asset
-    success_url = reverse_lazy('polls:assets-list')
+    success_url = reverse_lazy('zipline_app:assets-list')
 
 class IndexView(generic.ListView):
-    template_name = 'polls/index.html'
+    template_name = 'zipline_app/index.html'
     context_object_name = 'combined'
 
     def get_queryset(self):
@@ -105,7 +105,7 @@ class IndexView(generic.ListView):
 
 class DetailView(generic.DetailView):
     model = Order
-    template_name = 'polls/detail.html'
+    template_name = 'zipline_app/detail.html'
     def get_queryset(self):
         """
         Excludes any orders that aren't published yet.
@@ -114,7 +114,7 @@ class DetailView(generic.DetailView):
 
 class ResultsView(generic.DetailView):
     model = Order
-    template_name = 'polls/results.html'
+    template_name = 'zipline_app/results.html'
 
 def vote(request, order_id):
     order = get_object_or_404(Order, pk=order_id)
@@ -122,7 +122,7 @@ def vote(request, order_id):
         selected_fill = order.fill_set.get(pk=request.POST['fill'])
     except (KeyError, Fill.DoesNotExist):
         # Redisplay the order voting form.
-        return render(request, 'polls/detail.html', {
+        return render(request, 'zipline_app/detail.html', {
             'order': order,
             'error_message': "You didn't select a fill.",
         })
@@ -132,4 +132,4 @@ def vote(request, order_id):
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
-        return HttpResponseRedirect(reverse('polls:results', args=(order.id,)))
+        return HttpResponseRedirect(reverse('zipline_app:results', args=(order.id,)))

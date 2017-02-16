@@ -22,5 +22,5 @@ class Asset(models.Model):
         }
 
     def get_absolute_url(self):
-      return reverse('polls:assets-list') # TODO rename to assets
-#      return reverse('polls:assets-list', kwargs={'pk': self.pk})
+      return reverse('zipline_app:assets-list') # TODO rename to assets
+#      return reverse('zipline_app:assets-list', kwargs={'pk': self.pk})

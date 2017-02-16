@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
-    'polls.apps.PollsConfig',
+    'zipline_app.apps.PollsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -135,7 +135,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'polls': {
+        'zipline_app': {
             'handlers': ['console'],
             'level': os.getenv('POLLS_LOG_LEVEL', 'INFO'),
         },
