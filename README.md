@@ -43,6 +43,15 @@ Version 0.1
 - [ ] add broker field
 - [ ] what about GTC orders and cancel on EOD
 - [ ] default landing page at `/`: think of github dashboard
+
+- [ ] rename project to zipline-django
+- [ ] move files to match structure of zipline
+- [ ] fix async asset create (the one inline with assets list)
+- [ ] how to move to async? Decide between
+  - [django-angular](http://django-angular.readthedocs.io/en/latest/angular-model-form.html)
+    - [django-channels](https://channels.readthedocs.io/en/stable/concepts.html)
+    - [ ] inline alert of unmatched fills in side-by-side view has a popup that could display the number of unused fills
+
 - ~~link fills to transactions/orders~~
   - ~~but `fills_as_dict_df` loses the original ID's (check `test_fills_as_dict_df`)~~
   - cancelled because transactions have no reference from zipline to the fills
@@ -72,9 +81,9 @@ pip3 install -r requirements.txt # Django datetime zipline
 Apply patch from https://github.com/quantopian/zipline/pull/1683 if not already merged and usable
 
 ```bash
-pip3 manage.py migrate
-pip3 manage.py test polls
-pip3 manage.py createsuperuser
+python3 manage.py migrate
+python3 manage.py test polls
+python3 manage.py createsuperuser
 ```
 Reference
 * [creating an admin user](https://docs.djangoproject.com/en/1.10/intro/tutorial02/#creating-an-admin-user)
