@@ -3,11 +3,11 @@ import datetime
 from django.utils import timezone
 from django.test import TestCase
 
-from .models.zipline_app.zipline_app import Order, ZlModel, Fill, Account
-from .models.zipline_app.asset import Asset
+from .models.zipline_app.zipline_app import Order, ZlModel, Fill, Account, Asset
 from .matcher import reduce_concatenate
 from django.urls import reverse
 from time import sleep
+import pandas as pd
 
 a1 = {
   "exchange":'exchange name',

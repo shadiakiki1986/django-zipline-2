@@ -6,8 +6,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
-from .models.zipline_app.zipline_app import Order, Fill, ZlModel
-from .models.zipline_app.asset import Asset
+from .models.zipline_app.zipline_app import Order, Fill, ZlModel, Asset
 
 from django.utils import timezone
 

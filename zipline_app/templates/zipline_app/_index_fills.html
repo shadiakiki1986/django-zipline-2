@@ -1,0 +1,21 @@
+{% load humanize %}
+
+{% for fill in duo.fills %}
+<div class="row {% if fill.has_unused %}text-danger{% endif %}">
+  <div class="col-xs-2">
+    <div class="row">
+      <div class="col-xs-6">
+        {% if fill.has_unused %}
+        <abbr title="Asset has unmatched fills">
+          <span class="glyphicon glyphicon-alert"></span>
+        </abbr>
+        {% endif %}
+      </div>
+      <div class="col-xs-6">#{{fill.id}}</div>
+    </div>
+  </div>
+  <div class="col-xs-2 text-primary text-right">{{fill.fill_qty}}</div>
+  <div class="col-xs-2 text-primary text-right">{{fill.fill_price}}</div>
+  <div class="col-xs-6 text-muted">{{ fill.fill_text }}</div>
+</div>
+{% endfor %}

@@ -54,6 +54,7 @@ Version 0.1
     - [ ] inline alert of unmatched fills in side-by-side view has a popup that could display the number of unused fills
 
 - [ ] replace my `order_text` and `fill_text` with [django-review](https://github.com/bitlabstudio/django-review)
+- [ ] add section "fills required to close open orders"
 
 - ~~link fills to transactions/orders~~
   - ~~but `fills_as_dict_df` loses the original ID's (check `test_fills_as_dict_df`)~~

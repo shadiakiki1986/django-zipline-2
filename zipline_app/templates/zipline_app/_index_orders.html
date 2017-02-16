@@ -1,0 +1,31 @@
+{% load humanize %}
+
+{% for order in duo.orders %}
+<div class="row {% if order.filled != order.amount %}text-warning{% endif %}">
+  <div class="col-xs-2">
+    <div class="row">
+      <div class="col-xs-6">
+        {% if order.filled != order.amount %}
+        <abbr title="Order is still open">
+          <span class="glyphicon glyphicon-alert"></span>
+        </abbr>
+        {% endif %}
+      </div>
+
+      <div class="col-xs-6">
+        <abbr title="Order">
+          <a href="{% url 'zipline_app:detail' order.id %}">
+            #{{order.id}}
+          </a>
+        </abbr>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xs-1">{{order.account.account_symbol}}</div>
+  <div class="col-xs-2 text-right">{{order.amount|intcomma}}</div>
+  <div class="col-xs-2 text-right text-primary">{{order.filled|intcomma}}</div>
+  <div class="col-xs-2 text-right text-primary">{{order.avgPrice|floatformat:"2"|intcomma}}</div>
+  <div class="col-xs-3 text-muted">{{ order.order_text }}</div>
+</div>
+{% endfor %}
