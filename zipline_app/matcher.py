@@ -35,7 +35,7 @@ from zipline.utils.memoize import lazyval
 from pandas.tseries.offsets import CustomBusinessDay
 
 import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("zipline_app") # __name__)
 
 def reduce_concatenate(list_of_lists):
   return reduce(

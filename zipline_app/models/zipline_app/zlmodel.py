@@ -11,7 +11,7 @@ from django.db import connection
 # Django Logging
 # https://docs.djangoproject.com/en/1.10/topics/logging/
 import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('zipline_app.models') #__name__)
 
 import json
 from ...matcher import factory as mmm_factory, Matcher as mmm_Matcher
@@ -31,6 +31,7 @@ class ZlModel:
     orders={}
     assets={}
     zl_unused = {}
+    all_minutes = []
 
     @staticmethod
     def clear():
@@ -44,6 +45,7 @@ class ZlModel:
       ZlModel.orders={}
       ZlModel.assets={}
       ZlModel.zl_unused = {}
+      ZlModel.all_minutes=[]
 
     @staticmethod
     def add_asset(asset):
