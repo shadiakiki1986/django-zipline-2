@@ -1,7 +1,18 @@
-# finance-blotter
-(WIP) Web app serving as an electronic blotter for trading in finance
+# django-zipline
+(WIP)  A Django app that wraps the Zipline library
 
-TODO version 0.1
+At the time of this writing (2017-02-16),
+I'm focusing on wrapping the blotter object for usage in trading in finance.
+The app's structure is similar to the zipline library structure,
+so that this library can easily be extended to include more zipline objects along the line.
+
+If there are lingering references to `blotter-finance` in the code or docs,
+it's because that's what I named the project at first.
+
+## Features
+_Unticked features are still TODO_
+
+Version 0.1
 - [x] django app from tutorial customized to blotter
 - [x] use zipline as matching enging
 - [x] integrate zipline into django app
@@ -36,7 +47,7 @@ TODO version 0.1
   - ~~but `fills_as_dict_df` loses the original ID's (check `test_fills_as_dict_df`)~~
   - cancelled because transactions have no reference from zipline to the fills
 
-TODO version 0.2
+Version 0.2
 - [ ] sort by "open" first then by date (remember that main view will be for one day)
 - [ ] how about an "email" order button? possibly rename `vote` field and button
 - [ ] email notification on order/fill
@@ -54,8 +65,8 @@ TODO version 0.2
 
 ## Installation
 ```bash
-pew new BLOTTER_FINANCE
-pip3 install Django datetime zipline
+pew new DJANGO_ZIPLINE
+pip3 install -r requirements.txt # Django datetime zipline
 ```
 
 Apply patch from https://github.com/quantopian/zipline/pull/1683 if not already merged and usable
@@ -70,14 +81,12 @@ Reference
 
 ## Usage
 ```bash
-cd app
 python3 manage.py runserver 0.0.0.0:8000
 ```
 
 ## Testing
 ```bash
-pew workon BLOTTER_FINANCE
-cd app
+pew workon DJANGO_ZIPLINE
 POLLS_LOG_LEVEL=DEBUG python manage.py test polls
 ```
 where the `POLLS_LOG_LEVEL` env variable is the django log level desired
@@ -97,9 +106,13 @@ If running tests manually, could benefit from
 ### Django
 Following the [django tutorial](https://docs.djangoproject.com/en/1.10/intro/tutorial01/)
 ```bash
-pew workon BLOTTER_FINANCE
-django-admin startproject blotter_finance
-mv blotter_finance app
+pew workon DJANGO_ZIPLINE
+mkdir django-zipline
+cd django-zipline
+git init
+django-admin startproject project
+mv project/* .
+git add *
 ```
 
 When a model is modified:
