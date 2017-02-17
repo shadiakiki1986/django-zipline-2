@@ -19,31 +19,8 @@
     <li>No assets yet.</li>
 {% endfor %}
 
-{% include "zipline_app/asset/_asset_form.html" %}
-
-<div id="MESSAGE-DIV"></div>
-
-<script type="text/javascript">
-    var frm = $('#FORM-ID');
-    frm.each(function() { this.reset() });
-    frm.submit(function () {
-       $("#MESSAGE-DIV").html("Loading...");
-       $("#FORM-ID :input").prop('disabled', true);
-        $.ajax({
-            type: frm.attr('method'),
-            url: "{% url 'zipline_app:assets-new' %}", //frm.attr('action'),
-            data: frm.serialize(),
-            success: function (data) {
-                // $("#SOME-DIV").html(data);
-                location.reload();
-            },
-            error: function(data) {
-               $("#MESSAGE-DIV").html("Something went wrong: "+data.responseText);
-               $("#FORM-ID :input").prop('disabled', false);
-            }
-        });
-        return false;
-    });
-</script>
+{# {% include "zipline_app/asset/_asset_form_builtin.html" %} #}
+{# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
+{% include "zipline_app/asset/_asset_form_bootstrap_django.html" %}
 
 {% endblock %}

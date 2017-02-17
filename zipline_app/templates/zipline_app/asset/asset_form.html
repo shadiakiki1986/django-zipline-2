@@ -1,5 +1,7 @@
 {% extends "zipline_app/base.html" %}
 
 {% block content %}
-{% include "zipline_app/asset/_asset_form.html" %}
+{# {% include "zipline_app/asset/_asset_form_builtin.html" %} #}
+{# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
+{% include "zipline_app/asset/_asset_form_bootstrap_django.html" %}
 {% endblock %}

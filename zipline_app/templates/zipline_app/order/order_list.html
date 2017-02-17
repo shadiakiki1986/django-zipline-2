@@ -6,47 +6,25 @@
 
 <a href="{% url 'zipline_app:orders-new' %}">New</a>
 
-<ul>
-    {% for order in order_list %}
-    <li>
-      {{ order.id }},
-      {{ order.pub_date }},
-      <a href="{% url 'zipline_app:assets-list' %}">{{ order.asset.symbol }}</a>,
-      {{ order.amount }},
-{#      <a href="{% url 'zipline_app:accounts-list' %}">{{ order.account.account_symbol }}</a>,#}
-      {{order.account.account_symbol}},
-      {{ order.order_text }},
-      <a href="{% url 'zipline_app:orders-delete' order.id %}">Delete</a>
-    </li>
-{% empty %}
-    <li>No orders yet.</li>
-{% endfor %}
-
 {% include "zipline_app/order/_order_form.html" %}
 
-<div id="MESSAGE-DIV"></div>
-
-<script type="text/javascript">
-    var frm = $('#FORM-ID');
-    frm.each(function() { this.reset() });
-    frm.submit(function () {
-       $("#MESSAGE-DIV").html("Loading...");
-       $("#FORM-ID :input").prop('disabled', true);
-        $.ajax({
-            type: frm.attr('method'),
-            url: "{% url 'zipline_app:orders-new' %}", //frm.attr('action'),
-            data: frm.serialize(),
-            success: function (data) {
-                // $("#SOME-DIV").html(data);
-                location.reload();
-            },
-            error: function(data) {
-               $("#MESSAGE-DIV").html("Something went wrong: "+data.responseText);
-               $("#FORM-ID :input").prop('disabled', false);
-            }
-        });
-        return false;
-    });
-</script>
+    {% for order in order_list %}
+    <div class="row">
+      <div class="col-xs-1">{{ order.id }}</div>
+      <div class="col-xs-2">{{ order.pub_date }}</div>
+      <div class="col-xs-2">
+        <a href="{% url 'zipline_app:assets-list' %}">{{ order.asset.symbol }}</a>
+      </div>
+{#      <a href="{% url 'zipline_app:accounts-list' %}">{{ order.account.account_symbol }}</a>,#}
+      <div class="col-xs-2">{{order.account.account_symbol}}</div>
+      <div class="col-xs-2 text-right">{{ order.amount }}</div>
+      <div class="col-xs-2">{{ order.order_text }}</div>
+      <div class="col-xs-1">
+        <a href="{% url 'zipline_app:orders-delete' order.id %}">Delete</a>
+      </div>
+    </div>
+{% empty %}
+    <div class="alert alert-info">No orders yet.</div>
+{% endfor %}
 
 {% endblock %}

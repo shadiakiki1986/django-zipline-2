@@ -126,10 +126,10 @@ To access deeper namespace, use
 > python manage.py test zipline_app.tests.zipline_app.zlmodel
 ```
 ## Under the hood
-
 * [django](https://www.djangoproject.com/)
-* [zipline/finance/order](https://github.com/quantopian/zipline/blob/master/zipline/finance/order.py)
-
+* [zipline](https://github.com/quantopian/zipline/)
+  * [zipline/finance/order](https://github.com/quantopian/zipline/blob/master/zipline/finance/order.py)
+* [django-bootstrap3](https://github.com/dyve/django-bootstrap3)
 
 ### Django
 Following the [django tutorial](https://docs.djangoproject.com/en/1.10/intro/tutorial01/)

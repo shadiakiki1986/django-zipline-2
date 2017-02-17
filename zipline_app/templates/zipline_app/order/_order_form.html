@@ -5,43 +5,16 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-<!-- this works but below doesnt -->
-<form action="" method="post">{% csrf_token %}
-  {{ form.as_p }}
-  <input type="submit" value="Save" />
-</form>
-
-<!--
-this yields a csrf token error
-<form action="" method="post" id="FORM-ID">{% csrf_token %}
-  {% bootstrap_form form %}
-  {% buttons %}
-    <button type="submit" class="btn btn-primary">
-      {% bootstrap_icon "star" %} Save
-    </button>
-  {% endbuttons %}
-</form>-->
-
-<!--
-{# Display a form #}
-<form class="form-inline" id="FORM-ID" method="post" action="{% url 'zipline_app:orders-new' %}">
+<form action="" method="post" class="form">
   {% csrf_token %}
-  <div class="form-group">
-    <label for="order_symbol">Symbol</label>
-    <input type="text" class="form-control" name="order_symbol" id="order_symbol" placeholder="AAPL">
+  {#  {% bootstrap_form form layout='horizontal' %}#}
+  <div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.pub_date %}</div></div>
+    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.asset %}</div></div>
+    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.account %}</div></div>
+    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.amount %}</div></div>
+    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.order_text placeholder="some comments" %}</div></div>
+    <div class="col-xs-1">{% bootstrap_button content="Save" icon="star" button_type="submit" %}</div>
   </div>
-  <div class="form-group">
-    <label for="order_name">Name</label>
-    <input type="text" class="form-control" name="order_name" id="order_name" placeholder="Crude June 16">
-  </div>
-  <div class="form-group">
-    <label for="order_exchange">Exchange</label>
-    <input type="text" class="form-control" name="order_exchange" id="order_exchange" placeholder="NYSE">
-  </div>
-  {% buttons %}
-    <button type="submit" class="btn btn-primary">
-      {% bootstrap_icon "star" %} Submit
-    </button>
-  {% endbuttons %}
 </form>
--->

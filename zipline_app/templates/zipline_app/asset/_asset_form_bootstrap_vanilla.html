@@ -1,0 +1,17 @@
+{# Display a form #}
+<form class="form-inline" id="" method="post" action="">
+  {% csrf_token %}
+  <div class="form-group">
+    <label for="asset_symbol">Symbol</label>
+    <input type="text" class="form-control" name="asset_symbol" id="asset_symbol" placeholder="AAPL" required>
+  </div>
+  <div class="form-group">
+    <label for="asset_name">Name</label>
+    <input type="text" class="form-control" name="asset_name" id="asset_name" placeholder="Crude June 16" required>
+  </div>
+  <div class="form-group">
+    <label for="asset_exchange">Exchange</label>
+    <input type="text" class="form-control" name="asset_exchange" id="asset_exchange" placeholder="NYSE" required>
+  </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
