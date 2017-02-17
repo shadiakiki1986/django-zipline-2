@@ -6,21 +6,20 @@
 
 <a href="{% url 'zipline_app:assets-new' %}">New</a>
 
-<ul>
-    {% for asset in asset_list %}
-    <li>
-      {{ asset.id }},
-      {{ asset.asset_symbol }},
-      {{ asset.asset_name }},
-      {{ asset.asset_exchange }},
-      <a href="{% url 'zipline_app:assets-delete' asset.id %}">Delete</a>
-    </li>
-{% empty %}
-    <li>No assets yet.</li>
-{% endfor %}
-
 {# {% include "zipline_app/asset/_asset_form_builtin.html" %} #}
 {# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
 {% include "zipline_app/asset/_asset_form_bootstrap_django.html" %}
+
+{% for asset in asset_list %}
+    <div class="row">
+      <div class="col-xs-1 text-right">{{ asset.id }}</div>
+      <div class="col-xs-2">{{ asset.asset_symbol }}</div>
+      <div class="col-xs-2">{{ asset.asset_name }}</div>
+      <div class="col-xs-2">{{ asset.asset_exchange }}</div>
+      <div class="col-xs-1"><a href="{% url 'zipline_app:assets-delete' asset.id %}">Delete</a></div>
+    </div>
+{% empty %}
+    <div class="alert alert-info">No assets yet.</div>
+{% endfor %}
 
 {% endblock %}

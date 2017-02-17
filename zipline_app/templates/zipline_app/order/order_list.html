@@ -10,7 +10,7 @@
 
     {% for order in order_list %}
     <div class="row">
-      <div class="col-xs-1">{{ order.id }}</div>
+      <div class="col-xs-1 text-right">{{ order.id }}</div>
       <div class="col-xs-2">{{ order.pub_date }}</div>
       <div class="col-xs-2">
         <a href="{% url 'zipline_app:assets-list' %}">{{ order.asset.symbol }}</a>

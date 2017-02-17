@@ -6,12 +6,14 @@
 {% bootstrap_javascript %}
 
 {# based on https://github.com/dyve/django-bootstrap3#example-template #}
-<form action="" method="post" class="form-inline">
+<form action="" method="post" class="form">
   {% csrf_token %}
-  {% bootstrap_form form layout='horizontal' %}
-  {% bootstrap_button content="Save" icon="star" button_type="submit" %}
+  {#  {% bootstrap_form form layout='horizontal' %}#}
+  <div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.asset_symbol placeholder="AAPL" %}</div></div>
+    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.asset_name placeholder="Crude June 16" %}</div></div>
+    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.asset_exchange placeholder="NYSE" %}</div></div>
+    <div class="col-xs-1">{% bootstrap_button content="Save" icon="star" button_type="submit" %}</div>
+  </div>
 </form>
-
-{#  {% bootstrap_field field=form.asset_symbol layout="inline" placeholder="AAPL" %}#}
-{#  {% bootstrap_field field=form.asset_name layout="inline" placeholder="Crude June 16" %}#}
-{#  {% bootstrap_field field=form.asset_exchange layout="inline" placeholder="NYSE" %}#}

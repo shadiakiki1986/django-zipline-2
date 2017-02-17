@@ -231,15 +231,30 @@ class Matcher:
   def _orders2blotter(self, orders, blotter):
     #print("Place orders")
     for sid in orders:
-      for oid, order in orders[sid].items():
-        # skip orders in the future
-        if order["dt"] > blotter.current_dt:
-          #logger.debug("Order in future skipped: %s" % order)
-          continue
 
-        if oid in blotter.orders:
-          #logger.debug("Order already included: %s" % order)
-          continue
+      # append 'id' in object, otherwise it will be lost after the sorting
+      for oid,order in orders[sid].items():
+        order["id"]=oid
+
+      # sort by field
+      # http://stackoverflow.com/questions/72899/ddg#73050
+      orders2 = sorted(orders[sid].values(), key=lambda k: k['dt'])
+
+      for order in orders2:
+        # 2017-02-17: Actually it's a good idea to allo orders to match with earlier fill
+        #             It allows to assign extra fills to an error account for example, or to another client
+        #             Note that this is coupled with:
+        #             - moving the _orders2blotter out of the for loop in match_orders_fills
+        #             - adding the blotter.set_date below
+        #             - sorting the orders by ascending time above
+        # 2017-02-15: skip orders in the future
+        #if order["dt"] > blotter.current_dt:
+        #  #logger.debug("Order in future skipped: %s" % order)
+        #  continue
+        #if oid in blotter.orders:
+        #  #logger.debug("Order already included: %s" % order)
+        #  continue
+        blotter.set_date(order["dt"])
 
         #logger.debug("Order included: %s" % order)
         asset = self.env.asset_finder.retrieve_asset(sid=sid, default_none=True)
@@ -248,7 +263,7 @@ class Matcher:
           sid=asset,
           amount=order["amount"],
           style=order["style"],
-          order_id = oid
+          order_id = order["id"]
         )
 
     #print("Open orders: %s" % ({k.symbol: len(v) for k,v in iteritems(blotter.open_orders)}))
@@ -277,11 +292,12 @@ class Matcher:
   def match_orders_fills(self, blotter, bar_data, all_minutes, orders):
     all_closed = []
     all_txns = []
+    self._orders2blotter(orders,blotter)
     for dt in all_minutes:
         #print("========================")
         dt = pd.Timestamp(dt, tz='utc')
         blotter.set_date(dt)
-        self._orders2blotter(orders,blotter)
+        #self._orders2blotter(orders,blotter)
         #print("DQ1: %s" % (blotter.current_dt))
         #print("DQ6", blotter.open_orders)
         new_transactions, new_commissions, closed_orders = blotter.get_transactions(bar_data)

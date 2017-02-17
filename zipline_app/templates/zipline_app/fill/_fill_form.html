@@ -5,9 +5,16 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-<!-- this works but below doesnt -->
-<form action="" method="post">{% csrf_token %}
-  {{ form.as_p }}
-  <input type="submit" value="Save" />
+<form action="" method="post" class="form">
+  {% csrf_token %}
+  {#  {% bootstrap_form form layout='horizontal' %}#}
+  <div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.pub_date %}</div></div>
+    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.asset %}</div></div>
+    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.fill_qty placeholder="100" %}</div></div>
+    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.fill_price placeholder="25" %}</div></div>
+    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.fill_text placeholder="some comment" %}</div></div>
+    <div class="col-xs-1">{% bootstrap_button content="Save" icon="star" button_type="submit" %}</div>
+  </div>
 </form>
-
