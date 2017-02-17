@@ -2,6 +2,13 @@
 {% load humanize %}
 {% load poll_extras %}
 
+{# Load the tag library #}
+{% load bootstrap3 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
 {% block content %}
 
 {% if zl_unused|length > 0 %}
@@ -15,7 +22,15 @@
 </div>
 {% endif %}
 
-{# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
+  {# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
+
+<!--
+  <form action="/orders/new/" method="post">{% csrf_token %}
+    {{ order_form.as_p }}
+    <input type="hidden" name="source" value="combined">
+    <input type="submit" value="Save" />
+  </form>
+-->
 
   <div class="container">
     <em>
@@ -44,7 +59,9 @@
         </div>
         <div class="col-xs-1">&nbsp;</div>
       </div>
+    </em>
 
+    <em>
       <div class="row">
         <div class="col-xs-1">&nbsp;</div>
         <div class="col-xs-10">
@@ -83,6 +100,64 @@
         <div class="col-xs-1">&nbsp;</div>
       </div>
     </em>
+
+    <div class="row">
+      <div class="col-xs-1">&nbsp;</div>
+      <div class="col-xs-10">
+        <div class="row">
+
+          <div class="col-xs-7">
+            <form action="/orders/new/" method="post" class="form">
+              {% csrf_token %}
+              <!-- hidden timestamp -->
+              <div style="display: none;">{% bootstrap_field field=order_form.pub_date layout='inline' %}</div>
+              <!-- hidden form field -->
+              <input type="hidden" name="source" value="combined">
+
+              <div class="row">
+                <div class="col-xs-2">
+                  <div class="row">
+                    {% bootstrap_field field=order_form.asset layout='inline' %}
+                  </div>
+                </div>
+                <div class="col-xs-10">
+                  <div class="row">
+                    <div class="col-xs-3">
+                      {% bootstrap_field field=order_form.account layout='inline' %}
+                    </div>
+                    <div class="col-xs-2 text-right">
+                      {% bootstrap_field field=order_form.amount layout='inline' %}
+                    </div>
+                    <div class="col-xs-2 text-right">
+                      {% bootstrap_button content="Add" icon="plus" button_type="submit" %}
+                    </div>
+                    <div class="col-xs-3 text-right"></div>
+                    <div class="col-xs-2"></div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="col-xs-5">
+            <form>
+              <div class="row">
+                <div class="col-xs-2">Symbol</div>
+                <div class="col-xs-10">
+                  <div class="row">
+                    <div class="col-xs-4 text-right"><abbr title="Quantity">Q</abbr></div>
+                    <div class="col-xs-4 text-right"><abbr title="Price">P</abbr></div>
+                    <div class="col-xs-4"></div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+      <div class="col-xs-1">&nbsp;</div>
+    </div>
 
     {% for minute in combined %}
     <hr style="margin-top:5px;margin-bottom:5px">

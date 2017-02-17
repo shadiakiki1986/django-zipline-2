@@ -5,14 +5,13 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
-
-from ...models.zipline_app.zipline_app import Order, Fill, ZlModel, Asset
-
 from django.utils import timezone
-
 from django.contrib import messages
 from pandas import Timedelta
 from numpy import concatenate
+
+from ...models.zipline_app.zipline_app import Order, Fill, ZlModel, Asset
+from ...forms import OrderForm
 
 class IndexView(generic.ListView):
     template_name = 'zipline_app/index.html'
@@ -51,6 +50,11 @@ class IndexView(generic.ListView):
             "duos":duos
           })
         return combined
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(IndexView, self).get_context_data(*args, **kwargs)
+        context["order_form"]=OrderForm()
+        return context
 
 class DetailView(generic.DetailView):
     model = Order

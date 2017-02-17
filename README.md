@@ -35,10 +35,15 @@ Version 0.1
   - [x] tabular for printing
 - [x] rename project to django-zipline
 - [x] move files to match structure of zipline
-- [ ] new asset: works with generic view form, but not yet with bootstrap form (csrf error)
+- [x] new asset: works with generic view form and bootstrap form (was submitting form with jquery but violating csrf)
+- [ ] add inline create new order/fill/asset on index page
+  - [x] order inline
+  - [ ] fill inline
+  - [ ] asset inline?!?!?
+  - [ ] combine OrderCreate and OrderForm classes?
+
 - [ ] if fill entered before order, make it easy to re-attach to order timestamp
 - [ ] new asset form should check that symbol is not already defined (zipline constraint)
-- [ ] add inline create new order/fill/asset on index page
   - ~~or maybe just open the admin?~~
 - [ ] add "working" flag to original order
 - [ ] username/password
@@ -52,8 +57,9 @@ Version 0.1
 
 - [ ] how to move to async? Decide between
   - [django-angular](http://django-angular.readthedocs.io/en/latest/angular-model-form.html)
-    - [django-channels](https://channels.readthedocs.io/en/stable/concepts.html)
-    - [ ] inline alert of unmatched fills in side-by-side view has a popup that could display the number of unused fills
+  - [django-channels](https://channels.readthedocs.io/en/stable/concepts.html)
+
+- [ ] inline alert of unmatched fills in side-by-side view has a popup that could display the number of unused fills
 
 - [ ] rename my `order_text` and `fill_text` to `...comment`
 - [ ] add section "fills required to close open orders"
@@ -65,6 +71,8 @@ Version 0.1
   - cancelled because transactions have no reference from zipline to the fills
 
 Version 0.2
+- [ ] move the matching engine to use redis backend
+  - something like what is described [here](https://channels.readthedocs.io/en/stable/getting-started.html#running-with-channels)
 - [ ] sort by "open" first then by date (remember that main view will be for one day)
 - [ ] how about an "email" order button? possibly rename `vote` field and button
 - [ ] email notification on order/fill

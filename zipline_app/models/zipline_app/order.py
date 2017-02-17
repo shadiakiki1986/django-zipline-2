@@ -52,6 +52,8 @@ class Order(models.Model):
     was_published_recently.boolean = True
     was_published_recently.short_description = 'Published recently?'
 
-    def get_absolute_url(self):
-      return reverse('zipline_app:orders-list') # TODO rename to orders
+# using get_success_url in OrderCreate instead of this
+#
+#    def get_absolute_url(self):
+#      return reverse('zipline_app:orders-list') # TODO rename to orders
 #      return reverse('zipline_app:orders-list', kwargs={'pk': self.pk})
