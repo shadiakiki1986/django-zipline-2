@@ -8,7 +8,7 @@ urlpatterns = [
     # ex: /<root>/
     url(r'^$', views.IndexView.as_view(), name='index'),
     # ex: /<root>/ordersOnly/
-    url(r'^ordersOnly/$', order.OrdersOnlyView.as_view(), name='ordersOnly'),
+    url(r'^ordersOnly/$', views.OrdersOnlyView.as_view(), name='ordersOnly'),
 
     # ex: /<root>/5/results/
     url(r'^(?P<pk>[0-9]+)/results/$', views.ResultsView.as_view(), name='results'),

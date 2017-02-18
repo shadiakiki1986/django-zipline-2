@@ -95,6 +95,7 @@ class OrderMethodTests(TestCase):
 class OrderViewTests(TestCase):
 
     def setUp(self):
+      ZlModel.clear()
       self.acc1 = create_account(symbol="TEST01")
       self.asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
 
@@ -154,7 +155,7 @@ class OrderViewTests(TestCase):
             ['<Order: A1, 10 (TEST01, Past order 2.)>', '<Order: A1, 10 (TEST01, Past order 1.)>']
         )
 
-    def test_index_view_combined(self):
+    def test_index_view_combined_general(self):
         """
         This test sometimes fails and then passes when re-run
         .. not sure why yet
@@ -191,3 +192,10 @@ class OrderViewTests(TestCase):
               '<Fill: A1, 20, 2.0 (test?)>',
             ]
         )
+
+    def test_index_unused_fills(self):
+        f1 = create_fill(fill_text="test?",days=-30, asset=self.asset, fill_qty=20, fill_price=2)
+        sleep(0.05)
+        response = self.client.get(reverse('zipline_app:index'))
+        self.assertEqual(len(ZlModel.zl_unused),1)
+        self.assertContains(response, "Assets with extra fills")
