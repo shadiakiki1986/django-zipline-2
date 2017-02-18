@@ -10,12 +10,13 @@ from zipline.finance.execution import (
 
 class MatcherMethodTests(TestCase):
 
-    def test_chopSeconds(self):
+    def test_chopSeconds_dropsSeconds(self):
         sec_yes = pd.Timestamp('2017-02-13 05:13:23', tz='utc')
         sec_non = pd.Timestamp('2017-02-13 05:13', tz='utc')
         fills = {
             1: pd.DataFrame({
                 "close": [3.5],
+                "volume": [1],
                 "dt": [sec_yes]
             }).set_index("dt")
         }
@@ -29,6 +30,24 @@ class MatcherMethodTests(TestCase):
         self.assertEqual(actual_fills[1].index, [sec_non])
         asList = reduce_concatenate([list(o.values()) for o in list(actual_orders.values())])
         self.assertEqual([x["dt"] for x in asList], [sec_non])
+
+    def test_chopSeconds_aggregatesFillsInSameMinute(self):
+        sec1 = pd.Timestamp('2017-02-13 05:13:23', tz='utc')
+        sec2 = pd.Timestamp('2017-02-13 05:13:24', tz='utc')
+        sec_non = pd.Timestamp('2017-02-13 05:13', tz='utc')
+        fills = {
+            1: pd.DataFrame({
+                "close": [1,3],
+                "volume": [1,3],
+                "dt": [sec1,sec2]
+            }).set_index("dt")
+        }
+        orders = {}
+        actual_fills, actual_orders = mmm_Matcher.chopSeconds(fills, orders)
+
+        self.assertEqual(actual_fills[1].index, [sec_non])
+        self.assertEqual(actual_fills[1][sec_non]['close' ], 2.5)
+        self.assertEqual(actual_fills[1][sec_non]['volume'], 4)
 
     def test_factory_some_orders_and_some_fills(self):
         matcher = mmm_Matcher()

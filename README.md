@@ -36,17 +36,14 @@ Version 0.0.1
 - [x] rename project to django-zipline
 - [x] move files to match structure of zipline
 - [x] new asset: works with generic view form and bootstrap form (was submitting form with jquery but violating csrf)
-
-WIP
-- [ ] fills need an intermediate class "bar data row" which would aggregate fills entered at the same timestamp and for the same asset
-  - this "bar data row" can be linked in a unique way to the transactions via the timestamp field and asset field
-  - this would also help link back transactions to fills, and hence display the split of a fill, or specify exactly which fill has "unused fills"
-
+- [w] aggregate fills per asset by minute in chopSeconds
+  - do not add an intermediate "bar data" model to reduce computations since the weighted average close would still require re-computation
 - [ ] add inline create new order/fill/asset on index page
   - [x] order inline
   - [ ] fill inline
   - [ ] asset inline?!?!?
   - [ ] combine OrderCreate and OrderForm classes?
+- [ ] time zones!
 
 Version 0.0.2
 - [ ] add model of the combined view with fields: minute as foreign key to asset, which in its turn is a foreign key to a pair, which in its turn is a foreign key to orders array and fills array
