@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from .util import md5_wrap
+from ...utils import md5_wrap
 from zipline.finance.execution import (
 #    LimitOrder,
     MarketOrder,

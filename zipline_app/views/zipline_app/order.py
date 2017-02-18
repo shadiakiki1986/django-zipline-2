@@ -1,8 +1,8 @@
 from django.views import generic
 from django.utils import timezone
 from django.contrib import messages
-from django.urls import  reverse_lazy
 from ...models.zipline_app.zipline_app import Order, Fill, ZlModel, Asset
+from ...utils import redirect_index_or_local
 
 class OrderCreate(generic.CreateView):
   model = Order
@@ -10,10 +10,7 @@ class OrderCreate(generic.CreateView):
   template_name = 'zipline_app/order/order_form.html'
 
   def get_success_url(self):
-    source = self.request.POST.get('source')
-    if source == 'combined': # is not None
-      return reverse_lazy('zipline_app:index')
-    return reverse_lazy('zipline_app:orders-list')
+    return redirect_index_or_local(self,'zipline_app:orders-list')
 
 # inheriting from create+get_context with order_list instead of inheriting from listview
 # so that I can have the inline in create
@@ -26,9 +23,10 @@ class OrderList(OrderCreate):
     return context
 
 class OrderDelete(generic.DeleteView):
-    model = Order
-    success_url = reverse_lazy('zipline_app:orders-list')
-    template_name = 'zipline_app/order/order_confirm_delete.html'
+  model = Order
+  template_name = 'zipline_app/order/order_confirm_delete.html'
+  def get_success_url(self):
+    return redirect_index_or_local(self,'zipline_app:orders-list')
 
 class OrderDetailView(generic.DetailView):
     model = Order

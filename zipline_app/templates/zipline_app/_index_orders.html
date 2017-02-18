@@ -1,4 +1,5 @@
 {% load humanize %}
+{% load bootstrap3 %}
 
 {% for order in duo.orders %}
 <div class="row {% if order.filled != order.amount %}text-warning{% endif %}">
@@ -28,7 +29,18 @@
       </div>
 
       <div class="col-xs-4">
+        <!-- delete with confirmation
         <a href="{% url 'zipline_app:orders-delete' order.id %}">Delete</a>
+        -->
+
+        <!-- delete without confirmation -->
+        <form action="{% url 'zipline_app:orders-delete' order.id %}" method="post" class="form">
+          {% csrf_token %}
+          <!-- hidden form field -->
+          <input type="hidden" name="source" value="combined">
+          {% bootstrap_button content="Del" icon="minus" button_type="submit" %}
+        </form>
+
       </div>
 
     </div>

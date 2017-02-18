@@ -1,18 +1,13 @@
-from django.urls import  reverse_lazy
 from django.views import generic
-
 from ...models.zipline_app.zipline_app import Fill
+from ...utils import redirect_index_or_local
 
 class FillCreate(generic.CreateView):
   model = Fill
   fields = ['pub_date','asset','fill_qty','fill_price','fill_text']
   template_name = 'zipline_app/fill/fill_form.html'
-
   def get_success_url(self):
-    source = self.request.POST.get('source')
-    if source == 'combined': # is not None
-      return reverse_lazy('zipline_app:index')
-    return reverse_lazy('zipline_app:fills-list')
+    return redirect_index_or_local(self,'zipline_app:fills-list')
 
 # inheriting from create+get_context with fill_list instead of inheriting from listview
 # so that I can have the inline in create
@@ -25,9 +20,10 @@ class FillList(FillCreate):
     return context
 
 class FillDelete(generic.DeleteView):
-    model = Fill
-    success_url = reverse_lazy('zipline_app:fills-list')
-    template_name = 'zipline_app/fill/fill_confirm_delete.html'
+  model = Fill
+  template_name = 'zipline_app/fill/fill_confirm_delete.html'
+  def get_success_url(self):
+    return redirect_index_or_local(self,'zipline_app:fills-list')
 
 class FillDetailView(generic.DetailView):
     model = Fill

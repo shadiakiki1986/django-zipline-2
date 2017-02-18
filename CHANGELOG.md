@@ -71,7 +71,6 @@ Version 0.0.1
 - [x] new asset: works with generic view form and bootstrap form (was submitting form with jquery but violating csrf)
 - [x] ~~add an intermediate "bar data" model between fills and ZlModel to reduce computations~~
   - cancelled since the weighted average close would still require re-computation
-
 - [w] aggregate fills per asset by minute in chopSeconds
 - [w] travis-ci.org
 - [ ] add inline create new order/fill/asset on index page
