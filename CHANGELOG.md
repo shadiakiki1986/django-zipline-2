@@ -81,6 +81,25 @@ Version 0.0.1
   - [w] delete inline
   - [w] ~~edit inline~~ link to details in order to edit
   - [ ] edit in details
+- UX
+  - create in index
+    - [ ] inline create account
+    - [ ] replace all inline creates with modals that pop up when clicking on add new order/fill
+    - [ ] asset add button unintuitive .. asset form inline should be one line, like others
+    - [ ] quantity input too small
+    - [ ] during loading of page after asset create, block page (display "loading...")
+    - [ ] symbol dropdown is too small
+    - [ ] fill quantity too large yields error: Python int too large to convert to SQLite INTEGER
+
+  - [ ] rename "symbol" on index to "asset" (show name using tooltip?)
+  - [ ] delete buttons are ugly and overlap with timetsamp
+  - [ ] times not displayed in beirut timezone
+  - [ ] replace heart with github logo/link
+  - [ ] add field explicit for pending quantities
+  - [ ] unused fills, if closed with correction fills, no longer show up anywhere (as slippage?)
+  - [ ] when unused fills are negative, they dont show up
+  - [ ] add undo for accidental deletes (or display history somewhere)
+  - [ ] delete should be open only to an admin user
 - [ ] time zones!
   - omitting timezones would yield django error about timezone-naive timestamp uncomparable to timezone-aware timestamp
 - [ ] if fill entered before/after order, make it easy to re-attach to order timestamp
@@ -94,3 +113,7 @@ Version 0.0.1
   - would this replace the separate section?
 - [ ] bug: create order at t1, then create at `t2>t1`, then drop the one at t1, but the minute t1 is still there in combined view
 - [ ] bug: if no open orders on A1 and new fill on A1, not getting alerted about unused fill
+- [ ] how to handle the index table when data becomes too much
+  - how to truncate the data (do not show past orders that were filled, or past fills that completed an order)
+  - keep showing open orders or unused fills
+  - etc

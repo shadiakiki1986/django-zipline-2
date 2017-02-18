@@ -9,7 +9,7 @@ class AssetCreate(generic.CreateView):
   template_name = 'zipline_app/asset/asset_form.html'
 
   def get_success_url(self):
-    return redirect_index_or_local('zipline_app:assets-list')
+    return redirect_index_or_local(self,'zipline_app:assets-list')
 
 # inheriting from create+get_context with asset_list instead of inheriting from listview
 # so that I can have the inline in create
