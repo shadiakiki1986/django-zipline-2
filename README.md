@@ -36,15 +36,17 @@ Version 0.0.1
 - [x] rename project to django-zipline
 - [x] move files to match structure of zipline
 - [x] new asset: works with generic view form and bootstrap form (was submitting form with jquery but violating csrf)
-- [w] aggregate fills per asset by minute in chopSeconds
 - [x] ~~add an intermediate "bar data" model between fills and ZlModel to reduce computations~~
   - cancelled since the weighted average close would still require re-computation
-- [ ] travis-ci.org
+
+- [w] aggregate fills per asset by minute in chopSeconds
+- [w] travis-ci.org
 - [ ] add inline create new order/fill/asset on index page
-  - [x] order inline
-  - [ ] fill inline
-  - [ ] asset inline?!?!?
-  - [ ] combine OrderCreate and OrderForm classes?
+  - [x] order inline create
+  - [w] fill inline create
+  - [w] asset inline create
+  - [ ] combine OrderCreate and OrderForm classes? (same for FillCreate/FillForm)
+  - [ ] edit/delete inline
 - [ ] time zones!
 - [ ] link fills to transactions/orders
   - but `fills_as_dict_df` loses the original ID's (check `test_fills_as_dict_df`)
@@ -52,7 +54,6 @@ Version 0.0.1
   - can it be done by using the asset/timestamp pair as key?
 
 Version 0.0.2
-- [ ] add model of the combined view with fields: minute as foreign key to asset, which in its turn is a foreign key to a pair, which in its turn is a foreign key to orders array and fills array
 - [ ] if fill entered before order, make it easy to re-attach to order timestamp
 - [ ] new asset form should check that symbol is not already defined (zipline constraint)
   - ~~or maybe just open the admin?~~
@@ -76,9 +77,9 @@ Version 0.0.2
 - [ ] add section "fills required to close open orders"
 - [ ] bug: create order at t1, then create at `t2>t1`, then drop the one at t1, but the minute t1 is still there in combined view
 - [ ] bug: if no open orders on A1 and new fill on A1, not getting alerted about unused fill
+- [ ] release 0.1.0
 
-
-Version 0.2
+Version 0.1.1
 - [ ] move the matching engine to use redis backend
   - something like what is described [here](https://channels.readthedocs.io/en/stable/getting-started.html#running-with-channels)
 - [ ] sort by "open" first then by date (remember that main view will be for one day)

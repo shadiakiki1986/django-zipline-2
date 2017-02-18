@@ -23,9 +23,15 @@
 {% endif %}
 
   {# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
+<form action="{% url 'zipline_app:assets-new' %}" method="post" class="form">
+  {% csrf_token %}
+  {% bootstrap_form asset_form layout='horizontal' %}
+  {% bootstrap_button content="Add" icon="plus" button_type="submit" %}
+</form>
 
 <!--
-  <form action="/orders/new/" method="post">{% csrf_token %}
+  <form action="{% url 'zipline_app:orders-new' %}" method="post">
+    {% csrf_token %}
     {{ order_form.as_p }}
     <input type="hidden" name="source" value="combined">
     <input type="submit" value="Save" />
@@ -107,7 +113,7 @@
         <div class="row">
 
           <div class="col-xs-7">
-            <form action="/orders/new/" method="post" class="form">
+            <form action="{% url 'zipline_app:orders-new' %}" method="post" class="form">
               {% csrf_token %}
               <!-- hidden timestamp -->
               <div style="display: none;">{% bootstrap_field field=order_form.pub_date layout='inline' %}</div>
@@ -140,14 +146,23 @@
           </div>
 
           <div class="col-xs-5">
-            <form>
+            <form action="{% url 'zipline_app:fills-new' %}" method="post" class="form">
+              {% csrf_token %}
               <div class="row">
-                <div class="col-xs-2">Symbol</div>
+                <div class="col-xs-2">
+                  {% bootstrap_field field=fill_form.asset layout='inline' %}
+                </div>
                 <div class="col-xs-10">
                   <div class="row">
-                    <div class="col-xs-4 text-right"><abbr title="Quantity">Q</abbr></div>
-                    <div class="col-xs-4 text-right"><abbr title="Price">P</abbr></div>
-                    <div class="col-xs-4"></div>
+                    <div class="col-xs-4 text-right">
+                      {% bootstrap_field field=fill_form.amount layout='inline' %}
+                    </div>
+                    <div class="col-xs-4 text-right">
+                      {% bootstrap_field field=fill_form.price layout='inline' %}
+                    </div>
+                    <div class="col-xs-4">
+                      {% bootstrap_button content="Add" icon="plus" button_type="submit" %}
+                    </div>
                   </div>
                 </div>
               </div>

@@ -11,7 +11,7 @@ from pandas import Timedelta
 from numpy import concatenate
 
 from ...models.zipline_app.zipline_app import Order, Fill, ZlModel, Asset
-from ...forms import OrderForm
+from ...forms import OrderForm, FillForm, AssetForm
 
 class IndexView(generic.ListView):
     template_name = 'zipline_app/index.html'
@@ -54,6 +54,8 @@ class IndexView(generic.ListView):
     def get_context_data(self, *args, **kwargs):
         context = super(IndexView, self).get_context_data(*args, **kwargs)
         context["order_form"]=OrderForm()
+        context["fill_form"]=FillForm()
+        context["asset_form"]=AssetForm()
         return context
 
 class DetailView(generic.DetailView):
