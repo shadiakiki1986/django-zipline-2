@@ -20,6 +20,7 @@ from functools import reduce
 from numpy import concatenate
 import pandas as pd
 
+# This is an adapter connecting the django model datastructures to the zipline datastructures
 class ZlModel:
     md5 = None
     zl_open       = []
@@ -73,10 +74,11 @@ class ZlModel:
     def fills_as_dict_df():
       # Copy keys to a new dictionary (Python)
       # http://stackoverflow.com/a/7369284/4126114
-      fills2=dict.fromkeys(ZlModel.fills.keys(),{})
+      # http://www.tutorialspoint.com/python/dictionary_fromkeys.htm
+      fills2=dict.fromkeys(ZlModel.fills.keys(), pd.DataFrame({}))
 
       for sid in ZlModel.fills:
-        fills2[sid] = pd.DataFrame({})
+        # sub loses the fill id because of values
         sub = ZlModel.fills[sid].values()
         fills2[sid]["close"]=[y["close"] for y in sub]
         fills2[sid]["volume"]=[y["volume"] for y in sub]
@@ -135,10 +137,7 @@ class ZlModel:
         ZlModel.add_asset(asset)
 
     @staticmethod
-    def update():
-      if not ZlModel.db_ready():
-        return
-
+    def calculate_md5():
       md5_orders = []
       for sid,o1 in ZlModel.orders.items():
         for oid,o2 in o1.items():
@@ -171,7 +170,14 @@ class ZlModel:
         "orders": md5_orders,
         "assets": ZlModel.assets,
       }))
+     return md5
 
+    @staticmethod
+    def update():
+      if not ZlModel.db_ready():
+        return
+
+      md5 = ZlModel.calculate_md5()
       if ZlModel.md5==md5:
         logger.debug("Model unchanged .. not rerunning engine: "+md5)
         return

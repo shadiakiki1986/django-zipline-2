@@ -128,17 +128,34 @@ class Matcher:
   @staticmethod
   def chopSeconds(fills, orders):
     for sid in fills:
-      # for fills, start by adding a floored "index" column, and group by it
+      # for fills, start by adding a floored-minute "index" column, and group by it
       # Combination of
       #    http://stackoverflow.com/a/34297689/4126114
       #    http://stackoverflow.com/a/29583335/4126114
-      fills = fills.reset_index()
+      fills[sid] = fills[sid].reset_index()
       fills[sid]['dt_fl'] = [dt.floor('1Min') for dt in fills[sid]['dt']]
       del fills[sid]['dt']
-      fills[sid].groupby(['dt_fl','close','volume']).transform({'close':'average','volume':'sum'})
-      fills.set_index('dt_fl')
-      fills[sid].sort_index(inplace=True)
 
+      # group in preparation of aggregation
+      # http://pandas.pydata.org/pandas-docs/stable/groupby.html#applying-different-functions-to-dataframe-columns
+      grouped = fills[sid].groupby('dt_fl')
+
+      # weighted-average of price
+      # http://stackoverflow.com/a/35327787/4126114
+      grouped['close'] = grouped.apply(lambda g: numpy.average(g['close'],weights=g['volume']))
+
+      # add all volumes of fills at the same minute
+      grouped['volume'] = grouped['volume'].aggregate('sum')
+
+      # go back to original indexing
+      # http://pandas.pydata.org/pandas-docs/stable/groupby.html#aggregation
+      grouped.reset_index.set_index('dt_fl')
+      grouped.sort_index(inplace=True)
+
+      # replace original
+      fills[sid] = grouped
+
+    # For orders, just floor the minute
     for sid in orders:
       for oid,order in orders[sid].items():
         order["dt"]=pd.Timestamp(order["dt"],tz="utc").floor('1Min')
