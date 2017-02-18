@@ -37,13 +37,19 @@ Version 0.0.1
 - [x] move files to match structure of zipline
 - [x] new asset: works with generic view form and bootstrap form (was submitting form with jquery but violating csrf)
 - [w] aggregate fills per asset by minute in chopSeconds
-  - do not add an intermediate "bar data" model to reduce computations since the weighted average close would still require re-computation
+- [x] ~~add an intermediate "bar data" model between fills and ZlModel to reduce computations~~
+  - cancelled since the weighted average close would still require re-computation
+- [ ] travis-ci.org
 - [ ] add inline create new order/fill/asset on index page
   - [x] order inline
   - [ ] fill inline
   - [ ] asset inline?!?!?
   - [ ] combine OrderCreate and OrderForm classes?
 - [ ] time zones!
+- [ ] link fills to transactions/orders
+  - but `fills_as_dict_df` loses the original ID's (check `test_fills_as_dict_df`)
+  - but transactions have no reference from zipline to the fills
+  - can it be done by using the asset/timestamp pair as key?
 
 Version 0.0.2
 - [ ] add model of the combined view with fields: minute as foreign key to asset, which in its turn is a foreign key to a pair, which in its turn is a foreign key to orders array and fills array
@@ -71,9 +77,6 @@ Version 0.0.2
 - [ ] bug: create order at t1, then create at `t2>t1`, then drop the one at t1, but the minute t1 is still there in combined view
 - [ ] bug: if no open orders on A1 and new fill on A1, not getting alerted about unused fill
 
-- ~~link fills to transactions/orders~~
-  - ~~but `fills_as_dict_df` loses the original ID's (check `test_fills_as_dict_df`)~~
-  - cancelled because transactions have no reference from zipline to the fills
 
 Version 0.2
 - [ ] move the matching engine to use redis backend

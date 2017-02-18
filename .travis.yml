@@ -1,0 +1,15 @@
+# with some inspiration from zipline/.travis.yml
+language: python
+sudo: false
+python:
+- 3
+cache:
+  directories:
+    - $HOME/.cache/.pip/
+install:
+- pip install -r requirements.txt
+script:
+- python manage.py test zipline_app.tests.zipline_app.asset
+- python manage.py test zipline_app.tests.zipline_app.other
+- python manage.py test zipline_app.tests.zipline_app.matcher
+- python manage.py test zipline_app.tests.zipline_app.zlmodel
