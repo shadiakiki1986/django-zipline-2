@@ -261,3 +261,39 @@ class MatcherMethodTests(TestCase):
 
         a1a=matcher.env.asset_finder.retrieve_asset(sid=1)
         self.assertEqual(unused, {a1a:5})
+
+    def test_factory_fills_at_the_same_minute_before_order(self):
+        matcher = mmm_Matcher()
+
+        # Use same sid as for assets above
+        # NOT Multiplying by 1000 as documented in zipline/data/minute_bars.py#L419
+        MID_DATE_1 = pd.Timestamp('2013-01-07 17:01:01', tz='utc')
+        MID_DATE_2 = pd.Timestamp('2013-01-07 17:01:02', tz='utc')
+        fills = {
+            1: pd.DataFrame({
+                "close": [1, 2],
+                "volume": [5, 5],
+                "dt": [MID_DATE_1,MID_DATE_2]
+            }).set_index("dt"),
+        }
+
+        MID_DATE_0 = pd.Timestamp('2013-01-07 17:02', tz='utc')
+        orders = {
+          1: {
+            1: {"dt": MID_DATE_0, "amount": 5, "style": MarketOrder()},
+          }
+        }
+
+        assets = {1:a1}
+
+        all_closed, all_txns, open_orders, unused, all_minutes = mmm_factory(matcher, fills, orders, assets)
+
+        self.assertEqual(1,len(all_closed))
+        self.assertEqual(1,len(all_txns))
+        self.assertEqual(0,len(open_orders))
+
+        txn = all_txns[0].to_dict()
+        self.assertEqual(txn["price"], 1.5) # average of two fills
+
+        a1a=matcher.env.asset_finder.retrieve_asset(sid=1)
+        self.assertEqual(unused, {a1a:5})

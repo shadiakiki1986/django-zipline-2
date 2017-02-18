@@ -1,7 +1,7 @@
 from django.test import TestCase
 from .test_zipline_app import create_asset, create_account, create_order, a1, a2, create_fill
-from ...models.zipline_app.zipline_app import ZlModel
 import pandas as pd
+from ...models.zipline_app.zipline_app import ZlModel, Order
 
 class ZlModelMethodTests(TestCase):
     def setUp(self):
@@ -78,3 +78,20 @@ class ZlModelMethodTests(TestCase):
 
         self.assertEqual(len(ZlModel.zl_open), 0)
         self.assertEqual(len(ZlModel.zl_closed), 2)
+
+    def test_order_deleted(self):
+        o1a = create_order(order_text="test?",days=-0.5, asset=self.a1a, amount=10, account=self.acc1)
+        self.assertEqual(len(ZlModel.orders), 1)
+        self.assertEqual(self.a1a.id in ZlModel.orders, True)
+        self.assertEqual(o1a.id in ZlModel.orders[self.a1a.id], True)
+        self.assertEqual(len(ZlModel.orders[self.a1a.id]), 1)
+
+        o1a.delete()
+        self.assertEqual(len(ZlModel.orders), 0)
+        self.assertEqual(self.a1a.id in ZlModel.orders, False)
+
+        o1b = create_order(order_text="test?",days=-0.5, asset=self.a1a, amount=10, account=self.acc1)
+        self.assertEqual(len(ZlModel.orders), 1)
+        self.assertEqual(self.a1a.id in ZlModel.orders, True)
+        self.assertEqual(o1b.id in ZlModel.orders[self.a1a.id], True)
+        self.assertEqual(len(ZlModel.orders[self.a1a.id]), 1)

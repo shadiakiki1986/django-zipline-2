@@ -2,8 +2,8 @@ from __future__ import unicode_literals
 
 # Django Logging
 # https://docs.djangoproject.com/en/1.10/topics/logging/
-#import logging
-#logger = logging.getLogger("zipline_app") #__name__)
+import logging
+logger = logging.getLogger("zipline_app") #__name__)
 
 from .models.zipline_app.asset import Asset
 from .models.zipline_app.account import Account
@@ -26,20 +26,20 @@ class SignalProcessor:
       ZlModel.update()
 
   def post_save(sender, instance, **kwargs):
-    #logger.debug("Signal: %s, %s" % ("post_save", sender))
+    logger.debug("Signal: %s, %s" % ("post_save", sender))
     if sender.__name__=="Fill": ZlModel.add_fill(instance)
     if sender.__name__=="Order": ZlModel.add_order(instance)
     if sender.__name__=="Asset": ZlModel.add_asset(instance)
     SignalProcessor.update_if_mine(sender)
 
   def post_delete(sender, instance, **kwargs):
-    #print("Signal: %s, %s" % ("post_delete", sender))
+    logger.debug("Signal: %s, %s" % ("post_delete", sender))
     if sender.__name__=="Fill": ZlModel.delete_fill(instance)
     if sender.__name__=="Order": ZlModel.delete_order(instance)
     if sender.__name__=="Asset": ZlModel.delete_asset(instance)
     SignalProcessor.update_if_mine(sender)
 
-  def connection_created(sender, **kwargs):
-  #  print("Signal: %s, %s" % ("connection_created", sender))
+  def ready():
+    logger.debug("Signal: %s, %s" % ("ready", ""))
     ZlModel.init(Fill.objects.all(), Order.objects.all(), Asset.objects.all())
     ZlModel.update()

@@ -17,5 +17,9 @@ class ZiplineAppConfig(AppConfig):
         #models.signals.post_init.connect(SignalProcessor.post_init, sender=sender)
         models.signals.post_save.connect(SignalProcessor.post_save, sender=sender)
         models.signals.post_delete.connect(SignalProcessor.post_delete, sender=sender)
-      connection_created.connect(SignalProcessor.connection_created)
 
+      # This runs at every page reload. Instead, just run it directly here once
+      # eventhough this is supposed to run only once, I am seeing it run twice,
+      # but twice is still better than at each reload
+      #connection_created.connect(SignalProcessor.connection_created)
+      SignalProcessor.ready()

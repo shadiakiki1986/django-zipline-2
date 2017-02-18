@@ -36,6 +36,7 @@ class ZlModel:
 
     @staticmethod
     def clear():
+      logger.debug("ZlModel: Clear")
       ZlModel.md5 = None
       ZlModel.zl_open       = []
       ZlModel.zl_closed     = []
@@ -50,7 +51,7 @@ class ZlModel:
 
     @staticmethod
     def add_asset(asset):
-      #print("adding asset",asset,asset.id)
+      logger.debug("adding asset %s" % asset)
       ZlModel.assets[asset.id]=asset.to_dict()
 
     # cannot use typehinting as
@@ -60,7 +61,7 @@ class ZlModel:
     # so this will become a cyclic dependency
     @staticmethod
     def add_fill(fill):
-      #print("Adding fill: %s" % fill)
+      logger.debug("Adding fill: %s" % fill)
       if fill.asset.id not in ZlModel.fills:
         ZlModel.fills[fill.asset.id]={}
 
@@ -90,6 +91,7 @@ class ZlModel:
 
     @staticmethod
     def add_order(order):
+      logger.debug("Add order %s" % order)
       if order.asset.id not in ZlModel.orders:
         ZlModel.orders[order.asset.id]={}
 
@@ -102,10 +104,12 @@ class ZlModel:
 
     @staticmethod
     def delete_asset(asset):
+      logger.debug("Delete asset %s" % asset)
       ZlModel.assets.pop(asset.id, None)
 
     @staticmethod
     def delete_fill(fill):
+      logger.debug("Delete fill %s" % fill)
       # How to remove a key from a python dictionary
       # http://stackoverflow.com/questions/11277432/ddg#11277439
       ZlModel.fills[fill.asset.id].pop(fill.id, None)
@@ -114,9 +118,10 @@ class ZlModel:
 
     @staticmethod
     def delete_order(order):
-      # How to remove a key from a python dictionary
-      # http://stackoverflow.com/questions/11277432/ddg#11277439
-      ZlModel.orders.pop(order.id, None)
+      logger.debug("Delete order %s" % order)
+      ZlModel.orders[order.asset.id].pop(order.id, None)
+      if not any(ZlModel.orders[order.asset.id]):
+        ZlModel.orders.pop(order.asset.id, None)
 
     @staticmethod
     def db_ready():
@@ -131,6 +136,7 @@ class ZlModel:
       if not ZlModel.db_ready():
         return
 
+      logger.debug("Initializing. %s vs %s" % (fills, ZlModel.fills))
       for fill in fills:
         ZlModel.add_fill(fill)
       for order in orders:
