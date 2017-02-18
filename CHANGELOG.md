@@ -82,7 +82,8 @@ Version 0.0.1
   - [w] delete inline
   - [w] ~~edit inline~~ link to details in order to edit
   - [ ] edit in details
-- [w] time zones!
+- [ ] time zones!
+  - omitting timezones would yield django error about timezone-naive timestamp uncomparable to timezone-aware timestamp
 - [ ] if fill entered before/after order, make it easy to re-attach to order timestamp
 - [ ] new asset form should check that symbol is not already defined
   - this is a zipline constraint
