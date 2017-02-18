@@ -8,6 +8,12 @@ class AssetCreate(generic.CreateView):
   fields = ['asset_symbol','asset_name','asset_exchange']
   template_name = 'zipline_app/asset/asset_form.html'
 
+  def get_success_url(self):
+    source = self.request.POST.get('source')
+    if source == 'combined': # is not None
+      return reverse_lazy('zipline_app:index')
+    return reverse_lazy('zipline_app:assets-list')
+
 # inheriting from create+get_context with asset_list instead of inheriting from listview
 # so that I can have the inline in create
 # http://stackoverflow.com/a/12883683/4126114

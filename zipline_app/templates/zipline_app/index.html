@@ -25,6 +25,8 @@
   {# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
 <form action="{% url 'zipline_app:assets-new' %}" method="post" class="form">
   {% csrf_token %}
+  <!-- hidden form field -->
+  <input type="hidden" name="source" value="combined">
   {% bootstrap_form asset_form layout='horizontal' %}
   {% bootstrap_button content="Add" icon="plus" button_type="submit" %}
 </form>
@@ -148,6 +150,11 @@
           <div class="col-xs-5">
             <form action="{% url 'zipline_app:fills-new' %}" method="post" class="form">
               {% csrf_token %}
+              <!-- hidden timestamp -->
+              <div style="display: none;">{% bootstrap_field field=fill_form.pub_date layout='inline' %}</div>
+              <!-- hidden form field -->
+              <input type="hidden" name="source" value="combined">
+
               <div class="row">
                 <div class="col-xs-2">
                   {% bootstrap_field field=fill_form.asset layout='inline' %}

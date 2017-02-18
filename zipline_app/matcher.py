@@ -356,7 +356,11 @@ class Matcher:
       sub = [x.amount for x in all_txns if x.sid.sid==sid]
       extra = fill.volume.sum() - sum(sub)
       if extra>0:
-        asset = self.env.asset_finder.retrieve_asset(sid=sid)
+        asset = self.env.asset_finder.retrieve_asset(sid=sid,default_none=True)
+        # if the asset was already dropped because it was a duplicate, ignore
+        if asset is None:
+          logger.warning("Ignoring asset "+str(sid)+" as it was not imported into ZlModel (possible duplicate symbol?)")
+          continue
         unused[asset]=extra
     return unused
 
