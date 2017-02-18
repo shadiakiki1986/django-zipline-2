@@ -12,7 +12,7 @@ it's because that's what I named the project at first.
 ## Features
 _Unticked features are still TODO_
 
-Version 0.1
+Version 0.0.1
 - [x] django app from tutorial customized to blotter
 - [x] use zipline as matching enging
 - [x] integrate zipline into django app
@@ -36,12 +36,20 @@ Version 0.1
 - [x] rename project to django-zipline
 - [x] move files to match structure of zipline
 - [x] new asset: works with generic view form and bootstrap form (was submitting form with jquery but violating csrf)
+
+WIP
+- [ ] fills need an intermediate class "bar data row" which would aggregate fills entered at the same timestamp and for the same asset
+  - this "bar data row" can be linked in a unique way to the transactions via the timestamp field and asset field
+  - this would also help link back transactions to fills, and hence display the split of a fill, or specify exactly which fill has "unused fills"
+
 - [ ] add inline create new order/fill/asset on index page
   - [x] order inline
   - [ ] fill inline
   - [ ] asset inline?!?!?
   - [ ] combine OrderCreate and OrderForm classes?
 
+Version 0.0.2
+- [ ] add model of the combined view with fields: minute as foreign key to asset, which in its turn is a foreign key to a pair, which in its turn is a foreign key to orders array and fills array
 - [ ] if fill entered before order, make it easy to re-attach to order timestamp
 - [ ] new asset form should check that symbol is not already defined (zipline constraint)
   - ~~or maybe just open the admin?~~

@@ -128,8 +128,15 @@ class Matcher:
   @staticmethod
   def chopSeconds(fills, orders):
     for sid in fills:
-      index=[dt.floor('1Min') for dt in fills[sid].index]
-      fills[sid].index = index
+      # for fills, start by adding a floored "index" column, and group by it
+      # Combination of
+      #    http://stackoverflow.com/a/34297689/4126114
+      #    http://stackoverflow.com/a/29583335/4126114
+      fills = fills.reset_index()
+      fills[sid]['dt_fl'] = [dt.floor('1Min') for dt in fills[sid]['dt']]
+      del fills[sid]['dt']
+      fills[sid].groupby(['dt_fl','close','volume']).transform({'close':'average','volume':'sum'})
+      fills.set_index('dt_fl')
       fills[sid].sort_index(inplace=True)
 
     for sid in orders:
