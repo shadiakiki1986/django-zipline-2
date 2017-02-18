@@ -80,10 +80,12 @@ class ZlModel:
       for sid in ZlModel.fills:
         # sub loses the fill id because of values
         sub = ZlModel.fills[sid].values()
-        fills2[sid]["close"]=[y["close"] for y in sub]
-        fills2[sid]["volume"]=[y["volume"] for y in sub]
-        fills2[sid]["dt"]=[y["dt"] for y in sub]
-        fills2[sid]=fills2[sid].set_index("dt")
+        fills2[sid] = fills2[sid].append(pd.DataFrame({
+          "close" : [y["close"] for y in sub],
+          "volume": [y["volume"] for y in sub],
+          "dt"    : [y["dt"] for y in sub],
+        })).set_index("dt")
+
       return fills2
 
     @staticmethod

@@ -2,7 +2,7 @@ from django.test import TestCase
 import pandas as pd
 from ...matcher import factory as mmm_factory, Matcher as mmm_Matcher
 from ...matcher import reduce_concatenate
-from .other import a1,a2
+from .test_zipline_app import a1,a2
 
 from zipline.finance.execution import (
     MarketOrder,
@@ -34,7 +34,7 @@ class MatcherMethodTests(TestCase):
     def test_chopSeconds_aggregatesFillsInSameMinute(self):
         sec1 = pd.Timestamp('2017-02-13 05:13:23', tz='utc')
         sec2 = pd.Timestamp('2017-02-13 05:13:24', tz='utc')
-        sec_non = pd.Timestamp('2017-02-13 05:13', tz='utc')
+        sec0 = pd.Timestamp('2017-02-13 05:13',    tz='utc')
         fills = {
             1: pd.DataFrame({
                 "close": [1,3],
@@ -45,9 +45,9 @@ class MatcherMethodTests(TestCase):
         orders = {}
         actual_fills, actual_orders = mmm_Matcher.chopSeconds(fills, orders)
 
-        self.assertEqual(actual_fills[1].index, [sec_non])
-        self.assertEqual(actual_fills[1][sec_non]['close' ], 2.5)
-        self.assertEqual(actual_fills[1][sec_non]['volume'], 4)
+        self.assertEqual(actual_fills[1].index, [sec0])
+        self.assertEqual(actual_fills[1].get_value(sec0,'close' ), 2.5)
+        self.assertEqual(actual_fills[1].get_value(sec0,'volume'), 4)
 
     def test_factory_some_orders_and_some_fills(self):
         matcher = mmm_Matcher()
@@ -257,7 +257,7 @@ class MatcherMethodTests(TestCase):
         self.assertEqual(0,len(open_orders))
 
         txn = all_txns[0].to_dict()
-        self.assertEqual(txn["price"], 2)
+        self.assertEqual(txn["price"], 1) # this is 1 if fills are allowed to match with later orders, and 2 if not. The latter is the case ATM
 
         a1a=matcher.env.asset_finder.retrieve_asset(sid=1)
         self.assertEqual(unused, {a1a:5})

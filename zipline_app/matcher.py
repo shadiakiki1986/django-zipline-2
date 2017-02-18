@@ -142,18 +142,20 @@ class Matcher:
 
       # weighted-average of price
       # http://stackoverflow.com/a/35327787/4126114
-      grouped['close'] = grouped.apply(lambda g: numpy.average(g['close'],weights=g['volume']))
+      grouped_close = grouped.apply(lambda g: numpy.average(g['close'],weights=g['volume']))
+      grouped_close = pd.DataFrame({'close':grouped_close})
 
       # add all volumes of fills at the same minute
-      grouped['volume'] = grouped['volume'].aggregate('sum')
+      grouped_volume = grouped['volume'].aggregate('sum')
+      grouped2 = pd.concat([grouped_close, grouped_volume], axis=1)
 
       # go back to original indexing
       # http://pandas.pydata.org/pandas-docs/stable/groupby.html#aggregation
-      grouped.reset_index.set_index('dt_fl')
-      grouped.sort_index(inplace=True)
+      grouped2.reset_index().set_index('dt_fl')
+      grouped2.sort_index(inplace=True)
 
       # replace original
-      fills[sid] = grouped
+      fills[sid] = grouped2
 
     # For orders, just floor the minute
     for sid in orders:

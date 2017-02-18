@@ -55,12 +55,13 @@ If running tests manually, could benefit from
 To access deeper namespace, use
 ```bash
 > python manage.py test zipline_app # will not test anything because I dont use tests.py anymore
-> python manage.py test zipline_app.tests # will not test anything also
+> python manage.py test zipline_app.tests # will test everything
 
-> python manage.py test zipline_app.tests.zipline_app.asset
-> python manage.py test zipline_app.tests.zipline_app.other
-> python manage.py test zipline_app.tests.zipline_app.matcher
-> python manage.py test zipline_app.tests.zipline_app.zlmodel
+> python manage.py test zipline_app.tests.zipline_app.test_asset # will test only asset
+> python manage.py test zipline_app.tests.zipline_app.test_zipline_app
+> python manage.py test zipline_app.tests.zipline_app.test_matcher
+> python manage.py test zipline_app.tests.zipline_app.test_zlmodel
+> python manage.py test ...
 ```
 ## Under the hood
 * [django](https://www.djangoproject.com/)

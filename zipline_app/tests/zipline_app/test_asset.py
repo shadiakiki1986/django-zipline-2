@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .other import create_asset, a1
+from .test_zipline_app import create_asset, a1
 from django.urls import reverse
 
 class AssetViewsTests(TestCase):

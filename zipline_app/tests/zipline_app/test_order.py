@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from ...models.zipline_app.zipline_app import ZlModel
-from .other import create_asset, create_order, create_account, a1
+from .test_zipline_app import create_asset, create_order, create_account, a1
 
 class OrderGeneralViewsTests(TestCase):
     def setUp(self):

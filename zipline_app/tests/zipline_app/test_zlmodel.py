@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .other import create_asset, create_account, create_order, a1, a2, create_fill
+from .test_zipline_app import create_asset, create_account, create_order, a1, a2, create_fill
 from ...models.zipline_app.zipline_app import ZlModel
 import pandas as pd
 
@@ -32,13 +32,13 @@ class ZlModelMethodTests(TestCase):
         ZlModel.fills={
           1: {
             1: { "dt": "2015-01-01", "close": 1, "volume": 1 },
-            2: { "dt": "2015-01-01", "close": 2, "volume": 2 }
+            2: { "dt": "2015-01-02", "close": 2, "volume": 2 }
           },
           2: {}
         }
         expected = {
           1: pd.DataFrame({
-            "dt": ["2015-01-01","2015-01-01"],
+            "dt": ["2015-01-01","2015-01-02"],
             "close": [1, 2],
             "volume": [1, 2]
           }).set_index("dt"),
