@@ -170,7 +170,7 @@ class ZlModel:
         "orders": md5_orders,
         "assets": ZlModel.assets,
       }))
-     return md5
+      return md5
 
     @staticmethod
     def update():
