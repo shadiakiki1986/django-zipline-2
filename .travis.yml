@@ -1,8 +1,7 @@
-# with some inspiration from zipline/.travis.yml
 language: python
 sudo: false
 python:
-- 3.4
+- 3.4 # most recent version against zipline is tested. Check zipline/.travis.yml
 cache:
   directories:
     - $HOME/.cache/.pip/
