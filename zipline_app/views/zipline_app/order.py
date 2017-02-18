@@ -30,6 +30,15 @@ class OrderDelete(generic.DeleteView):
     success_url = reverse_lazy('zipline_app:orders-list')
     template_name = 'zipline_app/order/order_confirm_delete.html'
 
+class OrderDetailView(generic.DetailView):
+    model = Order
+    template_name = 'zipline_app/order/order_detail.html'
+    def get_queryset(self):
+        """
+        Excludes any orders that aren't published yet.
+        """
+        return Order.objects.filter(pub_date__lte=timezone.now())
+
 class OrdersOnlyView(generic.ListView):
     template_name = 'zipline_app/ordersOnly.html'
     context_object_name = 'latest_order_list'

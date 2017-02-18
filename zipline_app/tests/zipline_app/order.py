@@ -5,7 +5,7 @@ from django.utils import timezone
 from ...models.zipline_app.zipline_app import ZlModel
 from .other import create_asset, create_order, create_account, a1
 
-class OrderViewsTests(TestCase):
+class OrderGeneralViewsTests(TestCase):
     def setUp(self):
       ZlModel.clear()
       self.acc1 = create_account(symbol="TEST01")
@@ -40,4 +40,29 @@ class OrderViewsTests(TestCase):
         #self.assertFormError(response, 'form', 'asset', 'Enter a valid date/time.')
         #self.assertFormError(response, 'form', 'amount', 'Enter a valid date/time.')
         #self.assertFormError(response, 'form', 'account', 'Select a valid choice. That choice is not one of the available choices.')
+
+class OrderDetailViewTests(TestCase):
+    def setUp(self):
+      self.acc1 = create_account(symbol="TEST01")
+      self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
+
+    def test_detail_view_with_a_future_order(self):
+        """
+        The detail view of a order with a pub_date in the future should
+        return a 404 not found.
+        """
+        future_order = create_order(order_text='Future order.', days=5, asset=self.a1a, amount=10, account=self.acc1)
+        url = reverse('zipline_app:orders-detail', args=(future_order.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_detail_view_with_a_past_order(self):
+        """
+        The detail view of a order with a pub_date in the past should
+        display the order's text.
+        """
+        past_order = create_order(order_text='Past Order.', days=-5, asset=self.a1a, amount=10, account=self.acc1)
+        url = reverse('zipline_app:orders-detail', args=(past_order.id,))
+        response = self.client.get(url)
+        self.assertContains(response, past_order.order_text)
 

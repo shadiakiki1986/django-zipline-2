@@ -26,7 +26,7 @@
           <td width="10%">{{order.account.account_symbol}}</td>
           <td width="10%"><font color="red">{{order.avgPrice|floatformat:"2"|intcomma}}</font></td>
           <td width="10%" nowrap>{{ order.order_text }}</td>
-          <td width="10%"><a href="{% url 'zipline_app:detail' order.id %}">Details</a></td>
+          <td width="10%"><a href="{% url 'zipline_app:orders-detail' order.id %}">Details</a></td>
         </tr>
       {% endfor %}
     </table>
@@ -64,7 +64,7 @@
         <td width="10%">&nbsp;</td>
         <td width="10%">{{fill.fill_price}}</td>
         <td width="10%" nowrap>{{ fill.fill_text }}</td>
-        <td width="10%">&nbsp;</td>
+        <td width="10%"><a href="{% url 'zipline_app:fills-detail' fill.id %}">Details</a></td>
       </tr>
     {% endfor %}
     </table>

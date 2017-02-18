@@ -22,3 +22,13 @@ class FillDelete(generic.DeleteView):
     model = Fill
     success_url = reverse_lazy('zipline_app:fills-list')
     template_name = 'zipline_app/fill/fill_confirm_delete.html'
+
+class FillDetailView(generic.DetailView):
+    model = Fill
+    template_name = 'zipline_app/fill/fill_detail.html'
+    def get_queryset(self):
+        """
+        Excludes any fills that aren't published yet.
+        """
+        return Fill.objects.filter(pub_date__lte=timezone.now())
+

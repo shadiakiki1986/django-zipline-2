@@ -1,5 +1,5 @@
 {% extends "zipline_app/base.html" %}
-
+{% load humanize %}
 
 {% block content %}
 <h1>Fills</h1>
@@ -13,7 +13,7 @@
       <div class="col-xs-1">{{ fill.id }}</div>
       <div class="col-xs-2">{{ fill.pub_date }}</div>
       <div class="col-xs-2"><a href="{% url 'zipline_app:assets-list' %}">{{ fill.asset.symbol }}</a></div>
-      <div class="col-xs-2">{{ fill.fill_qty }}</div>
+      <div class="col-xs-2">{{ fill.fill_qty|intcomma}}</div>
       <div class="col-xs-2">{{ fill.fill_price }}</div>
       <div class="col-xs-2">{{ fill.fill_text }}</div>
       <div class="col-xs-1"><a href="{% url 'zipline_app:fills-delete' fill.id %}">Delete</a></div>

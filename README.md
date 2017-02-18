@@ -47,7 +47,8 @@ Version 0.0.1
   - [w] asset inline create
   - [ ] combine OrderCreate and OrderForm classes? (same for FillCreate/FillForm)
   - [w] delete inline
-  - [ ] edit inline
+  - [w] ~~edit inline~~ link to details in order to edit
+  - [ ] edit in details
 - [ ] time zones!
 - [ ] link fills to transactions/orders
   - but `fills_as_dict_df` loses the original ID's (check `test_fills_as_dict_df`)

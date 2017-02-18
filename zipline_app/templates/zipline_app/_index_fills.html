@@ -15,7 +15,14 @@
         {% endif %}
       </div>
 
-      <div class="col-xs-4 text-right">#{{fill.id}}</div>
+      <div class="col-xs-4 text-right">
+        <abbr title="Order">
+          <a href="{% url 'zipline_app:fills-detail' fill.id %}">
+            #{{fill.id}}
+          </a>
+        </abbr>
+
+      </div>
 
       <div class="col-xs-4">
         <a href="{% url 'zipline_app:fills-delete' fill.id %}">Delete</a>

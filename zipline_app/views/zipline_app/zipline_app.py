@@ -58,15 +58,6 @@ class IndexView(generic.ListView):
         context["asset_form"]=AssetForm()
         return context
 
-class DetailView(generic.DetailView):
-    model = Order
-    template_name = 'zipline_app/detail.html'
-    def get_queryset(self):
-        """
-        Excludes any orders that aren't published yet.
-        """
-        return Order.objects.filter(pub_date__lte=timezone.now())
-
 class ResultsView(generic.DetailView):
     model = Order
     template_name = 'zipline_app/results.html'
@@ -77,7 +68,7 @@ def vote(request, order_id):
         selected_fill = order.fill_set.get(pk=request.POST['fill'])
     except (KeyError, Fill.DoesNotExist):
         # Redisplay the order voting form.
-        return render(request, 'zipline_app/detail.html', {
+        return render(request, 'zipline_app/order/order_detail.html', {
             'order': order,
             'error_message': "You didn't select a fill.",
         })

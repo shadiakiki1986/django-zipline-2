@@ -1,0 +1,17 @@
+{% extends "zipline_app/base.html" %}
+{% load humanize %}
+
+{% block content %}
+
+Fill Details
+<ul>
+  <li>{{fill.pub_date}}</li>
+  <li>{{fill.asset.asset_symbol}}</li>
+  <li>{{fill.fill_qty|intcomma}}</li>
+  <li>{{fill.fill_price}}</li>
+  <li>{{ fill.fill_text }}</li>
+</ul>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+{% endblock %}
