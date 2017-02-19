@@ -76,8 +76,9 @@ _Unticked are still TODO_
 - [w] travis-ci.org
 - [x] ~~bug: create order at t1, then create at `t2>t1`, then drop the one at t1, but the minute t1 is still there in combined view~~
   - I couldnt reproduce this bug anymore .. so cancelling
-- [ ] test failing for in-page create account
-- [ ] fill quantity too large yields error: Python int too large to convert to SQLite INTEGER
+- [x] ~~test failing for in-page create account~~
+  - doesnt seem to fail anymore
+- [x] fill quantity too large yields error: Python int too large to convert to SQLite INTEGER
 - [ ] more index
   - [ ] combine OrderCreate and OrderForm classes? (same for FillCreate/FillForm and others)
   - [ ] edit in details

@@ -11,6 +11,7 @@ from .zlmodel import ZlModel
 from .fill import Fill
 
 from numpy import average
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create your models here.
 
@@ -18,7 +19,10 @@ class Order(models.Model):
     order_text = models.CharField(max_length=200, blank=True)
     pub_date = models.DateTimeField('date published',default=timezone.now)
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
-    amount = models.IntegerField(default=0)
+    amount = models.IntegerField(
+      default=0,
+      validators=[MaxValueValidator(1000000),MinValueValidator(-1000000)]
+    )
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
     # static variable

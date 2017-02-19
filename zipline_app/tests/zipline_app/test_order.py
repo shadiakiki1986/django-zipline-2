@@ -31,7 +31,6 @@ class OrderGeneralViewsTests(TestCase):
     def test_new_post(self):
         # http://stackoverflow.com/questions/40005411/django-django-test-client-post-request
         time = '2015-01-01 00:00:00' #timezone.now() + datetime.timedelta(days=-0.5)
-
         url = reverse('zipline_app:orders-new')
         response = self.client.post(url,{'pub_date':time,'asset':self.a1a.id,'amount':10,'account':self.acc1.id})
         self.assertEqual(response.status_code, 302)
@@ -40,6 +39,13 @@ class OrderGeneralViewsTests(TestCase):
         #self.assertFormError(response, 'form', 'asset', 'Enter a valid date/time.')
         #self.assertFormError(response, 'form', 'amount', 'Enter a valid date/time.')
         #self.assertFormError(response, 'form', 'account', 'Select a valid choice. That choice is not one of the available choices.')
+
+    def test_quantity_large_does_not_trigger_error_integer_too_large(self):
+        time = '2015-01-01 00:00:00' #timezone.now() + datetime.timedelta(days=-0.5)
+        url = reverse('zipline_app:orders-new')
+        largeqty=100000000000000000000000000000
+        response = self.client.post(url,{'pub_date':time,'asset':self.a1a.id,'amount':largeqty,'account':self.acc1.id})
+        self.assertContains(response,"Ensure this value is less than or equal to")
 
 class OrderDetailViewTests(TestCase):
     def setUp(self):
@@ -65,4 +71,3 @@ class OrderDetailViewTests(TestCase):
         url = reverse('zipline_app:orders-detail', args=(past_order.id,))
         response = self.client.get(url)
         self.assertContains(response, past_order.order_text)
-

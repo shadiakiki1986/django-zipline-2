@@ -3,10 +3,10 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 import datetime
-
 from django.urls import reverse
-from .asset import Asset
+from django.core.validators import MaxValueValidator, MinValueValidator
 
+from .asset import Asset
 from .zlmodel import ZlModel
 
 # Create your models here.
@@ -16,8 +16,14 @@ class Fill(models.Model):
     # order = models.ForeignKey(Order, on_delete=models.CASCADE)
     fill_text = models.CharField(max_length=200, blank=True)
     votes = models.IntegerField(default=0)
-    fill_qty = models.IntegerField(default=0)
-    fill_price = models.FloatField(default=0)
+    fill_qty = models.IntegerField(
+      default=0,
+      validators=[MaxValueValidator(1000000),MinValueValidator(-1000000)]
+    )
+    fill_price = models.FloatField(
+      default=0,
+      validators=[MaxValueValidator(1000000),MinValueValidator(-1000000)]
+    )
     pub_date = models.DateTimeField('date published',default=timezone.now)
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
 
