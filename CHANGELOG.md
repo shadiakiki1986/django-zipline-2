@@ -46,7 +46,7 @@ _Unticked are still TODO_
 
 
 ## [ ] Version 0.0.2
-- [w] travis-ci.org
+- [w] bug: create order at t1, then create at `t2>t1`, then drop the one at t1, but the minute t1 is still there in combined view
 - UX
   - create in index
     - [ ] inline create account
@@ -58,7 +58,6 @@ _Unticked are still TODO_
     - [ ] fill quantity too large yields error: Python int too large to convert to SQLite INTEGER
   - [ ] combine OrderCreate and OrderForm classes? (same for FillCreate/FillForm)
   - [ ] edit in details
-
   - [ ] rename "symbol" on index to "asset" (show name using tooltip?)
   - [ ] delete buttons are ugly and overlap with timetsamp
   - [ ] times not displayed in beirut timezone
@@ -71,20 +70,16 @@ _Unticked are still TODO_
 - [ ] time zones!
   - omitting timezones would yield django error about timezone-naive timestamp uncomparable to timezone-aware timestamp
 - [ ] if fill entered before/after order, make it easy to re-attach to order timestamp
-- [ ] new asset form should check that symbol is not already defined
-  - this is a zipline constraint
-  - ~~or maybe just open the admin?~~
 - [ ] add "order status" flag: working, closed, ...
   - or should this be implied from the data? (with the default always being "working")
 - [ ] add section "XX fills required to close open orders"
 - [ ] inline alert of unmatched fills in side-by-side view has a popup that could display the number of unused fills
   - would this replace the separate section?
-- [ ] bug: create order at t1, then create at `t2>t1`, then drop the one at t1, but the minute t1 is still there in combined view
-- [ ] bug: if no open orders on A1 and new fill on A1, not getting alerted about unused fill
 - [ ] how to handle the index table when data becomes too much
   - how to truncate the data (do not show past orders that were filled, or past fills that completed an order)
   - keep showing open orders or unused fills
   - etc
+- [w] travis-ci.org
 
 
 ## [x] Version 0.0.1
@@ -120,3 +115,7 @@ _Unticked are still TODO_
   - [x] asset create in page and redirect back to index
   - [x] delete in page and redirect back to index
   - [x] ~~edit inline~~ link to details in order to edit
+- [x] new asset form should check that symbol is not already defined
+  - this is a zipline constraint
+  - ~~or maybe just open the admin?~~
+- [x] bug: if no open orders on A1 and new fill on A1, not getting alerted about unused fill

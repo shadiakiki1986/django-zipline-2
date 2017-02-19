@@ -199,3 +199,15 @@ class OrderViewTests(TestCase):
         response = self.client.get(reverse('zipline_app:index'))
         self.assertEqual(len(ZlModel.zl_unused),1)
         self.assertContains(response, "Assets with extra fills")
+
+    def test_index_view_deleted_order_implies_deleted_minute(self):
+        o1 = create_order(order_text="test", days=0, asset=self.asset, amount=10, account=self.acc1)
+        time = o1.pub_date
+        sleep(0.05)
+        response = self.client.get(reverse('zipline_app:index'))
+        self.assertContains(response, time.strftime("%Y-%m-%d"))
+
+        o1.delete()
+        sleep(0.05)
+        response = self.client.get(reverse('zipline_app:index'))
+        self.assertNotContains(response, time.strftime("%Y-%m-%d"))
