@@ -16,7 +16,7 @@ Version 0.0.1
 - fill can match order before/after it
 - side-by-side view, consecutive view
 
-Also check [[CHANGELOG.md]]
+Also check [CHANGELOG](CHANGELOG.md)
 
 ## Installation
 ```bash
