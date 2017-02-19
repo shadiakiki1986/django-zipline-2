@@ -63,10 +63,10 @@ _Unticked are still TODO_
       - [ ] symbol dropdown is too small
       - [w] send django message when asset/account/order/fill created from index
         - [w] how do multiple django messages sent in one request get displayed?
-        - [ ] account to be added
         - [w] also when order/fill deleted
           - assets/accounts to be dealt with separately since they''re not in direct display on the index page (possibly think of a "clean up" button)
-    - [ ] in-page create account
+    - [w] in-page create account
+      - [w] send django message upon create
     - [ ] during loading of page after asset create, block page (display "loading...")
       - might also want to automatically re-open modals if for example the new-fill modal was opened followed by the new-asset modal
     - [ ] fill quantity too large yields error: Python int too large to convert to SQLite INTEGER
@@ -99,7 +99,12 @@ _Unticked are still TODO_
   - keep showing open orders or unused fills
   - etc
 - nav bar active page should be changed with jquery upon page load
-
+- drop redundant load of css/js from html templates, except base.html
+  ```
+  {# Load CSS and JavaScript #}
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+  ```
 
 ## [x] Version 0.0.1
 - [x] django app from tutorial customized to blotter

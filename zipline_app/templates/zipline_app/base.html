@@ -7,8 +7,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
+  {# Load CSS and JavaScript #}
   {% bootstrap_css %}
   {% bootstrap_javascript jquery=1 %}
+
   <link rel="stylesheet" type="text/css" href="{% static 'zipline_app/style.css' %}" />
   <title>Blotter</title>
 </head>
@@ -31,6 +33,7 @@
           <ul class="nav navbar-nav">
             <li class="active"><a href="{% url 'zipline_app:index' %}">Side-by-side view</a></li>
             <li><a href="{% url 'zipline_app:ordersOnly' %}">Consecutive view</a></li>
+            <li><a href="{% url 'zipline_app:accounts-list' %}">Accounts</a></li>
             <li><a href="{% url 'zipline_app:assets-list' %}">Assets</a></li>
             <li><a href="{% url 'zipline_app:orders-list' %}">Orders</a></li>
             <li><a href="{% url 'zipline_app:fills-list' %}">Fills</a></li>

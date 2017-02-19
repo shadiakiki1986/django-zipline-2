@@ -1,0 +1,8 @@
+{# Load the tag library #}
+{% load bootstrap3 %}
+
+<form action="" method="post" class="form">
+  {% csrf_token %}
+  {% bootstrap_form form layout='horizontal' %}
+  {% bootstrap_button content="Save" button_type="submit" %}
+</form>

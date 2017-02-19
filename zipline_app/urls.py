@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
 from .views.zipline_app import zipline_app as views
-from .views.zipline_app import order, asset, fill
+from .views.zipline_app import order, asset, fill, account
 
 app_name='zipline_app'
 urlpatterns = [
@@ -14,6 +14,13 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/results/$', views.ResultsView.as_view(), name='results'),
     # ex: /<root>/5/vote/
     url(r'^(?P<order_id>[0-9]+)/vote/$', views.vote, name='vote'),
+
+    # ex: /<root>/accounts/
+    url(r'^accounts/$', account.AccountList.as_view(), name='accounts-list'),
+    # ex: /<root>/accounts/new/
+    url(r'^accounts/new/$', account.AccountCreate.as_view(), name='accounts-new'),
+    # ex: /<root>/accounts/1/delete/
+    url(r'^accounts/(?P<pk>[0-9]+)/delete/$', account.AccountDelete.as_view(), name='accounts-delete'),
 
     # ex: /<root>/assets/
     url(r'^assets/$', asset.AssetList.as_view(), name='assets-list'),

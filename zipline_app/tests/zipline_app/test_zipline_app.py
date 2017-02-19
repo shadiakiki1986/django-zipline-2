@@ -228,5 +228,8 @@ class OrderViewTests(TestCase):
         f1.delete()
         get_assert_contains(self,"Successfully deleted fill")
 
-        a1=create_asset("test","test","test")
+        as1=create_asset("test","test","test")
         get_assert_contains(self,"Successfully created asset")
+
+        ac1=create_account("test")
+        get_assert_contains(self,"Successfully created account")

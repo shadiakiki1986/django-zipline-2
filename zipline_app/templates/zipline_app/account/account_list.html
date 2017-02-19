@@ -1,0 +1,23 @@
+{% extends "zipline_app/base.html" %}
+
+
+{% block content %}
+<h1>Accounts</h1>
+
+<a href="{% url 'zipline_app:accounts-new' %}">New</a>
+
+{% include "zipline_app/account/_account_form.html" %}
+
+    {% for account in account_list %}
+    <div class="row">
+      <div class="col-xs-1 text-right">{{ account.id }}</div>
+      <div class="col-xs-2">{{ account.account_symbol }}</div>
+      <div class="col-xs-1">
+        <a href="{% url 'zipline_app:accounts-delete' account.id %}">Delete</a>
+      </div>
+    </div>
+{% empty %}
+    <div class="alert alert-info">No accounts yet.</div>
+{% endfor %}
+
+{% endblock %}
