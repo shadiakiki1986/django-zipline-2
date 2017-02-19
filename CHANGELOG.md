@@ -46,27 +46,36 @@ _Unticked are still TODO_
 
 
 ## [ ] Version 0.0.2
+- [w] travis-ci.org
 - [w] bug: create order at t1, then create at `t2>t1`, then drop the one at t1, but the minute t1 is still there in combined view
 - UX
   - create in index
-    - [ ] inline create account
-    - [ ] replace all inline creates with modals that pop up when clicking on add new order/fill
-    - [ ] asset add button unintuitive .. asset form inline should be one line, like others
-    - [ ] quantity input too small
+    - [w] replace all inline creates with divs that show up when clicking on add new order/fill
+      - not to be "bootstrap modal" because user needs to keep sight of orders/fills (same reason why not just going to a new page completely)
+      - use same concept as one-line create, but make the form take the whole page width (instead of displaying the order form on the left and the fill form on the right)
+      - [ ] quantity input too small
+      - [ ] asset add button unintuitive
+      - [ ] symbol dropdown is too small
+      - [ ] when asset/account/order/fill created from index, send django message saying so
+    - [ ] in-page create account
     - [ ] during loading of page after asset create, block page (display "loading...")
-    - [ ] symbol dropdown is too small
+      - might also want to automatically re-open modals if for example the new-fill modal was opened followed by the new-asset modal
     - [ ] fill quantity too large yields error: Python int too large to convert to SQLite INTEGER
   - [ ] combine OrderCreate and OrderForm classes? (same for FillCreate/FillForm)
   - [ ] edit in details
   - [ ] rename "symbol" on index to "asset" (show name using tooltip?)
-  - [ ] delete buttons are ugly and overlap with timetsamp
+    - or show name instead of symbol?
+  - [ ] delete buttons are ugly and overlap with timestamp
   - [ ] times not displayed in beirut timezone
   - [ ] replace heart with github logo/link
-  - [ ] add field explicit for pending quantities
+  - [ ] add column explicitly calculated for pending quantities
+    - or perhaps just display a summary of pending quantities per asset?
   - [ ] unused fills, if closed with correction fills, no longer show up anywhere (as slippage?)
   - [ ] when unused fills are negative, they dont show up
-  - [ ] add undo for accidental deletes (or display history somewhere)
   - [ ] delete should be open only to an admin user
+    - [ ] add undo for accidental deletes (or display history somewhere)
+      - do I still need this if it is only open to an admin user?
+      - there will be a "cancel order" button for regular users (which can be followed by a delete)
 - [ ] time zones!
   - omitting timezones would yield django error about timezone-naive timestamp uncomparable to timezone-aware timestamp
 - [ ] if fill entered before/after order, make it easy to re-attach to order timestamp
@@ -79,7 +88,7 @@ _Unticked are still TODO_
   - how to truncate the data (do not show past orders that were filled, or past fills that completed an order)
   - keep showing open orders or unused fills
   - etc
-- [w] travis-ci.org
+- nav bar active page should be changed with jquery upon page load
 
 
 ## [x] Version 0.0.1

@@ -1,0 +1,110 @@
+<div class="row">
+  <div class="col-xs-3">{% bootstrap_button content="Account" icon="plus" href="#account-new" extra_classes="create-button" %}</div>
+  <div class="col-xs-3">{% bootstrap_button content="Asset"   icon="plus" href="#asset-new"   extra_classes="create-button" %}</div>
+  <div class="col-xs-3">{% bootstrap_button content="Order"   icon="plus" href="#orders-new"  extra_classes="create-button" %}</div>
+  <div class="col-xs-3">{% bootstrap_button content="Fill"    icon="plus" href="#fills-new"   extra_classes="create-button" %}</div>
+</div>
+
+<!--
+  jquery show hide div's with a href tag
+  https://jsfiddle.net/bessppxz/
+  http://stackoverflow.com/a/12897443/4126114
+
+  jquery children/siblings
+  https://api.jquery.com/category/traversing/tree-traversal/
+-->
+<script>
+$(document).ready(function(){
+    $("#create-container").children().hide();
+    $(".create-button").click(function () {
+        var idname= $(this).attr("href");
+        $(idname).show("slow").siblings().hide("slow");
+    });
+});
+</script>
+
+<div class="container" id="create-container">
+  <div class="row" id="asset-new">
+    {# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
+    <form action="{% url 'zipline_app:assets-new' %}" method="post" class="form">
+      {% csrf_token %}
+      <!-- hidden form field -->
+      <input type="hidden" name="source" value="combined">
+      {% bootstrap_form asset_form layout='horizontal' %}
+      {% bootstrap_button content="Save" button_type="submit" %}
+    </form>
+  </div>
+
+  <div class="row" id="orders-new">
+
+  <!--
+    <form action="{% url 'zipline_app:orders-new' %}" method="post">
+      {% csrf_token %}
+      {{ order_form.as_p }}
+      <input type="hidden" name="source" value="combined">
+      <input type="submit" value="Save" />
+    </form>
+  -->
+
+          <form action="{% url 'zipline_app:orders-new' %}" method="post" class="form">
+            {% csrf_token %}
+            <!-- hidden timestamp -->
+            <div style="display: none;">{% bootstrap_field field=order_form.pub_date layout='inline' %}</div>
+            <!-- hidden form field -->
+            <input type="hidden" name="source" value="combined">
+
+            <div class="row">
+              <div class="col-xs-2">
+                <div class="row">
+                  {% bootstrap_field field=order_form.asset layout='inline' %}
+                </div>
+              </div>
+              <div class="col-xs-10">
+                <div class="row">
+                  <div class="col-xs-3">
+                    {% bootstrap_field field=order_form.account layout='inline' %}
+                  </div>
+                  <div class="col-xs-2 text-right">
+                    {% bootstrap_field field=order_form.amount layout='inline' %}
+                  </div>
+                  <div class="col-xs-2 text-right">
+                    {% bootstrap_button content="Add" icon="plus" button_type="submit" %}
+                  </div>
+                  <div class="col-xs-3 text-right"></div>
+                  <div class="col-xs-2"></div>
+                </div>
+              </div>
+            </div>
+          </form>
+  </div>
+
+  <div class="row" id="fills-new">
+          <form action="{% url 'zipline_app:fills-new' %}" method="post" class="form">
+            {% csrf_token %}
+            <!-- hidden timestamp -->
+            <div style="display: none;">{% bootstrap_field field=fill_form.pub_date layout='inline' %}</div>
+            <!-- hidden form field -->
+            <input type="hidden" name="source" value="combined">
+
+            <div class="row">
+              <div class="col-xs-2">
+                {% bootstrap_field field=fill_form.asset layout='inline' %}
+              </div>
+              <div class="col-xs-10">
+                <div class="row">
+                  <div class="col-xs-4 text-right">
+                    {% bootstrap_field field=fill_form.fill_qty layout='inline' %}
+                  </div>
+                  <div class="col-xs-4 text-right">
+                    {% bootstrap_field field=fill_form.fill_price layout='inline' %}
+                  </div>
+                  <div class="col-xs-4">
+                    {% bootstrap_button content="Add" icon="plus" button_type="submit" %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+  </div>
+
+</div><!-- div.container -->
