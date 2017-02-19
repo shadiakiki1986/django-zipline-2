@@ -7,7 +7,7 @@ cache:
     - $HOME/.cache/.pip/
 install:
   - CACHE_DIR="$HOME/.cache/.pip/"
-  - pip install -U setuptools
+  - pip install -U setuptools numpy
   - pip show setuptools
   - pip install -r requirements.txt --cache-dir=$CACHE_DIR
 script:
