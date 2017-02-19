@@ -23,7 +23,14 @@ _Unticked are still TODO_
   - allow a user to edit/delete an order only when still a draft
   - same for fills?
   - how are cancels related?
-
+- [ ] unused fills, if closed with correction fills, no longer show up anywhere (as slippage?)
+  - or probably should compute slippage from asset''s close?
+  - this would require close data (linked from the asset symbol)
+  - the symbol would need to be a valid "yahoo finance", "google finance", "blooomberg", "marketflow" symbol
+- [ ] delete should be open only to an admin user
+  - [ ] add undo for accidental deletes (or display history somewhere)
+    - do I still need this if it is only open to an admin user?
+    - there will be a "cancel order" button for regular users (which can be followed by a delete)
 
 ## [ ] Version 0.1.0
 - [ ] release
@@ -81,7 +88,6 @@ _Unticked are still TODO_
   - doesnt seem to fail anymore
 - [x] fill quantity too large yields error: Python int too large to convert to SQLite INTEGER
 - [ ] more index
-  - [ ] combine OrderCreate and OrderForm classes? (same for FillCreate/FillForm and others)
   - [x] edit in details
     - this is related to drafting (in version 0.1.1) .. so not sure if should postpone
   - [x] delete buttons are ugly and overlap with timestamp
@@ -89,15 +95,8 @@ _Unticked are still TODO_
   - [ ] replace heart with github logo/link
   - [ ] add column explicitly calculated for pending quantities
     - or perhaps just display a summary of pending quantities per asset?
-  - [ ] unused fills, if closed with correction fills, no longer show up anywhere (as slippage?)
-    - or probably should compute slippage from asset''s close?
-    - this would require close data (linked from the asset symbol)
-    - the symbol would need to be a valid "yahoo finance", "google finance", "blooomberg", "marketflow" symbol
   - [ ] when unused fills are negative, they dont show up
-  - [ ] delete should be open only to an admin user
-    - [ ] add undo for accidental deletes (or display history somewhere)
-      - do I still need this if it is only open to an admin user?
-      - there will be a "cancel order" button for regular users (which can be followed by a delete)
+- [ ] combine OrderCreate and OrderForm classes? (same for FillCreate/FillForm and others)
 - [ ] time zones!
   - omitting timezones would yield django error about timezone-naive timestamp uncomparable to timezone-aware timestamp
 - [ ] if fill entered before/after order, make it easy to re-attach to order timestamp
