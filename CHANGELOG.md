@@ -52,6 +52,7 @@ _Unticked are still TODO_
 - [ ] index in-page create buttons: add way to close them without reloading
 - [ ] during loading of page after asset create, block page (display "loading...")
   - might also want to automatically re-open modals if for example the new-fill modal was opened followed by the new-asset modal
+- [ ] favicon.ico
 
 ## [ ] Version 0.0.2
 - [x] no need to update zlmodel upon asset changes
@@ -73,7 +74,8 @@ _Unticked are still TODO_
           - assets/accounts to be dealt with separately since they''re not in direct display on the index page (possibly think of a "clean up" button)
 
 - [w] travis-ci.org
-- [w] bug: create order at t1, then create at `t2>t1`, then drop the one at t1, but the minute t1 is still there in combined view
+- [x] ~~bug: create order at t1, then create at `t2>t1`, then drop the one at t1, but the minute t1 is still there in combined view~~
+  - I couldnt reproduce this bug anymore .. so cancelling
 - [ ] test failing for in-page create account
 - [ ] fill quantity too large yields error: Python int too large to convert to SQLite INTEGER
 - [ ] more index
