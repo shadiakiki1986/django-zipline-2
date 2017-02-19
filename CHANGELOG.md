@@ -80,6 +80,9 @@ _Unticked are still TODO_
   - [ ] add column explicitly calculated for pending quantities
     - or perhaps just display a summary of pending quantities per asset?
   - [ ] unused fills, if closed with correction fills, no longer show up anywhere (as slippage?)
+    - or probably should compute slippage from asset''s close?
+    - this would require close data (linked from the asset symbol)
+    - the symbol would need to be a valid "yahoo finance", "google finance", "blooomberg", "marketflow" symbol
   - [ ] when unused fills are negative, they dont show up
   - [ ] delete should be open only to an admin user
     - [ ] add undo for accidental deletes (or display history somewhere)
