@@ -7,8 +7,8 @@ cache:
     - $HOME/.cache/.pip/
 install:
   - CACHE_DIR="$HOME/.cache/.pip/"
-  - pip install -U setuptools numpy
-  - pip show setuptools
+  - pip install -U setuptools numpy pip
+  - pip show       setuptools numpy pip
   - pip install -r requirements.txt --cache-dir=$CACHE_DIR
 script:
   - python manage.py test zipline_app.tests.zipline_app.asset
