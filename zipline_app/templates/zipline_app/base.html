@@ -56,6 +56,7 @@
     -->
     <script type="text/javascript">
       path = document.location.pathname
+      path = "/"+path.split('/')[1]+"/"
       $('.navbar-nav li.active').removeClass('active');
       $('.navbar-nav > li > a[href="' + path + '"]').parent().addClass('active');
     </script>

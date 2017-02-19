@@ -40,3 +40,15 @@ class OrderDetailView(generic.DetailView):
         Excludes any orders that aren't published yet.
         """
         return Order.objects.filter(pub_date__lte=timezone.now())
+
+class OrderUpdateView(generic.UpdateView):
+  model = Order
+  fields = ['pub_date','asset','amount','account','order_text']
+  template_name = 'zipline_app/order/order_form.html'
+
+  def get_success_url(self):
+    # django message levels
+    # https://docs.djangoproject.com/en/1.10/ref/contrib/messages/#message-levels
+    messages.add_message(self.request, messages.INFO, "Successfully updated order: %s" % self.object)
+    return redirect_index_or_local(self,'zipline_app:orders-list')
+

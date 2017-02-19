@@ -19,6 +19,8 @@ urlpatterns = [
     url(r'^accounts/$', account.AccountList.as_view(), name='accounts-list'),
     # ex: /<root>/accounts/new/
     url(r'^accounts/new/$', account.AccountCreate.as_view(), name='accounts-new'),
+    # ex: /<root>/accounts/1/update/
+    url(r'^accounts/(?P<pk>[0-9]+)/update/$', account.AccountUpdateView.as_view(), name='accounts-update'),
     # ex: /<root>/accounts/1/delete/
     url(r'^accounts/(?P<pk>[0-9]+)/delete/$', account.AccountDelete.as_view(), name='accounts-delete'),
 
@@ -28,6 +30,8 @@ urlpatterns = [
     url(r'^assets/new/$', asset.AssetCreate.as_view(), name='assets-new'),
     # ex: /<root>/assets/1/delete/
     url(r'^assets/(?P<pk>[0-9]+)/delete/$', asset.AssetDelete.as_view(), name='assets-delete'),
+    # ex: /<root>/assets/1/update/
+    url(r'^assets/(?P<pk>[0-9]+)/update/$', asset.AssetUpdateView.as_view(), name='assets-update'),
 
     # ex: /<root>/fills/
     url(r'^fills/$', fill.FillList.as_view(), name='fills-list'),
@@ -35,6 +39,8 @@ urlpatterns = [
     url(r'^fills/(?P<pk>[0-9]+)/$', fill.FillDetailView.as_view(), name='fills-detail'),
     # ex: /<root>/fills/new/
     url(r'^fills/new/$', fill.FillCreate.as_view(), name='fills-new'),
+    # ex: /<root>/fills/1/update/
+    url(r'^fills/(?P<pk>[0-9]+)/update/$', fill.FillUpdateView.as_view(), name='fills-update'),
     # ex: /<root>/fills/1/delete/
     url(r'^fills/(?P<pk>[0-9]+)/delete/$', fill.FillDelete.as_view(), name='fills-delete'),
 
@@ -46,4 +52,7 @@ urlpatterns = [
     url(r'^orders/new/$', order.OrderCreate.as_view(), name='orders-new'),
     # ex: /<root>/orders/1/delete/
     url(r'^orders/(?P<pk>[0-9]+)/delete/$', order.OrderDelete.as_view(), name='orders-delete'),
+    # ex: /<root>/orders/5/update/
+    url(r'^orders/(?P<pk>[0-9]+)/update/$', order.OrderUpdateView.as_view(), name='orders-update'),
+
 ]

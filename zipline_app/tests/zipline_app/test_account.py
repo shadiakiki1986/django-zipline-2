@@ -18,3 +18,9 @@ class AssetViewsTests(TestCase):
         url = reverse('zipline_app:accounts-delete', args=(a1a.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+    def test_update(self):
+        a1a = create_account("test acc")
+        url = reverse('zipline_app:accounts-update', args=(a1a.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)

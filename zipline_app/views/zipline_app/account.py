@@ -27,3 +27,15 @@ class AccountDelete(generic.DeleteView):
     model = Account
     success_url = reverse_lazy('zipline_app:accounts-list')
     template_name = 'zipline_app/account/account_confirm_delete.html'
+
+class AccountUpdateView(generic.UpdateView):
+  model = Account
+  fields = ['account_symbol']
+  template_name = 'zipline_app/account/account_form.html'
+
+  def get_success_url(self):
+    # django message levels
+    # https://docs.djangoproject.com/en/1.10/ref/contrib/messages/#message-levels
+    messages.add_message(self.request, messages.INFO, "Successfully updated account: %s" % self.object)
+    return redirect_index_or_local(self,'zipline_app:accounts-list')
+

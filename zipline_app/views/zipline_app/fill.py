@@ -38,3 +38,15 @@ class FillDetailView(generic.DetailView):
         """
         return Fill.objects.filter(pub_date__lte=timezone.now())
 
+
+class FillUpdateView(generic.UpdateView):
+  model = Fill
+  fields = ['pub_date','asset','fill_qty','fill_price','fill_text']
+  template_name = 'zipline_app/fill/fill_form.html'
+
+  def get_success_url(self):
+    # django message levels
+    # https://docs.djangoproject.com/en/1.10/ref/contrib/messages/#message-levels
+    messages.add_message(self.request, messages.INFO, "Successfully updated fill: %s" % self.object)
+    return redirect_index_or_local(self,'zipline_app:fills-list')
+

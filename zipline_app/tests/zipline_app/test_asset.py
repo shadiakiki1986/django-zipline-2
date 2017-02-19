@@ -18,3 +18,9 @@ class AssetViewsTests(TestCase):
         url = reverse('zipline_app:assets-delete', args=(a1a.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+    def test_update(self):
+        a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
+        url = reverse('zipline_app:assets-update', args=(a1a.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)

@@ -30,3 +30,10 @@ class FillViewsTests(TestCase):
         self.assertContains(response,"Ensure this value is less than or equal to")
         response = self.client.post(url,{'pub_date':time,'asset':self.a1a.id,'fill_qty':1,'fill_price':largeqty})
         self.assertContains(response,"Ensure this value is less than or equal to")
+
+    def test_update(self):
+        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_qty=20, fill_price=2)
+        url = reverse('zipline_app:fills-update', args=(self.a1a.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+

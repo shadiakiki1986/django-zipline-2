@@ -27,3 +27,15 @@ class AssetDelete(generic.DeleteView):
     model = Asset
     success_url = reverse_lazy('zipline_app:assets-list')
     template_name = 'zipline_app/asset/asset_confirm_delete.html'
+
+class AssetUpdateView(generic.UpdateView):
+  model = Asset
+  fields = ['asset_symbol','asset_name','asset_exchange']
+  template_name = 'zipline_app/asset/asset_form.html'
+
+  def get_success_url(self):
+    # django message levels
+    # https://docs.djangoproject.com/en/1.10/ref/contrib/messages/#message-levels
+    messages.add_message(self.request, messages.INFO, "Successfully updated asset: %s" % self.object)
+    return redirect_index_or_local(self,'zipline_app:assets-list')
+

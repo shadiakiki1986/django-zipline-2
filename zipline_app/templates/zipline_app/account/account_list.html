@@ -11,8 +11,9 @@
     {% for account in account_list %}
     <div class="row">
       <div class="col-xs-1 text-right">{{ account.id }}</div>
-      <div class="col-xs-2">{{ account.account_symbol }}</div>
-      <div class="col-xs-1">
+      <div class="col-xs-3">{{ account.account_symbol }}</div>
+      <div class="col-xs-2">
+        <a href="{% url 'zipline_app:accounts-update' account.id %}">Edit</a>
         <a href="{% url 'zipline_app:accounts-delete' account.id %}">Delete</a>
       </div>
     </div>

@@ -71,3 +71,10 @@ class OrderDetailViewTests(TestCase):
         url = reverse('zipline_app:orders-detail', args=(past_order.id,))
         response = self.client.get(url)
         self.assertContains(response, past_order.order_text)
+
+    def test_update(self):
+        o1 = create_order(order_text="test?",days=-1, asset=self.a1a, amount=10, account=self.acc1)
+
+        url = reverse('zipline_app:orders-update', args=(self.a1a.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
