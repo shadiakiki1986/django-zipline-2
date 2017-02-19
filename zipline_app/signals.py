@@ -21,7 +21,7 @@ class SignalProcessor:
   #  print("Signal: %s, %s" % ("post_init", sender.__name__))
 
   def update_if_mine(sender):
-    condition = sender.__name__=="Fill" or sender.__name__=="Order" or sender.__name__=="Asset"
+    condition = sender.__name__=="Fill" or sender.__name__=="Order"
     if condition:
       ZlModel.update()
 

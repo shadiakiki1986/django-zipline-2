@@ -52,6 +52,7 @@ _Unticked are still TODO_
 ## [ ] Version 0.0.2
 - [w] travis-ci.org
 - [w] bug: create order at t1, then create at `t2>t1`, then drop the one at t1, but the minute t1 is still there in combined view
+- [w] no need to update zlmodel upon asset changes
 - UX
   - create in index
     - [w] replace all inline creates with divs that show up when clicking on add new order/fill
