@@ -19,6 +19,10 @@ _Unticked are still TODO_
   - otherwise constrain the django fields for `pub_date` to be without seconds
   - also default for order `pub_date` to be now (like fill `pub_date`)
 - [ ] could also add [django-review](https://github.com/bitlabstudio/django-review)
+- [ ] place an order "draft" to allow placing multiple orders and then single-button "publish drafted"
+  - allow a user to edit/delete an order only when still a draft
+  - same for fills?
+  - how are cancels related?
 
 
 ## [ ] Version 0.1.0
@@ -51,18 +55,23 @@ _Unticked are still TODO_
 - UX
   - create in index
     - [w] replace all inline creates with divs that show up when clicking on add new order/fill
-      - not to be "bootstrap modal" because user needs to keep sight of orders/fills (same reason why not just going to a new page completely)
-      - use same concept as one-line create, but make the form take the whole page width (instead of displaying the order form on the left and the fill form on the right)
+      - [x] not to be "bootstrap modal" because user needs to keep sight of orders/fills (same reason why not just going to a new page completely)
+      - [w] use same concept as one-line create, but make the form take the whole page width (instead of displaying the order form on the left and the fill form on the right)
       - [ ] quantity input too small
       - [ ] asset add button unintuitive
       - [ ] symbol dropdown is too small
-      - [ ] when asset/account/order/fill created from index, send django message saying so
+      - [w] send django message when asset/account/order/fill created from index
+        - [w] how do multiple django messages sent in one request get displayed?
+        - [ ] account to be added
+        - [w] also when order/fill deleted
+          - assets/accounts to be dealt with separately since they''re not in direct display on the index page (possibly think of a "clean up" button)
     - [ ] in-page create account
     - [ ] during loading of page after asset create, block page (display "loading...")
       - might also want to automatically re-open modals if for example the new-fill modal was opened followed by the new-asset modal
     - [ ] fill quantity too large yields error: Python int too large to convert to SQLite INTEGER
   - [ ] combine OrderCreate and OrderForm classes? (same for FillCreate/FillForm)
   - [ ] edit in details
+    - this is related to drafting (in version 0.1.1) .. so not sure if should postpone
   - [ ] rename "symbol" on index to "asset" (show name using tooltip?)
     - or show name instead of symbol?
   - [ ] delete buttons are ugly and overlap with timestamp

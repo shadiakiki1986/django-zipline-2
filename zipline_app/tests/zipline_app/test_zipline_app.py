@@ -211,3 +211,22 @@ class OrderViewTests(TestCase):
         sleep(0.05)
         response = self.client.get(reverse('zipline_app:index'))
         self.assertNotContains(response, time.strftime("%Y-%m-%d"))
+
+    def test_index_view_create_delete_order_toggle_django_message(self):
+        def get_assert_contains(myself,message):
+          sleep(0.05)
+          response = myself.client.get(reverse('zipline_app:index'))
+          myself.assertContains(response, message)
+
+        o1 = create_order(order_text="test", days=0, asset=self.asset, amount=10, account=self.acc1)
+        get_assert_contains(self,"Successfully created order")
+        o1.delete()
+        get_assert_contains(self,"Successfully deleted order")
+
+        f1 = create_fill(fill_text="test?",days=-30, asset=self.asset, fill_qty=20, fill_price=2)
+        get_assert_contains(self,"Successfully created fill")
+        f1.delete()
+        get_assert_contains(self,"Successfully deleted fill")
+
+        a1=create_asset("test","test","test")
+        get_assert_contains(self,"Successfully created asset")
