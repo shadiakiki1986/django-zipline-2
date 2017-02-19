@@ -9,7 +9,7 @@ class FillCreate(generic.CreateView):
   fields = ['pub_date','asset','fill_qty','fill_price','fill_text']
   template_name = 'zipline_app/fill/fill_form.html'
   def get_success_url(self):
-    messages.add_message(self.request, messages.INFO, "Successfully created fill: %s" % self)
+    messages.add_message(self.request, messages.INFO, "Successfully created fill: %s" % self.object)
     return redirect_index_or_local(self,'zipline_app:fills-list')
 
 # inheriting from create+get_context with fill_list instead of inheriting from listview
@@ -26,7 +26,7 @@ class FillDelete(generic.DeleteView):
   model = Fill
   template_name = 'zipline_app/fill/fill_confirm_delete.html'
   def get_success_url(self):
-    messages.add_message(self.request, messages.INFO, "Successfully deleted fill: %s" % self)
+    messages.add_message(self.request, messages.INFO, "Successfully deleted fill: %s" % self.object)
     return redirect_index_or_local(self,'zipline_app:fills-list')
 
 class FillDetailView(generic.DetailView):

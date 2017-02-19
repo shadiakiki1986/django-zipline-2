@@ -47,33 +47,39 @@ _Unticked are still TODO_
   - [django-angular](http://django-angular.readthedocs.io/en/latest/angular-model-form.html)
   - [django-channels](https://channels.readthedocs.io/en/stable/concepts.html)
 - [ ] rename my `order_text` and `fill_text` to `...comment`
-
+- [ ] what happens if i delete an account which is referenced in an order
+  - [ ] same for asset
+- [ ] index in-page create buttons: add way to close them without reloading
+- [ ] during loading of page after asset create, block page (display "loading...")
+  - might also want to automatically re-open modals if for example the new-fill modal was opened followed by the new-asset modal
 
 ## [ ] Version 0.0.2
+- [x] no need to update zlmodel upon asset changes
+- [x] nav bar active page should be changed with jquery upon page load
+- [x] UX
+  - [x] rename "symbol" on index to "asset" (show name using tooltip?)
+  - create in index
+    - [x] in-page create account: send django message upon create
+    - [x] replace all inline creates with divs that show up when clicking on add new order/fill
+      - [x] not to be "bootstrap modal" because user needs to keep sight of orders/fills (same reason why not just going to a new page completely)
+      - [x] use same concept as one-line create, but make the form take the whole page width (instead of displaying the order form on the left and the fill form on the right)
+      - [x] quantity input too small
+      - [x] asset add button unintuitive
+      - [x] symbol dropdown is too small
+      - [x] send django message when asset/account/order/fill created from index
+        - [x] ~~how do multiple django messages sent in one request get displayed?~~
+          - I dont have this case ATM
+        - [x] also when order/fill deleted
+          - assets/accounts to be dealt with separately since they''re not in direct display on the index page (possibly think of a "clean up" button)
+
 - [w] travis-ci.org
 - [w] bug: create order at t1, then create at `t2>t1`, then drop the one at t1, but the minute t1 is still there in combined view
-- [w] no need to update zlmodel upon asset changes
-- UX
-  - create in index
-    - [w] replace all inline creates with divs that show up when clicking on add new order/fill
-      - [x] not to be "bootstrap modal" because user needs to keep sight of orders/fills (same reason why not just going to a new page completely)
-      - [w] use same concept as one-line create, but make the form take the whole page width (instead of displaying the order form on the left and the fill form on the right)
-      - [ ] quantity input too small
-      - [ ] asset add button unintuitive
-      - [ ] symbol dropdown is too small
-      - [w] send django message when asset/account/order/fill created from index
-        - [w] how do multiple django messages sent in one request get displayed?
-        - [w] also when order/fill deleted
-          - assets/accounts to be dealt with separately since they''re not in direct display on the index page (possibly think of a "clean up" button)
-    - [w] in-page create account
-      - [w] send django message upon create
-    - [ ] during loading of page after asset create, block page (display "loading...")
-      - might also want to automatically re-open modals if for example the new-fill modal was opened followed by the new-asset modal
-    - [ ] fill quantity too large yields error: Python int too large to convert to SQLite INTEGER
+- [ ] test failing for in-page create account
+- [ ] fill quantity too large yields error: Python int too large to convert to SQLite INTEGER
+- [ ] more index
   - [ ] combine OrderCreate and OrderForm classes? (same for FillCreate/FillForm and others)
   - [ ] edit in details
     - this is related to drafting (in version 0.1.1) .. so not sure if should postpone
-  - [w] rename "symbol" on index to "asset" (show name using tooltip?)
   - [ ] delete buttons are ugly and overlap with timestamp
   - [ ] times not displayed in beirut timezone
   - [ ] replace heart with github logo/link
@@ -100,13 +106,13 @@ _Unticked are still TODO_
   - how to truncate the data (do not show past orders that were filled, or past fills that completed an order)
   - keep showing open orders or unused fills
   - etc
-- nav bar active page should be changed with jquery upon page load
 - drop redundant load of css/js from html templates, except base.html
   ```
   {# Load CSS and JavaScript #}
   {% bootstrap_css %}
   {% bootstrap_javascript %}
   ```
+- what is `poll_extras` in `index.html`
 
 ## [x] Version 0.0.1
 - [x] django app from tutorial customized to blotter

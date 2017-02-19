@@ -10,7 +10,7 @@ class AccountCreate(generic.CreateView):
   template_name = 'zipline_app/account/account_form.html'
 
   def get_success_url(self):
-    messages.add_message(self.request, messages.INFO, "Successfully created account: %s" % self)
+    messages.add_message(self.request, messages.INFO, "Successfully created account: %s" % self.object)
     return redirect_index_or_local(self,'zipline_app:accounts-list')
 
 # inheriting from create+get_context with account_list instead of inheriting from listview

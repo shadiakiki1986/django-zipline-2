@@ -12,7 +12,7 @@ class OrderCreate(generic.CreateView):
   def get_success_url(self):
     # django message levels
     # https://docs.djangoproject.com/en/1.10/ref/contrib/messages/#message-levels
-    messages.add_message(self.request, messages.INFO, "Successfully created order: %s" % self)
+    messages.add_message(self.request, messages.INFO, "Successfully created order: %s" % self.object)
     return redirect_index_or_local(self,'zipline_app:orders-list')
 
 # inheriting from create+get_context with order_list instead of inheriting from listview
@@ -29,7 +29,7 @@ class OrderDelete(generic.DeleteView):
   model = Order
   template_name = 'zipline_app/order/order_confirm_delete.html'
   def get_success_url(self):
-    messages.add_message(self.request, messages.INFO, "Successfully deleted order: %s" % self)
+    messages.add_message(self.request, messages.INFO, "Successfully deleted order: %s" % self.object)
     return redirect_index_or_local(self,'zipline_app:orders-list')
 
 class OrderDetailView(generic.DetailView):

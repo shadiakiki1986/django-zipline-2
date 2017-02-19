@@ -50,6 +50,16 @@
       </div>
     </nav>
 
+    <!--
+      Bootstrap CSS Active Navigation
+      http://stackoverflow.com/a/13189166/4126114
+    -->
+    <script type="text/javascript">
+      path = document.location.pathname
+      $('.navbar-nav li.active').removeClass('active');
+      $('.navbar-nav > li > a[href="' + path + '"]').parent().addClass('active');
+    </script>
+
     <div class="container">
       <div>
         {# Display django.contrib.messages as Bootstrap alerts #}
