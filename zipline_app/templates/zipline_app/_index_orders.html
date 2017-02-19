@@ -12,7 +12,7 @@
 
   <div class="col-xs-2">
     <div class="row">
-      <div class="col-xs-4">
+      <div class="col-xs-6">
         {% if order.filled != order.amount %}
         <abbr title="Order is still open">
           <span class="glyphicon glyphicon-alert"></span>
@@ -20,27 +20,12 @@
         {% endif %}
       </div>
 
-      <div class="col-xs-4">
+      <div class="col-xs-6">
         <abbr title="Order">
           <a href="{% url 'zipline_app:orders-detail' order.id %}">
             #{{order.id}}
           </a>
         </abbr>
-      </div>
-
-      <div class="col-xs-4">
-        <!-- delete with confirmation
-        <a href="{% url 'zipline_app:orders-delete' order.id %}">Delete</a>
-        -->
-
-        <!-- delete without confirmation -->
-        <form action="{% url 'zipline_app:orders-delete' order.id %}" method="post" class="form">
-          {% csrf_token %}
-          <!-- hidden form field -->
-          <input type="hidden" name="source" value="combined">
-          {% bootstrap_button content="Del" icon="minus" button_type="submit" %}
-        </form>
-
       </div>
 
     </div>

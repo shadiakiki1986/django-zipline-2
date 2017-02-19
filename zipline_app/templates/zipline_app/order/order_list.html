@@ -10,7 +10,9 @@
 
     {% for order in order_list %}
     <div class="row">
-      <div class="col-xs-1 text-right">{{ order.id }}</div>
+      <div class="col-xs-1 text-right">
+        <a href="{% url 'zipline_app:orders-detail' order.id %}">#{{ order.id }}</a>
+      </div>
       <div class="col-xs-2">{{ order.pub_date }}</div>
       <div class="col-xs-2">
         <a href="{% url 'zipline_app:assets-list' %}">{{ order.asset.asset_symbol }}</a>
@@ -18,11 +20,7 @@
 {#      <a href="{% url 'zipline_app:accounts-list' %}">{{ order.account.account_symbol }}</a>,#}
       <div class="col-xs-2">{{order.account.account_symbol}}</div>
       <div class="col-xs-2 text-right">{{ order.amount }}</div>
-      <div class="col-xs-2">{{ order.order_text }}</div>
-      <div class="col-xs-2">
-        <a href="{% url 'zipline_app:orders-update' order.id %}">Edit</a>
-        <a href="{% url 'zipline_app:orders-delete' order.id %}">Delete</a>
-      </div>
+      <div class="col-xs-4">{{ order.order_text }}</div>
     </div>
 {% empty %}
     <div class="alert alert-info">No orders yet.</div>

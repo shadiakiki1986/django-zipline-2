@@ -4,18 +4,18 @@
 {% block content %}
 <h1>Accounts</h1>
 
+<!-- link to create new account
 <a href="{% url 'zipline_app:accounts-new' %}">New</a>
+-->
 
 {% include "zipline_app/account/_account_form.html" %}
 
     {% for account in account_list %}
     <div class="row">
-      <div class="col-xs-1 text-right">{{ account.id }}</div>
-      <div class="col-xs-3">{{ account.account_symbol }}</div>
-      <div class="col-xs-2">
-        <a href="{% url 'zipline_app:accounts-update' account.id %}">Edit</a>
-        <a href="{% url 'zipline_app:accounts-delete' account.id %}">Delete</a>
+      <div class="col-xs-1 text-right">
+        <a href="{% url 'zipline_app:accounts-detail' account.id %}">#{{ account.id }}</a>
       </div>
+      <div class="col-xs-3">{{ account.account_symbol }}</div>
     </div>
 {% empty %}
     <div class="alert alert-info">No accounts yet.</div>

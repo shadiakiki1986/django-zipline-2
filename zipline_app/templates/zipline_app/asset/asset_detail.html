@@ -1,0 +1,15 @@
+{% extends "zipline_app/base.html" %}
+
+{% block content %}
+
+Asset Details
+<ul>
+  <li>{{asset.asset_symbol}}</li>
+  <li>{{asset.asset_name}}</li>
+  <li>{{asset.asset_exchange}}</li>
+</ul>
+
+<a href="{% url 'zipline_app:assets-update' asset.id %}">Edit</a>
+<a href="{% url 'zipline_app:assets-delete' asset.id %}">Delete</a>
+
+{% endblock %}

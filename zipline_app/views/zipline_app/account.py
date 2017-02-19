@@ -28,6 +28,10 @@ class AccountDelete(generic.DeleteView):
     success_url = reverse_lazy('zipline_app:accounts-list')
     template_name = 'zipline_app/account/account_confirm_delete.html'
 
+class AccountDetailView(generic.DetailView):
+    model = Account
+    template_name = 'zipline_app/account/account_detail.html'
+
 class AccountUpdateView(generic.UpdateView):
   model = Account
   fields = ['account_symbol']

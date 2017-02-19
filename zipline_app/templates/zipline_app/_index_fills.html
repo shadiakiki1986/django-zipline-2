@@ -8,7 +8,7 @@
   <div class="col-xs-4">
     <div class="row">
 
-      <div class="col-xs-4">
+      <div class="col-xs-6">
         {% if fill.has_unused %}
         <abbr title="Asset has unmatched fills">
           <span class="glyphicon glyphicon-alert"></span>
@@ -16,27 +16,12 @@
         {% endif %}
       </div>
 
-      <div class="col-xs-4 text-right">
+      <div class="col-xs-6 text-right">
         <abbr title="Order">
           <a href="{% url 'zipline_app:fills-detail' fill.id %}">
             #{{fill.id}}
           </a>
         </abbr>
-
-      </div>
-
-      <div class="col-xs-4">
-        <!-- delete with confirmation
-        <a href="{% url 'zipline_app:fills-delete' fill.id %}">Delete</a>
-        -->
-
-        <!-- delete without confirmation -->
-        <form action="{% url 'zipline_app:fills-delete' fill.id %}" method="post" class="form">
-          {% csrf_token %}
-          <!-- hidden form field -->
-          <input type="hidden" name="source" value="combined">
-          {% bootstrap_button content="Del" icon="minus" button_type="submit" %}
-        </form>
 
       </div>
 

@@ -19,6 +19,8 @@ urlpatterns = [
     url(r'^accounts/$', account.AccountList.as_view(), name='accounts-list'),
     # ex: /<root>/accounts/new/
     url(r'^accounts/new/$', account.AccountCreate.as_view(), name='accounts-new'),
+    # ex: /<root>/accounts/5/
+    url(r'^accounts/(?P<pk>[0-9]+)/$', account.AccountDetailView.as_view(), name='accounts-detail'),
     # ex: /<root>/accounts/1/update/
     url(r'^accounts/(?P<pk>[0-9]+)/update/$', account.AccountUpdateView.as_view(), name='accounts-update'),
     # ex: /<root>/accounts/1/delete/
@@ -28,6 +30,8 @@ urlpatterns = [
     url(r'^assets/$', asset.AssetList.as_view(), name='assets-list'),
     # ex: /<root>/assets/new/
     url(r'^assets/new/$', asset.AssetCreate.as_view(), name='assets-new'),
+    # ex: /<root>/assets/5/
+    url(r'^assets/(?P<pk>[0-9]+)/$', asset.AssetDetailView.as_view(), name='assets-detail'),
     # ex: /<root>/assets/1/delete/
     url(r'^assets/(?P<pk>[0-9]+)/delete/$', asset.AssetDelete.as_view(), name='assets-delete'),
     # ex: /<root>/assets/1/update/

@@ -12,14 +12,14 @@
 
 {% for asset in asset_list %}
     <div class="row">
-      <div class="col-xs-1 text-right">{{ asset.id }}</div>
+      <div class="col-xs-1 text-right">
+        <a href="{% url 'zipline_app:assets-detail' asset.id %}">
+          #{{ asset.id }}
+        </a>
+      </div>
       <div class="col-xs-2">{{ asset.asset_symbol }}</div>
       <div class="col-xs-2">{{ asset.asset_name }}</div>
-      <div class="col-xs-2">{{ asset.asset_exchange }}</div>
-      <div class="col-xs-1">
-        <a href="{% url 'zipline_app:assets-update' asset.id %}">Edit</a>
-        <a href="{% url 'zipline_app:assets-delete' asset.id %}">Delete</a>
-      </div>
+      <div class="col-xs-3">{{ asset.asset_exchange }}</div>
     </div>
 {% empty %}
     <div class="alert alert-info">No assets yet.</div>

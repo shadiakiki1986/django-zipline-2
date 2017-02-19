@@ -28,6 +28,10 @@ class AssetDelete(generic.DeleteView):
     success_url = reverse_lazy('zipline_app:assets-list')
     template_name = 'zipline_app/asset/asset_confirm_delete.html'
 
+class AssetDetailView(generic.DetailView):
+    model = Asset
+    template_name = 'zipline_app/asset/asset_detail.html'
+
 class AssetUpdateView(generic.UpdateView):
   model = Asset
   fields = ['asset_symbol','asset_name','asset_exchange']

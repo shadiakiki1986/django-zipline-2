@@ -53,6 +53,7 @@ _Unticked are still TODO_
 - [ ] during loading of page after asset create, block page (display "loading...")
   - might also want to automatically re-open modals if for example the new-fill modal was opened followed by the new-asset modal
 - [ ] favicon.ico
+- [ ] use order vote as order close
 
 ## [ ] Version 0.0.2
 - [x] no need to update zlmodel upon asset changes
@@ -81,9 +82,9 @@ _Unticked are still TODO_
 - [x] fill quantity too large yields error: Python int too large to convert to SQLite INTEGER
 - [ ] more index
   - [ ] combine OrderCreate and OrderForm classes? (same for FillCreate/FillForm and others)
-  - [ ] edit in details
+  - [x] edit in details
     - this is related to drafting (in version 0.1.1) .. so not sure if should postpone
-  - [ ] delete buttons are ugly and overlap with timestamp
+  - [x] delete buttons are ugly and overlap with timestamp
   - [ ] times not displayed in beirut timezone
   - [ ] replace heart with github logo/link
   - [ ] add column explicitly calculated for pending quantities

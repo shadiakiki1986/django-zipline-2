@@ -10,16 +10,14 @@
 
     {% for fill in fill_list %}
     <div class="row">
-      <div class="col-xs-1">{{ fill.id }}</div>
+      <div class="col-xs-1">
+        <a href="{% url 'zipline_app:fills-detail' fill.id %}">#{{ fill.id }}</a>
+      </div>
       <div class="col-xs-2">{{ fill.pub_date }}</div>
       <div class="col-xs-2"><a href="{% url 'zipline_app:assets-list' %}">{{ fill.asset.asset_symbol }}</a></div>
       <div class="col-xs-2">{{ fill.fill_qty|intcomma}}</div>
       <div class="col-xs-2">{{ fill.fill_price }}</div>
-      <div class="col-xs-2">{{ fill.fill_text }}</div>
-      <div class="col-xs-1">
-        <a href="{% url 'zipline_app:fills-update' fill.id %}">Edit</a>
-        <a href="{% url 'zipline_app:fills-delete' fill.id %}">Delete</a>
-      </div>
+      <div class="col-xs-3">{{ fill.fill_text }}</div>
     </div>
 {% empty %}
     <div class="alert alert-warning">No fills yet.</div>

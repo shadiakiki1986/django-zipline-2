@@ -1,5 +1,6 @@
 {% extends "zipline_app/base.html" %}
 {% load humanize %}
+{% load bootstrap3 %}
 
 {% block content %}
 
@@ -9,9 +10,21 @@ Fill Details
   <li>{{fill.asset.asset_symbol}}</li>
   <li>{{fill.fill_qty|intcomma}}</li>
   <li>{{fill.fill_price}}</li>
-  <li>{{ fill.fill_text }}</li>
+  <li>Comment: {{ fill.fill_text }}</li>
 </ul>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<!-- delete with confirmation -->
+<a href="{% url 'zipline_app:fills-delete' fill.id %}">Delete</a>
+
+<!-- delete without confirmation
+<form action="{% url 'zipline_app:fills-delete' fill.id %}" method="post" class="form">
+  {% csrf_token %}
+  {% bootstrap_button content="Del" icon="minus" button_type="submit" %}
+</form>
+-->
+
+<a href="{% url 'zipline_app:fills-update' fill.id %}">Edit</a>
 
 {% endblock %}

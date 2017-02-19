@@ -3,6 +3,14 @@
 
 <form action="" method="post" class="form">
   {% csrf_token %}
-  {% bootstrap_form form layout='horizontal' %}
-  {% bootstrap_button content="Save" button_type="submit" %}
+
+  <div class="row">
+    <div class="col-xs-10">
+      {% bootstrap_form form layout='horizontal' %}
+    </div>
+    <div class="col-xs-2">
+      {% bootstrap_button content="Add" icon="plus" button_type="submit" button_class="btn-primary" %}
+    </div>
+  </div>
+
 </form>

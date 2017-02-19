@@ -1,5 +1,6 @@
 {% extends "zipline_app/base.html" %}
 {% load humanize %}
+{% load bootstrap3 %}
 
 {% block content %}
 <h1>{{ order.order_text }}</h1>
@@ -10,7 +11,7 @@ Order Details
   <li><font color="red">{{order.filled|intcomma}}</font> / {{order.amount|intcomma}}</li>
   <li>{{order.pub_date}}</li>
   <li>{{order.account.account_symbol}}</li>
-  <li>{{ order.order_text }}</li>
+  <li>Comment: {{ order.order_text }}</li>
 </ul>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
@@ -33,6 +34,7 @@ Order Details
 {% endif %}
 </font>
 
+<!--
 Fill
 <form action="{% url 'zipline_app:vote' order.id %}" method="post">
 {% csrf_token %}
@@ -46,5 +48,18 @@ Fill
 {% endfor %}
 <input type="submit" value="Vote" />
 </form>
+-->
+
+        <!-- delete with confirmation -->
+        <a href="{% url 'zipline_app:orders-delete' order.id %}">Delete</a>
+
+        <!-- delete without confirmation
+        <form action="{% url 'zipline_app:orders-delete' order.id %}" method="post" class="form">
+          {% csrf_token %}
+          {% bootstrap_button content="Del" icon="minus" button_type="submit" %}
+        </form>
+        -->
+
+        <a href="{% url 'zipline_app:orders-update' order.id %}">Edit</a>
 
 {% endblock %}
