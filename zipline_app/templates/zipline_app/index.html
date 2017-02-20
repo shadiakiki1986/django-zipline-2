@@ -22,6 +22,17 @@
 </div>
 {% endif %}
 
+{% if fills_required_per_asset|length > 0 %}
+<div class="alert alert-danger">
+  Assets with required fills:
+  <ul>
+  {% for asset,qty in fills_required_per_asset.items %}
+    <li>{{asset.asset_symbol}}: {{qty}}</li>
+  {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
   <div>
    {% include 'zipline_app/_index_create.html' %}
 

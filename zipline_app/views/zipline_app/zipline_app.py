@@ -17,6 +17,14 @@ class IndexView(generic.ListView):
     template_name = 'zipline_app/index.html'
     context_object_name = 'combined'
 
+    def fills_required_per_asset(self):
+      fills = {}
+      for order in Order.objects.all():
+        if order.filled()!=order.amount:
+          if order.asset not in fills: fills[order.asset]=0
+          fills[order.asset]+=order.amount - order.filled()
+      return fills
+
     def get_queryset(self):
         combined = []
         for minute in sorted(ZlModel.all_minutes, reverse=True):
@@ -58,6 +66,7 @@ class IndexView(generic.ListView):
         context["asset_form"]=AssetForm()
         context["account_form"]=AccountForm()
         context["zl_unused"] = ZlModel.zl_unused.items()
+        context["fills_required_per_asset"]=self.fills_required_per_asset()
         return context
 
 class ResultsView(generic.DetailView):

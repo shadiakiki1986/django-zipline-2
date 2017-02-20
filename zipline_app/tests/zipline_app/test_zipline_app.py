@@ -241,3 +241,20 @@ class OrderViewTests(TestCase):
 #
 #        ac1=create_account("test")
 #        get_assert_contains(self,"Successfully created account")
+
+    def test_fills_required_per_asset(self):
+        o1 = create_order(order_text="test", days=-10, asset=self.asset, amount=10, account=self.acc1)
+        sleep(0.05)
+        response = self.client.get(reverse('zipline_app:index'))
+        self.assertEqual(response.context['fills_required_per_asset'], {self.asset:10})
+        self.assertContains(response, "Assets with required fills")
+        self.assertContains(response, self.asset.asset_symbol+": 10")
+
+        f1 = create_fill(fill_text="test?",days=-10, asset=self.asset, fill_qty=5, fill_price=2)
+        response = self.client.get(reverse('zipline_app:index'))
+        self.assertEqual(response.context['fills_required_per_asset'], {self.asset:5})
+
+        f2 = create_fill(fill_text="test?",days=-10, asset=self.asset, fill_qty=5, fill_price=2)
+        response = self.client.get(reverse('zipline_app:index'))
+        self.assertEqual(response.context['fills_required_per_asset'], {})
+        self.assertNotContains(response, "Assets with required fills")

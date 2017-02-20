@@ -31,6 +31,7 @@ _Unticked are still TODO_
   - [ ] add undo for accidental deletes (or display history somewhere)
     - do I still need this if it is only open to an admin user?
     - there will be a "cancel order" button for regular users (which can be followed by a delete)
+- [ ] make asset exchange foreign key and display alert if ordering/filling during exchange closed time
 
 ## [ ] Version 0.1.0
 - [ ] release
@@ -61,6 +62,7 @@ _Unticked are still TODO_
   - might also want to automatically re-open modals if for example the new-fill modal was opened followed by the new-asset modal
 - [ ] favicon.ico
 - [ ] use order vote as order close
+- [ ] fill from index required fills per asset
 
 ## [ ] Version 0.0.2
 - [x] no need to update zlmodel upon asset changes
@@ -91,10 +93,10 @@ _Unticked are still TODO_
   - [x] edit in details
     - this is related to drafting (in version 0.1.1) .. so not sure if should postpone
   - [x] delete buttons are ugly and overlap with timestamp
+  - [x] ~~add column explicitly calculated for pending quantities~~
+    - display a summary of pending quantities per asset
   - [ ] times not displayed in beirut timezone
   - [ ] replace heart with github logo/link
-  - [ ] add column explicitly calculated for pending quantities
-    - or perhaps just display a summary of pending quantities per asset?
   - [ ] when unused fills are negative, they dont show up
 - [ ] combine OrderCreate and OrderForm classes? (same for FillCreate/FillForm and others)
 - [ ] time zones!
@@ -109,13 +111,13 @@ _Unticked are still TODO_
   - how to truncate the data (do not show past orders that were filled, or past fills that completed an order)
   - keep showing open orders or unused fills
   - etc
-- drop redundant load of css/js from html templates, except base.html
+- [ ] drop redundant load of css/js from html templates, except base.html
   ```
   {# Load CSS and JavaScript #}
   {% bootstrap_css %}
   {% bootstrap_javascript %}
   ```
-- what is `poll_extras` in `index.html`
+- [ ] what is `poll_extras` in `index.html`
 
 ## [x] Version 0.0.1
 - [x] django app from tutorial customized to blotter
