@@ -13,7 +13,6 @@
   {% bootstrap_css %}
   {% bootstrap_javascript jquery=1 %}
 
-  <link rel="stylesheet" type="text/css" href="{% static 'zipline_app/style.css' %}" />
   <title>Blotter</title>
 </head>
 
@@ -28,24 +27,33 @@
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="#">
-            FFA Dubai Blotter
+            FFA Dubai
           </a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="{% url 'zipline_app:index' %}">Side-by-side view</a></li>
-            <li><a href="{% url 'zipline_app:ordersOnly' %}">Consecutive view</a></li>
+            <li class="active"><a href="{% url 'zipline_app:index' %}">Blotter</a></li>
             <li><a href="{% url 'zipline_app:accounts-list' %}">Accounts</a></li>
             <li><a href="{% url 'zipline_app:assets-list' %}">Assets</a></li>
             <li><a href="{% url 'zipline_app:orders-list' %}">Orders</a></li>
             <li><a href="{% url 'zipline_app:fills-list' %}">Fills</a></li>
             <li><a href="{% url 'admin:index' %}">Admin</a></li>
+            <li><a href="{% url 'zipline_app:ordersOnly' %}">Engine</a></li>
           </ul>
 
           <!-- http://getbootstrap.com/components/#navbar-links -->
           <div class="nav navbar-nav navbar-right navbar-text">
-            {% get_current_timezone as TIME_ZONE %}
-            {{TIME_ZONE}}
+            <div class="row">
+              <div class="col-xs-6">
+                {% get_current_timezone as TIME_ZONE %}
+                {{TIME_ZONE}}
+              </div>
+              <div class="col-xs-6">
+                <a href="http://github.com/shadiakiki1986/django-zipline/" target="_blank">
+                  <img src="{% static 'zipline_app/images/github-icon.png' %}" alt="github" width="30px" />
+                </a>
+              </div>
+            </div>
           </div>
 
         </div><!--/.nav-collapse -->

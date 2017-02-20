@@ -63,46 +63,6 @@ _Unticked are still TODO_
 - [ ] favicon.ico
 - [ ] use order vote as order close
 - [ ] fill from index required fills per asset
-
-## [ ] Version 0.0.2
-- [x] no need to update zlmodel upon asset changes
-- [x] nav bar active page should be changed with jquery upon page load
-- [x] UX
-  - [x] rename "symbol" on index to "asset" (show name using tooltip?)
-  - create in index
-    - [x] in-page create account: send django message upon create
-    - [x] replace all inline creates with divs that show up when clicking on add new order/fill
-      - [x] not to be "bootstrap modal" because user needs to keep sight of orders/fills (same reason why not just going to a new page completely)
-      - [x] use same concept as one-line create, but make the form take the whole page width (instead of displaying the order form on the left and the fill form on the right)
-      - [x] quantity input too small
-      - [x] asset add button unintuitive
-      - [x] symbol dropdown is too small
-      - [x] send django message when asset/account/order/fill created from index
-        - [x] ~~how do multiple django messages sent in one request get displayed?~~
-          - I dont have this case ATM
-        - [x] also when order/fill deleted
-          - assets/accounts to be dealt with separately since they''re not in direct display on the index page (possibly think of a "clean up" button)
-
-- [w] travis-ci.org
-- [x] ~~bug: create order at t1, then create at `t2>t1`, then drop the one at t1, but the minute t1 is still there in combined view~~
-  - I couldnt reproduce this bug anymore .. so cancelling
-- [x] ~~test failing for in-page create account~~
-  - doesnt seem to fail anymore
-- [x] fill quantity too large yields error: Python int too large to convert to SQLite INTEGER
-- [ ] more index
-  - [x] edit in details
-    - this is related to drafting (in version 0.1.1) .. so not sure if should postpone
-  - [x] delete buttons are ugly and overlap with timestamp
-  - [x] ~~add column explicitly calculated for pending quantities~~
-    - display a summary of pending quantities per asset
-  - [ ] replace heart with github logo/link
-- [x] bug: when unused fills are negative, they dont show up
-- [x] fill price cannot be negative (zipline constraint)
-- [x] bug: create fill with qty 0 yields error
-- [x] time zones!
-  - times not displayed in beirut timezone
-  - ~~omitting timezones would yield django error about timezone-naive timestamp uncomparable to timezone-aware timestamp~~
-- [x] add section "XX fills required to close open orders"
 - [ ] bug: fill that gets its timestamp changed to the same as another fill, then changed back out of that timestamp, disappears from the combined view
 - [ ] combine OrderCreate and OrderForm classes? (same for FillCreate/FillForm and others)
 - [ ] order list, fills list: order by desc `pub_date`
@@ -121,7 +81,48 @@ _Unticked are still TODO_
   {% bootstrap_css %}
   {% bootstrap_javascript %}
   ```
-- [ ] what is `poll_extras` in `index.html`
+- [w] travis-ci.org
+
+
+## [x] Version 0.0.2
+- [x] no need to update zlmodel upon asset changes
+- [x] nav bar active page should be changed with jquery upon page load
+- [x] UX
+  - [x] rename "symbol" on index to "asset" (show name using tooltip?)
+  - create in index
+    - [x] in-page create account: send django message upon create
+    - [x] replace all inline creates with divs that show up when clicking on add new order/fill
+      - [x] not to be "bootstrap modal" because user needs to keep sight of orders/fills (same reason why not just going to a new page completely)
+      - [x] use same concept as one-line create, but make the form take the whole page width (instead of displaying the order form on the left and the fill form on the right)
+      - [x] quantity input too small
+      - [x] asset add button unintuitive
+      - [x] symbol dropdown is too small
+      - [x] send django message when asset/account/order/fill created from index
+        - [x] ~~how do multiple django messages sent in one request get displayed?~~
+          - I dont have this case ATM
+        - [x] also when order/fill deleted
+          - assets/accounts to be dealt with separately since they''re not in direct display on the index page (possibly think of a "clean up" button)
+
+- [x] ~~bug: create order at t1, then create at `t2>t1`, then drop the one at t1, but the minute t1 is still there in combined view~~
+  - I couldnt reproduce this bug anymore .. so cancelling
+- [x] ~~test failing for in-page create account~~
+  - doesnt seem to fail anymore
+- [x] fill quantity too large yields error: Python int too large to convert to SQLite INTEGER
+- [x] more index
+  - [x] edit in details
+    - this is related to drafting (in version 0.1.1) .. so not sure if should postpone
+  - [x] delete buttons are ugly and overlap with timestamp
+  - [x] ~~add column explicitly calculated for pending quantities~~
+    - display a summary of pending quantities per asset
+- [x] bug: when unused fills are negative, they dont show up
+- [x] fill price cannot be negative (zipline constraint)
+- [x] bug: create fill with qty 0 yields error
+- [x] time zones!
+  - times not displayed in beirut timezone
+  - ~~omitting timezones would yield django error about timezone-naive timestamp uncomparable to timezone-aware timestamp~~
+- [x] add section "XX fills required to close open orders"
+- [x] replace heart with github logo/link
+
 
 ## [x] Version 0.0.1
 - [x] django app from tutorial customized to blotter
