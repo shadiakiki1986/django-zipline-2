@@ -98,11 +98,11 @@ _Unticked are still TODO_
   - [ ] times not displayed in beirut timezone
   - [ ] replace heart with github logo/link
   - [ ] when unused fills are negative, they dont show up
+- [x] bug: create fill with qty 0 yields error
+- [x] time zones!
+  - omitting timezones would yield django error about timezone-naive timestamp uncomparable to timezone-aware timestamp
 - [ ] combine OrderCreate and OrderForm classes? (same for FillCreate/FillForm and others)
 - [ ] order list, fills list: order by desc `pub_date`
-- [x] bug: create fill with qty 0 yields error
-- [ ] time zones!
-  - omitting timezones would yield django error about timezone-naive timestamp uncomparable to timezone-aware timestamp
 - [ ] if fill entered before/after order, make it easy to re-attach to order timestamp
 - [ ] add "order status" flag: working, closed, ...
   - or should this be implied from the data? (with the default always being "working")

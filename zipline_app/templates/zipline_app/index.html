@@ -1,6 +1,5 @@
 {% extends "zipline_app/base.html" %}
 {% load humanize %}
-{% load poll_extras %}
 
 {# Load the tag library #}
 {% load bootstrap3 %}
@@ -106,11 +105,22 @@
 
     {% for minute in combined %}
     <hr style="margin-top:5px;margin-bottom:5px">
+
+    {# https://docs.djangoproject.com/en/1.10/ref/templates/builtins/#ifchanged #}
+    {% ifchanged minute.minute.date %}
+      <div class="row text-center text-info">
+        <br>&nbsp;
+        {# {{ minute.minute.date }} #}
+        {{minute.minute|date:"Y-m-d"}}
+        <br>&nbsp;
+      </div>
+    {% endifchanged %}
+
     <div class="row">
         <div class="col-xs-1 text-right">
           <em>
-            <div class="row"><b>{{minute.minute|strftime:"%H:%M"}}</b></div>
-            <div class="row small text-muted">{{minute.minute|strftime:"%Y-%m-%d"}}</div>
+            <div class="row"><b>{{minute.minute|date:"H:i"}}</b></div>
+            {#<div class="row small text-muted">{{minute.minute|date:"Y-m-d"}}</div>#}
           </em>
         </div>
 
@@ -150,8 +160,8 @@
 
         <div class="col-xs-1 text-left">
           <em>
-            <div class="row"><b>{{minute.minute|strftime:"%H:%M"}}</b></div>
-            <div class="row small text-muted">{{minute.minute|strftime:"%Y-%m-%d"}}</div>
+            <div class="row"><b>{{minute.minute|date:"H:i"}}</b></div>
+            {#<div class="row small text-muted">{{minute.minute|date:"Y-m-d"}}</div>#}
           </em>
         </div>
 

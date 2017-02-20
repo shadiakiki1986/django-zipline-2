@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 {% load bootstrap3 %}
 {% load static %}
+{% load tz %}
+
 <html lang="en">
 <head>
   <!-- http://getbootstrap.com/getting-started/#template -->
@@ -40,13 +42,14 @@
             <li><a href="{% url 'admin:index' %}">Admin</a></li>
           </ul>
 
-          <!--
-            Provision for notifications area from sub-templates
-            Look at the example at http://getbootstrap.com/components/#navbar-default for inspiration
-          -->
-          {% block notifications %}
-          {% endblock %}
+          <!-- http://getbootstrap.com/components/#navbar-links -->
+          <div class="nav navbar-nav navbar-right navbar-text">
+            {% get_current_timezone as TIME_ZONE %}
+            {{TIME_ZONE}}
+          </div>
+
         </div><!--/.nav-collapse -->
+
       </div>
     </nav>
 

@@ -13,7 +13,7 @@
       <div class="col-xs-1 text-right">
         <a href="{% url 'zipline_app:orders-detail' order.id %}">#{{ order.id }}</a>
       </div>
-      <div class="col-xs-2">{{ order.pub_date }}</div>
+      <div class="col-xs-2">{{ order.pub_date|date:"Y-m-d H:i:s" }}</div>
       <div class="col-xs-2">
         <a href="{% url 'zipline_app:assets-list' %}">{{ order.asset.asset_symbol }}</a>
       </div>
