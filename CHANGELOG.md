@@ -38,6 +38,12 @@ _Unticked are still TODO_
 
 
 ## [ ] Version 0.0.3
+- [ ] host on heroku using free dyno hours?
+  - will require moving the database to postgres
+  - https://devcenter.heroku.com/articles/free-dyno-hour-faq
+  - https://devcenter.heroku.com/articles/getting-started-with-python#introduction
+  - or azure?
+  - https://blogs.msdn.microsoft.com/matt-harrington/2014/04/18/how-to-host-your-django-apps-on-azure-for-free/
 - [ ] link fills to transactions/orders
   - but `fills_as_dict_df` loses the original IDs (check `test_fills_as_dict_df`)
   - but transactions have no reference from zipline to the fills
