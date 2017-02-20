@@ -5,6 +5,7 @@ from django.utils import timezone
 import datetime
 from django.urls import reverse
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.forms import fields
 
 from .asset import Asset
 from .zlmodel import ZlModel
@@ -20,6 +21,28 @@ def validate_nonzero(value):
             params={'value': value},
         )
 
+# Inspired by django.forms.fields.py#FloatField
+class PositiveFloatFieldForm(fields.FloatField):
+  default_error_messages = {
+    'invalid': _('Enter a positive number.'),
+  }
+  def validate(self, value):
+    super(PositiveFloatFieldForm, self).validate(value)
+    if value<0:
+      raise ValidationError(self.error_messages['invalid'], code='invalid')
+    return value
+
+  def widget_attrs(self, widget):
+    attrs = super(PositiveFloatFieldForm, self).widget_attrs(widget)
+    attrs['min']=0
+    return attrs
+
+class PositiveFloatFieldModel(models.FloatField):
+  def formfield(self, **kwargs):
+    defaults = {'form_class': PositiveFloatFieldForm}
+    defaults.update(kwargs)
+    return super(PositiveFloatFieldModel, self).formfield(**defaults)
+
 class Fill(models.Model):
     # 2017-01-12: unlink orders from fills and use zipline engine to perform matching
     # order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -29,9 +52,9 @@ class Fill(models.Model):
       default=0,
       validators=[MaxValueValidator(1000000), MinValueValidator(-1000000), validate_nonzero]
     )
-    fill_price = models.FloatField(
+    fill_price = PositiveFloatFieldModel(
       default=0,
-      validators=[MaxValueValidator(1000000), MinValueValidator(-1000000)]
+      validators=[MaxValueValidator(1000000), MinValueValidator(0), validate_nonzero],
     )
     pub_date = models.DateTimeField('date published',default=timezone.now)
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)

@@ -95,18 +95,19 @@ _Unticked are still TODO_
   - [x] delete buttons are ugly and overlap with timestamp
   - [x] ~~add column explicitly calculated for pending quantities~~
     - display a summary of pending quantities per asset
-  - [ ] times not displayed in beirut timezone
   - [ ] replace heart with github logo/link
-  - [ ] when unused fills are negative, they dont show up
+- [ ] bug: when unused fills are negative, they dont show up
+- [x] fill price cannot be negative (zipline constraint)
 - [x] bug: create fill with qty 0 yields error
 - [x] time zones!
-  - omitting timezones would yield django error about timezone-naive timestamp uncomparable to timezone-aware timestamp
+  - times not displayed in beirut timezone
+  - ~~omitting timezones would yield django error about timezone-naive timestamp uncomparable to timezone-aware timestamp~~
+- [x] add section "XX fills required to close open orders"
 - [ ] combine OrderCreate and OrderForm classes? (same for FillCreate/FillForm and others)
 - [ ] order list, fills list: order by desc `pub_date`
 - [ ] if fill entered before/after order, make it easy to re-attach to order timestamp
 - [ ] add "order status" flag: working, closed, ...
   - or should this be implied from the data? (with the default always being "working")
-- [ ] add section "XX fills required to close open orders"
 - [ ] inline alert of unmatched fills in side-by-side view has a popup that could display the number of unused fills
   - would this replace the separate section?
 - [ ] how to handle the index table when data becomes too much

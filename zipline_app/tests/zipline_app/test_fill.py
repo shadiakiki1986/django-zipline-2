@@ -37,10 +37,17 @@ class FillViewsTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    def test_new_fill_zeroqty(self):
+    def test_new_fill_zero_qty(self):
         url = reverse('zipline_app:fills-new')
         time = '2015-01-01 06:00:00'
         f1={'pub_date':time,'asset':self.a1a.id,'fill_qty':0,'fill_price':1}
         response = self.client.post(url,f1)
         self.assertContains(response,"Quantity 0 is not allowed")
+
+    def test_new_fill_negative_price(self):
+        url = reverse('zipline_app:fills-new')
+        time = '2015-01-01 06:00:00'
+        f1={'pub_date':time,'asset':self.a1a.id,'fill_qty':1,'fill_price':-1}
+        response = self.client.post(url,f1)
+        self.assertContains(response,"Enter a positive number.")
 
