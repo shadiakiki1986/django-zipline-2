@@ -99,6 +99,8 @@ _Unticked are still TODO_
   - [ ] replace heart with github logo/link
   - [ ] when unused fills are negative, they dont show up
 - [ ] combine OrderCreate and OrderForm classes? (same for FillCreate/FillForm and others)
+- [ ] order list, fills list: order by desc `pub_date`
+- [x] bug: create fill with qty 0 yields error
 - [ ] time zones!
   - omitting timezones would yield django error about timezone-naive timestamp uncomparable to timezone-aware timestamp
 - [ ] if fill entered before/after order, make it easy to re-attach to order timestamp

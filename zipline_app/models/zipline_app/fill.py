@@ -9,7 +9,16 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from .asset import Asset
 from .zlmodel import ZlModel
 
-# Create your models here.
+# Django docs: writing validators
+# https://docs.djangoproject.com/en/1.10/ref/validators/#writing-validators
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
+def validate_nonzero(value):
+    if value == 0:
+        raise ValidationError(
+            _('Quantity %(value)s is not allowed'),
+            params={'value': value},
+        )
 
 class Fill(models.Model):
     # 2017-01-12: unlink orders from fills and use zipline engine to perform matching
@@ -18,11 +27,11 @@ class Fill(models.Model):
     votes = models.IntegerField(default=0)
     fill_qty = models.IntegerField(
       default=0,
-      validators=[MaxValueValidator(1000000),MinValueValidator(-1000000)]
+      validators=[MaxValueValidator(1000000), MinValueValidator(-1000000), validate_nonzero]
     )
     fill_price = models.FloatField(
       default=0,
-      validators=[MaxValueValidator(1000000),MinValueValidator(-1000000)]
+      validators=[MaxValueValidator(1000000), MinValueValidator(-1000000)]
     )
     pub_date = models.DateTimeField('date published',default=timezone.now)
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)

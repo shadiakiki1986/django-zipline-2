@@ -47,6 +47,20 @@ class OrderGeneralViewsTests(TestCase):
         response = self.client.post(url,{'pub_date':time,'asset':self.a1a.id,'amount':largeqty,'account':self.acc1.id})
         self.assertContains(response,"Ensure this value is less than or equal to")
 
+    def test_new_order_timezone(self):
+        url = reverse('zipline_app:orders-new')
+        time = '2015-01-01 06:00:00'
+        o1={'pub_date':time,'asset':self.a1a.id,'amount':1,'account':self.acc1.id}
+        response = self.client.post(url,o1,follow=True)
+        self.assertContains(response,"06:00")
+
+    def test_new_order_zeroqty(self):
+        url = reverse('zipline_app:orders-new')
+        time = '2015-01-01 06:00:00'
+        o1={'pub_date':time,'asset':self.a1a.id,'amount':0,'account':self.acc1.id}
+        response = self.client.post(url,o1)
+        self.assertContains(response,"Quantity 0 is not allowed")
+
 class OrderDetailViewTests(TestCase):
     def setUp(self):
       self.acc1 = create_account(symbol="TEST01")

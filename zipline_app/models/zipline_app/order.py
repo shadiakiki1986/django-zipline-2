@@ -8,7 +8,7 @@ from django.urls import reverse
 from .asset import Asset
 from .account import Account
 from .zlmodel import ZlModel
-from .fill import Fill
+from .fill import Fill, validate_nonzero
 
 from numpy import average
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -21,7 +21,7 @@ class Order(models.Model):
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
     amount = models.IntegerField(
       default=0,
-      validators=[MaxValueValidator(1000000),MinValueValidator(-1000000)]
+      validators=[MaxValueValidator(1000000),MinValueValidator(-1000000), validate_nonzero]
     )
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
