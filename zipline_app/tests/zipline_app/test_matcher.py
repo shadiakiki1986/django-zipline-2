@@ -297,3 +297,157 @@ class MatcherMethodTests(TestCase):
 
         a1a=matcher.env.asset_finder.retrieve_asset(sid=1)
         self.assertEqual(unused, {a1a:5})
+
+    def test_filterBySign(self):
+        MID_DATE_1 = pd.Timestamp('2013-01-07 17:01', tz='utc')
+        fills_all = {
+            1: pd.DataFrame({
+                "close": [3.5,3.5],
+                "volume": [-3,4],
+                "dt": [MID_DATE_1,MID_DATE_1]
+            }).set_index("dt"),
+        }
+
+        MID_DATE_0 = pd.Timestamp('2013-01-07 17:00', tz='utc')
+        orders_all = {
+          1: {
+            1: {"dt": MID_DATE_0, "amount": -10, "style": MarketOrder()},
+            2: {"dt": MID_DATE_0, "amount":  15, "style": MarketOrder()},
+          },
+        }
+
+        act_fills_pos, act_orders_pos = mmm_Matcher.filterBySign(+1,fills_all,orders_all)
+        act_fills_neg, act_orders_neg = mmm_Matcher.filterBySign(-1,fills_all,orders_all)
+
+        exp_fills_pos = {
+            1: pd.DataFrame({
+                "close": [3.5],
+                "volume": [4],
+                "dt": [MID_DATE_1]
+            }).set_index("dt"),
+        }
+        exp_fills_neg = {
+            1: pd.DataFrame({
+                "close": [3.5],
+                "volume": [-3],
+                "dt": [MID_DATE_1]
+            }).set_index("dt"),
+        }
+        exp_orders_pos = {
+          1: {
+            2: {"dt": MID_DATE_0, "amount":  15, "style": orders_all[1][2]['style']},
+          },
+        }
+        exp_orders_neg = {
+          1: {
+            1: {"dt": MID_DATE_0, "amount": -10, "style": orders_all[1][1]['style']},
+          },
+        }
+
+        self.assertEqual(act_fills_pos[1].equals(exp_fills_pos[1]), True)
+        self.assertEqual(act_fills_neg[1].equals(exp_fills_neg[1]), True)
+        self.assertEqual(act_orders_pos,exp_orders_pos)
+        self.assertEqual(act_orders_neg,exp_orders_neg)
+
+    def test_factory_negative_fill_negative_order_partial(self):
+        matcher = mmm_Matcher()
+
+        MID_DATE_1 = pd.Timestamp('2013-01-07 17:01', tz='utc')
+        fills = {
+            1: pd.DataFrame({
+                "close": [3.5],
+                "volume": [-3],
+                "dt": [MID_DATE_1]
+            }).set_index("dt"),
+        }
+
+        MID_DATE_0 = pd.Timestamp('2013-01-07 17:00', tz='utc')
+        orders = {
+          1: {
+            1: {"dt": MID_DATE_0, "amount": -10, "style": MarketOrder()},
+          },
+        }
+
+        assets = {1: a1}
+
+        all_closed, all_txns, open_orders, unused, all_minutes = mmm_factory(matcher, fills, orders, assets)
+
+        self.assertEqual(0,len(all_closed))
+        self.assertEqual(1,len(all_txns))
+
+        a1a=matcher.env.asset_finder.retrieve_asset(sid=1)
+        self.assertEqual(1,len(open_orders))
+        self.assertEqual(1,len(open_orders[a1a]))
+
+    def test_factory_negative_fill_negative_order_complete(self):
+        matcher = mmm_Matcher()
+
+        MID_DATE_1 = pd.Timestamp('2013-01-07 17:01', tz='utc')
+        fills = {
+            1: pd.DataFrame({
+                "close": [3.5],
+                "volume": [-10],
+                "dt": [MID_DATE_1]
+            }).set_index("dt"),
+        }
+
+        MID_DATE_0 = pd.Timestamp('2013-01-07 17:00', tz='utc')
+        orders = {
+          1: {
+            1: {"dt": MID_DATE_0, "amount": -10, "style": MarketOrder()},
+          },
+        }
+
+        assets = {1: a1}
+
+        all_closed, all_txns, open_orders, unused, all_minutes = mmm_factory(matcher, fills, orders, assets)
+
+        self.assertEqual(1,len(all_closed))
+        self.assertEqual(1,len(all_txns))
+
+        a1a=matcher.env.asset_finder.retrieve_asset(sid=1)
+        self.assertEqual(0,len(open_orders))
+        #self.assertEqual(1,len(open_orders[a1a]))
+
+    def test_factory_mixed_fill_mixed_order(self):
+        matcher = mmm_Matcher()
+
+        T1 = pd.Timestamp('2013-01-07 17:01', tz='utc')
+        T2 = pd.Timestamp('2013-01-07 17:02', tz='utc')
+        T3 = pd.Timestamp('2013-01-07 17:03', tz='utc')
+
+        fills = {
+            1: pd.DataFrame({
+                "close": [3,4,5],
+                "volume": [6,-10,5],
+                "dt": [T1,T2,T3]
+            }).set_index("dt"),
+        }
+
+        T0 = pd.Timestamp('2013-01-07 17:00', tz='utc')
+        orders = {
+          1: {
+            1: {"dt": T0, "amount":  10, "style": MarketOrder()},
+            2: {"dt": T0, "amount": -9, "style": MarketOrder()},
+          },
+          2: {
+            1: {"dt": T0, "amount":   3, "style": MarketOrder()},
+          },
+
+        }
+
+        assets = {1: a1, 2: a2}
+
+        all_closed, all_txns, open_orders, unused, all_minutes = mmm_factory(matcher, fills, orders, assets)
+
+        self.assertEqual(2,len(all_closed))
+        self.assertEqual(3,len(all_txns))
+
+        a1a=matcher.env.asset_finder.retrieve_asset(sid=1)
+        a2a=matcher.env.asset_finder.retrieve_asset(sid=2)
+
+        self.assertEqual(1,len(open_orders))
+        #self.assertEqual(0,len(open_orders[a1a]))
+        self.assertEqual(1,len(open_orders[a2a]))
+
+        self.assertEqual(unused[a1a],[-1,1])

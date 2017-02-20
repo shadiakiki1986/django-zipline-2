@@ -15,6 +15,7 @@ Version 0.0.1
 - zipline as matching engine between orders/fills
 - fill can match order before/after it
 - side-by-side view, consecutive view
+- matching engine matches long trades separately from short trades
 
 Also check [CHANGELOG](CHANGELOG.md)
 

@@ -96,13 +96,14 @@ _Unticked are still TODO_
   - [x] ~~add column explicitly calculated for pending quantities~~
     - display a summary of pending quantities per asset
   - [ ] replace heart with github logo/link
-- [ ] bug: when unused fills are negative, they dont show up
+- [x] bug: when unused fills are negative, they dont show up
 - [x] fill price cannot be negative (zipline constraint)
 - [x] bug: create fill with qty 0 yields error
 - [x] time zones!
   - times not displayed in beirut timezone
   - ~~omitting timezones would yield django error about timezone-naive timestamp uncomparable to timezone-aware timestamp~~
 - [x] add section "XX fills required to close open orders"
+- [ ] bug: fill that gets its timestamp changed to the same as another fill, then changed back out of that timestamp, disappears from the combined view
 - [ ] combine OrderCreate and OrderForm classes? (same for FillCreate/FillForm and others)
 - [ ] order list, fills list: order by desc `pub_date`
 - [ ] if fill entered before/after order, make it easy to re-attach to order timestamp

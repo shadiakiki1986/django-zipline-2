@@ -175,9 +175,16 @@ class Matcher:
       fill["high"] = fill["close"]
       fill["low"]  = fill["close"]
 
+      # since the below abs affects the original dataframe, storing the sign for later revert
+      fill["is_neg"] = fill["volume"]<0
+
+      # take absolute value, since negatives are split in the factory function to begin with
+      # and zipline doesnt support negative OHLC volumes (which dont make sense anyway)
+      fill["volume"] = abs(fill["volume"])
+
     # append empty OHLC dataframes for sid's in orders but not (yet) in fills
     # dummy OHLC data with volume=0 so as not to affect orders
-    empty = {"open":[0], "high":[0], "low":[0], "close":[0], "volume":[0], "dt":[minutes[0]]}
+    empty = {"open":[0], "high":[0], "low":[0], "close":[0], "volume":[0], "dt":[minutes[0]], "is_neg":[False]}
     for sid in orders:
       if sid not in fills:
         fills[sid]=pd.DataFrame(empty).set_index("dt")
@@ -206,6 +213,15 @@ class Matcher:
     #print('last date for sid 2', writer.last_date_in_output_for_sid(2))
     #for f in iteritems(fills): print("fill",f)
     writer.write(iteritems(fills))
+
+    # now that the data is written, revert the volume sign and drop the extra columns
+    for _,fill in fills.items():
+      del fill["open"]
+      del fill["high"]
+      del fill["low"]
+      if any(fill["is_neg"]):
+        fill.loc[fill["is_neg"],"volume"] = -1 * fill["volume"]
+      del fill["is_neg"]
 
     #print("temp path: %s" % (path))
     reader = BcolzMinuteBarReader(path)
@@ -320,29 +336,29 @@ class Matcher:
     all_txns = []
     self._orders2blotter(orders,blotter)
     for dt in all_minutes:
-        #print("========================")
+        #logger.debug("========================")
         dt = pd.Timestamp(dt, tz='utc')
         blotter.set_date(dt)
         #self._orders2blotter(orders,blotter)
-        #print("DQ1: %s" % (blotter.current_dt))
-        #print("DQ6", blotter.open_orders)
+        #logger.debug("DQ1: %s" % (blotter.current_dt))
+        #logger.debug("DQ6: %s" % blotter.open_orders)
         new_transactions, new_commissions, closed_orders = blotter.get_transactions(bar_data)
 
-  #      print("Closed orders: %s" % (len(closed_orders)))
-  #      for order in closed_orders:
-  #        print("Closed orders: %s" % (order))
-  #
-  #      print("Transactions: %s" % (len(new_transactions)))
-  #      for txn in new_transactions:
-  #        print("Transactions: %s" % (txn.to_dict()))
-  #
-  #      print("Commissions: %s" % (len(new_commissions)))
-  #      for txn in new_commissions:
-  #        print("Commissions: %s" % (txn))
+        #logger.debug("Closed orders: %s" % (len(closed_orders)))
+        #for order in closed_orders:
+        #  logger.debug("Closed orders: %s" % (order))
+  
+        #logger.debug("Transactions: %s" % (len(new_transactions)))
+        #for txn in new_transactions:
+        #  logger.debug("Transactions: %s" % (txn.to_dict()))
+  
+        #logger.debug("Commissions: %s" % (len(new_commissions)))
+        #for txn in new_commissions:
+        #  logger.debug("Commissions: %s" % (txn))
 
         blotter.prune_orders(closed_orders)
-        #print("Open orders: %s" % (len(blotter.open_orders[a1])))
-        #print("Open order status: %s" % ([o.open for o in blotter.open_orders[a1]]))
+        ##logger.debug("Open orders: %s" % (len(blotter.open_orders[a1])))
+        ##logger.debug("Open order status: %s" % ([o.open for o in blotter.open_orders[a1]]))
 
         all_closed = numpy.concatenate((all_closed,closed_orders))
         all_txns = numpy.concatenate((all_txns, new_transactions))
@@ -355,7 +371,7 @@ class Matcher:
     for sid, fill in fills.items():
       sub = [x.amount for x in all_txns if x.sid.sid==sid]
       extra = fill.volume.sum() - sum(sub)
-      if extra>0:
+      if extra!=0:
         asset = self.env.asset_finder.retrieve_asset(sid=sid,default_none=True)
         # if the asset was already dropped because it was a duplicate, ignore
         if asset is None:
@@ -364,18 +380,72 @@ class Matcher:
         unused[asset]=extra
     return unused
 
+  @staticmethod
+  def filterBySign(mySign, fills_all, orders_all):
+    fills_sub ={}
+    orders_sub={}
+
+    for sid in fills_all:
+      condition = fills_all[sid]['volume']*mySign > 0
+      filtered = fills_all[sid][condition]
+      if len(filtered)>0:
+        # Need .copy
+        # http://stackoverflow.com/a/32682095/4126114
+        fills_sub[sid]=filtered.copy()
+
+    for sid in orders_all:
+      filtered = {}
+      for oid, order in orders_all[sid].items():
+        if order['amount']*mySign>0:
+          filtered[oid]=order
+      if len(filtered)>0:
+        orders_sub[sid]=filtered
+
+    return fills_sub, orders_sub
+
+
 from testfixtures import TempDirectory
 
-def factory(matcher: Matcher, fills: dict, orders: dict, assets: dict):
-  fills, orders = Matcher.chopSeconds(fills, orders)
+def factory(matcher: Matcher, fills_all: dict, orders_all: dict, assets: dict):
+  fills_all, orders_all = Matcher.chopSeconds(fills_all, orders_all)
   matcher.write_assets(assets)
 
+  all_closed=[]
+  all_txns=[]
+  all_open_orders={}
+  all_minutes=[]
+  all_unused={}
+
+  for mySign in [-1,+1]:
+    fills_sub, orders_sub = Matcher.filterBySign(mySign, fills_all, orders_all)
+    with TempDirectory() as tempdir:
+      sub_closed, sub_txns, open_orders_sub, sub_unused, sub_minutes = _factory_sub(matcher, fills_sub, orders_sub, assets)
+
+      all_txns = numpy.concatenate((all_txns, sub_txns))
+      all_closed = numpy.concatenate((all_closed, sub_closed))
+      for sid, ordersList in open_orders_sub.items():
+        if sid not in all_open_orders:
+          all_open_orders[sid]=ordersList
+          continue
+        all_open_orders[sid] = numpy.concatenate(all_open_orders[sid],ordersList)
+      for sid, nf in sub_unused.items():
+        if sid not in all_unused:
+          all_unused[sid]=[nf]
+          continue
+        all_unused[sid].append(nf)
+
+      all_minutes = numpy.concatenate((all_minutes, sub_minutes))
+
+  all_minutes = list(set(all_minutes)) # make unique list
+  return all_closed, all_txns, all_open_orders, all_unused, all_minutes
+
+def _factory_sub(matcher: Matcher, fills: dict, orders: dict, assets: dict):
   with TempDirectory() as tempdir:
     all_minutes = matcher.get_minutes(fills,orders)
     equity_minute_reader = matcher.fills2reader(tempdir, all_minutes, fills, orders)
     blotter = matcher.get_blotter()
     bd = matcher.blotter2bardata(equity_minute_reader, blotter)
     all_closed, all_txns = matcher.match_orders_fills(blotter, bd, all_minutes, orders)
-    unused = matcher.unused_fills(all_txns,fills)
 
+  unused = matcher.unused_fills(all_txns, fills)
   return all_closed, all_txns, blotter.open_orders, unused, all_minutes
