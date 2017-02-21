@@ -38,6 +38,8 @@ _Unticked are still TODO_
 
 
 ## [ ] Version 0.0.3
+- [ ] replace dropdowns with [autocomplete](https://github.com/yourlabs/django-autocomplete-light/)
+  - or maybe just vanilla [jquery ui](https://jqueryui.com/resources/demos/autocomplete/combobox.html)
 - [ ] host on heroku using free dyno hours?
   - will require moving the database to postgres
   - https://devcenter.heroku.com/articles/free-dyno-hour-faq
