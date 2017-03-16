@@ -12,7 +12,7 @@ class OrderForm(ModelForm):
 class FillForm(ModelForm):
   class Meta:
     model = Fill
-    fields = ['pub_date','asset','fill_qty','fill_price','fill_text']
+    fields = ['pub_date','asset','fill_qty','fill_price','fill_text','tt_order_key']
 
 class AssetForm(ModelForm):
   class Meta:

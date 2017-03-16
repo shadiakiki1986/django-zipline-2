@@ -61,7 +61,7 @@ class Fill(models.Model):
     tt_order_key = models.CharField(max_length=20, blank=True)
 
     def __str__(self):
-        return "%s, %s, %s (%s)" % (self.asset.asset_symbol, self.fill_qty, self.fill_price, self.fill_text)
+        return "%s, %s, %s (%s, %s)" % (self.asset.asset_symbol, self.fill_qty, self.fill_price, self.tt_order_key, self.fill_text)
 
     def has_unused(self):
       return self.asset.id in ZlModel.zl_unused
