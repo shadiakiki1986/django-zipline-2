@@ -8,7 +8,9 @@
 Order Details
 <ul>
   <li>{{order.asset.asset_symbol}}</li>
-  <li><font color="red">{{order.filled|intcomma}}</font> / {{order.amount|intcomma}}</li>
+  <li>{{order.order_side}}</li>
+  <li>{{order.amount_unsigned|intcomma}}</li>
+  <li><font color="red">{{order.filled|intcomma}}</font></li>
   <li>{{order.pub_date}}</li>
   <li>{{order.account.account_symbol}}</li>
   <li>Comment: {{ order.order_text }}</li>
@@ -41,7 +43,8 @@ Fill
 {% for fill in order.fill_set.all %}
     <input type="radio" name="fill" id="fill{{ forloop.counter }}" value="{{ fill.id }}" />
     <label for="fill{{ forloop.counter }}">
-       {{fill.fill_qty}},
+       {{fill.fill_side}},
+       {{fill.fill_qty_unsigned}},
        {{fill.fill_price}},
        {{ fill.fill_text }}
     </label><br />

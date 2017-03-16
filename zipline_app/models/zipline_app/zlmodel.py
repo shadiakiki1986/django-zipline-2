@@ -67,7 +67,7 @@ class ZlModel:
 
       ZlModel.fills[fill.asset.id][fill.id]={
         "close": fill.fill_price,
-        "volume": fill.fill_qty,
+        "volume": fill.fill_qty_signed(),
         "dt": pd.Timestamp(fill.pub_date,tz='utc')
       }
 
@@ -98,7 +98,7 @@ class ZlModel:
       ZlModel.orders[order.asset.id][order.id] = {
         "dt": order.pub_date,
         "asset": order.asset.id,
-        "amount": order.amount,
+        "amount": order.amount_signed(),
         "style": MarketOrder()
       }
 

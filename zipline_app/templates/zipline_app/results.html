@@ -3,7 +3,8 @@
 Order Details
 <ul>
   <li>{{order.asset.asset_symbol}}</li>
-  <li>{{order.amount}}</li>
+  <li>{{order.order_side}}</li>
+  <li>{{order.amount_unsigned}}</li>
   <li>{{order.pub_date}}</li>
   <li>{{ order.order_text }}</li>
 </ul>
@@ -12,7 +13,8 @@ Fills
 <ul>
 {% for fill in order.fill_set.all %}
     <li>
-      {{fill.fill_qty}},
+      {{fill.fill_side}},
+      {{fill.fill_qty_unsigned}},
       {{fill.fill_price}},
       {{fill.pub_date}},
       {{ fill.fill_text }}

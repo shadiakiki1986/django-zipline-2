@@ -48,9 +48,9 @@ class Fill(models.Model):
     # order = models.ForeignKey(Order, on_delete=models.CASCADE)
     fill_text = models.CharField(max_length=200, blank=True)
     votes = models.IntegerField(default=0)
-    fill_qty = models.IntegerField(
+    fill_qty_unsigned = models.PositiveIntegerField(
       default=0,
-      validators=[MaxValueValidator(1000000), MinValueValidator(-1000000), validate_nonzero]
+      validators=[MaxValueValidator(1000000), validate_nonzero]
     )
     fill_price = PositiveFloatFieldModel(
       default=0,
@@ -60,8 +60,19 @@ class Fill(models.Model):
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
     tt_order_key = models.CharField(max_length=20, blank=True)
 
+    LONG = 'L'
+    SHORT = 'S'
+    FILL_SIDE_CHOICES = (
+      (LONG, 'Long'),
+      (SHORT, 'Short')
+    )
+    fill_side = models.CharField(max_length=1, choices=FILL_SIDE_CHOICES, default=LONG)
+
+    def fill_qty_signed(self):
+      return self.fill_qty_unsigned * (+1 if self.fill_side==Fill.LONG else -1)
+
     def __str__(self):
-        return "%s, %s, %s (%s, %s)" % (self.asset.asset_symbol, self.fill_qty, self.fill_price, self.tt_order_key, self.fill_text)
+        return "%s, %s %s, %s (%s, %s)" % (self.asset.asset_symbol, self.fill_side, self.fill_qty_unsigned, self.fill_price, self.tt_order_key, self.fill_text)
 
     def has_unused(self):
       return self.asset.id in ZlModel.zl_unused

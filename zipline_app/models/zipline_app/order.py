@@ -19,16 +19,18 @@ class Order(models.Model):
     order_text = models.CharField(max_length=200, blank=True)
     pub_date = models.DateTimeField('date published',default=timezone.now)
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
-    amount = models.IntegerField(
+    amount_unsigned = models.PositiveIntegerField(
       default=0,
-      validators=[MaxValueValidator(1000000),MinValueValidator(-1000000), validate_nonzero]
+      validators=[MaxValueValidator(1000000), validate_nonzero]
     )
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    order_side = models.CharField(max_length=1, choices=Fill.FILL_SIDE_CHOICES, default=Fill.LONG)
 
-    # static variable
+    def amount_signed(self):
+      return self.amount_unsigned * (+1 if self.order_side==Fill.LONG else -1)
 
     def __str__(self):
-        return "%s, %s (%s, %s)" % (self.asset.asset_symbol, self.amount, self.account.account_symbol, self.order_text)
+        return "%s, %s, %s (%s, %s)" % (self.asset.asset_symbol, self.order_side, self.amount_unsigned, self.account.account_symbol, self.order_text)
 
     def was_published_recently(self):
         now = timezone.now()
@@ -36,7 +38,7 @@ class Order(models.Model):
 
     def filled(self):
       if self.id in ZlModel.zl_closed_keyed:
-        return self.amount
+        return self.amount_signed()
       if self.id in ZlModel.zl_open_keyed:
         return ZlModel.zl_open_keyed[self.id].filled
       return 0

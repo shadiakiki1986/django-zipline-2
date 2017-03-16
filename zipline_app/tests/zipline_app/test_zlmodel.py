@@ -15,7 +15,7 @@ class ZlModelMethodTests(TestCase):
         self.assertEqual(len(ZlModel.zl_closed), 0)
 
     def test_update_some_orders_no_fills(self):
-        o = create_order(order_text="test?",days=-0.5, asset=self.a1a, amount=10, account=self.acc1)
+        o = create_order(order_text="test?",days=-0.5, asset=self.a1a, order_side=Fill.LONG, amount_unsigned=10, account=self.acc1)
         self.assertEqual(len(ZlModel.zl_open), 1)
         self.assertEqual(len(ZlModel.zl_closed), 0)
 
@@ -56,31 +56,31 @@ class ZlModelMethodTests(TestCase):
         """
         Test that creating an order sends the signal and adds the order in the static variable
         """
-        o = create_order(order_text="test?",days=-0.5, asset=self.a1a, amount=10, account=self.acc1)
+        o = create_order(order_text="test?",days=-0.5, asset=self.a1a, order_side=Fill.LONG, amount_unsigned=10, account=self.acc1)
         self.assertEqual(len(ZlModel.orders.items()), 1)
         o.delete()
         self.assertEqual(len(ZlModel.orders.items()), 0)
 
     def test_update_some_orders_some_fills(self):
-        o1 = create_order(order_text="test?",days=-0.5, asset=self.a1a, amount=10, account=self.acc1)
-        o2 = create_order(order_text="test?",days=-0.5, asset=self.a2a, amount=10, account=self.acc1)
-        f1 = create_fill(fill_text="test?",days=-0.5, asset=self.a1a, fill_qty=2, fill_price=2)
-        f2 = create_fill(fill_text="test?",days=-0.5, asset=self.a2a, fill_qty=2, fill_price=2)
+        o1 = create_order(order_text="test?",days=-0.5, asset=self.a1a, order_side=Fill.LONG, amount_unsigned=10, account=self.acc1)
+        o2 = create_order(order_text="test?",days=-0.5, asset=self.a2a, order_side=Fill.LONG, amount_unsigned=10, account=self.acc1)
+        f1 = create_fill(fill_text="test?",days=-0.5, asset=self.a1a, fill_side=Fill.LONG, fill_qty_unsigned=2, fill_price=2)
+        f2 = create_fill(fill_text="test?",days=-0.5, asset=self.a2a, fill_side=Fill.LONG, fill_qty_unsigned=2, fill_price=2)
 
         self.assertEqual(len(ZlModel.zl_open), 2)
         self.assertEqual(len(ZlModel.zl_closed), 0)
 
     def test_update_fills_then_orders(self):
-        f1 = create_fill(fill_text="test?",days=-0.5, asset=self.a1a, fill_qty=20, fill_price=2)
-        f2 = create_fill(fill_text="test?",days=-0.5, asset=self.a2a, fill_qty=20, fill_price=2)
-        o1 = create_order(order_text="test?",days=-0.5, asset=self.a1a, amount=10, account=self.acc1)
-        o2 = create_order(order_text="test?",days=-0.5, asset=self.a2a, amount=10, account=self.acc1)
+        f1 = create_fill(fill_text="test?",days=-0.5, asset=self.a1a, fill_side=Fill.LONG, fill_qty_unsigned=20, fill_price=2)
+        f2 = create_fill(fill_text="test?",days=-0.5, asset=self.a2a, fill_side=Fill.LONG, fill_qty_unsigned=20, fill_price=2)
+        o1 = create_order(order_text="test?",days=-0.5, asset=self.a1a, order_side=Fill.LONG, amount_unsigned=10, account=self.acc1)
+        o2 = create_order(order_text="test?",days=-0.5, asset=self.a2a, order_side=Fill.LONG, amount_unsigned=10, account=self.acc1)
 
         self.assertEqual(len(ZlModel.zl_open), 0)
         self.assertEqual(len(ZlModel.zl_closed), 2)
 
     def test_order_deleted(self):
-        o1a = create_order(order_text="test?",days=-0.5, asset=self.a1a, amount=10, account=self.acc1)
+        o1a = create_order(order_text="test?",days=-0.5, asset=self.a1a, order_side=Fill.LONG, amount_unsigned=10, account=self.acc1)
         self.assertEqual(len(ZlModel.orders), 1)
         self.assertEqual(self.a1a.id in ZlModel.orders, True)
         self.assertEqual(o1a.id in ZlModel.orders[self.a1a.id], True)
@@ -90,7 +90,7 @@ class ZlModelMethodTests(TestCase):
         self.assertEqual(len(ZlModel.orders), 0)
         self.assertEqual(self.a1a.id in ZlModel.orders, False)
 
-        o1b = create_order(order_text="test?",days=-0.5, asset=self.a1a, amount=10, account=self.acc1)
+        o1b = create_order(order_text="test?",days=-0.5, asset=self.a1a, order_side=Fill.LONG, amount_unsigned=10, account=self.acc1)
         self.assertEqual(len(ZlModel.orders), 1)
         self.assertEqual(self.a1a.id in ZlModel.orders, True)
         self.assertEqual(o1b.id in ZlModel.orders[self.a1a.id], True)

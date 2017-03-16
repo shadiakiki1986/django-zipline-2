@@ -18,11 +18,12 @@
       </thead>
       {% for order in latest_order_list %}
         <tr>
-          <td width="10%">&nbsp;&nbsp;&nbsp;</td>
+          <td width=" 5%">&nbsp;&nbsp;&nbsp;</td>
           <td width="10%" nowrap>{{order.pub_date}}</td>
           <td width="10%">{{order.asset.asset_symbol}}</td>
           <td width="10%"><font color="red">{{order.filled|intcomma}}</font></td>
-          <td width="10%">{{order.amount|intcomma}}</td>
+          <td width=" 5%">{{order.order_side}}</td>
+          <td width="10%">{{order.amount_unsigned|intcomma}}</td>
           <td width="10%">{{order.account.account_symbol}}</td>
           <td width="10%"><font color="red">{{order.avgPrice|floatformat:"2"|intcomma}}</font></td>
           <td width="10%" nowrap>{{ order.order_text }}</td>
@@ -59,8 +60,9 @@
         </td>
         <td width="10%" nowrap>{{fill.pub_date}}</td>
         <td width="10%">{{fill.asset.asset_symbol}}</td>
-        <td width="10%">{{fill.fill_qty}}</td>
-        <td width="10%">&nbsp;</td>
+        <td width=" 5%">{{fill.fill_side}}</td>
+        <td width="10%">{{fill.fill_qty_unsigned}}</td>
+        <td width=" 5%">&nbsp;</td>
         <td width="10%">&nbsp;</td>
         <td width="10%">{{fill.fill_price}}</td>
         <td width="10%" nowrap>{{ fill.fill_text }}</td>
@@ -96,7 +98,7 @@
         <li>
             {{order.dt}}:
             {{order.sid.symbol}},
-            filled {{order.filled}} / {{order.amount|intcomma}},
+            filled {{order.filled}} / {{order.amount_signed()|intcomma}},
             {{order.id}}
         </li>
     {% endfor %}

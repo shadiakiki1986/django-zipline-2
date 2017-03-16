@@ -15,10 +15,11 @@
       </div>
       <div class="col-xs-2">{{ fill.pub_date }}</div>
       <div class="col-xs-2"><a href="{% url 'zipline_app:assets-list' %}">{{ fill.asset.asset_symbol }}</a></div>
-      <div class="col-xs-1">{{ fill.fill_qty|intcomma}}</div>
+      <div class="col-xs-1">{{ fill.fill_side}}</div>
+      <div class="col-xs-1">{{ fill.fill_qty_unsigned|intcomma}}</div>
       <div class="col-xs-2">{{ fill.fill_price }}</div>
       <div class="col-xs-1">{{ fill.tt_order_key}}</div>
-      <div class="col-xs-3">{{ fill.fill_text }}</div>
+      <div class="col-xs-2">{{ fill.fill_text }}</div>
     </div>
 {% empty %}
     <div class="alert alert-warning">No fills yet.</div>

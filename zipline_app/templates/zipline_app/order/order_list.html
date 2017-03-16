@@ -19,8 +19,9 @@
       </div>
 {#      <a href="{% url 'zipline_app:accounts-list' %}">{{ order.account.account_symbol }}</a>,#}
       <div class="col-xs-2">{{order.account.account_symbol}}</div>
-      <div class="col-xs-2 text-right">{{ order.amount }}</div>
-      <div class="col-xs-4">{{ order.order_text }}</div>
+      <div class="col-xs-1">{{ order.order_side }}</div>
+      <div class="col-xs-2 text-right">{{ order.amount_unsigned }}</div>
+      <div class="col-xs-3">{{ order.order_text }}</div>
     </div>
 {% empty %}
     <div class="alert alert-info">No orders yet.</div>

@@ -20,9 +20,9 @@ class IndexView(generic.ListView):
     def fills_required_per_asset(self):
       fills = {}
       for order in Order.objects.all():
-        if order.filled()!=order.amount:
+        if order.filled()!=order.amount_signed():
           if order.asset not in fills: fills[order.asset]=0
-          fills[order.asset]+=order.amount - order.filled()
+          fills[order.asset]+=order.amount_signed() - order.filled()
       return fills
 
     def get_queryset(self):
