@@ -50,7 +50,8 @@ class Fill(models.Model):
     votes = models.IntegerField(default=0)
     fill_qty_unsigned = models.PositiveIntegerField(
       default=0,
-      validators=[MaxValueValidator(1000000), validate_nonzero]
+      validators=[MaxValueValidator(1000000), validate_nonzero],
+      verbose_name="Qty"
     )
     fill_price = PositiveFloatFieldModel(
       default=0,
@@ -66,7 +67,12 @@ class Fill(models.Model):
       (LONG, 'Long'),
       (SHORT, 'Short')
     )
-    fill_side = models.CharField(max_length=1, choices=FILL_SIDE_CHOICES, default=LONG)
+    fill_side = models.CharField(
+      max_length=1,
+      choices=FILL_SIDE_CHOICES,
+      default=LONG,
+      verbose_name="Side"
+    )
 
     def fill_qty_signed(self):
       return self.fill_qty_unsigned * (+1 if self.fill_side==Fill.LONG else -1)

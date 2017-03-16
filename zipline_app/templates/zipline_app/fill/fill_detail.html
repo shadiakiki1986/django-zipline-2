@@ -6,13 +6,13 @@
 
 Fill Details
 <ul>
-  <li>{{fill.pub_date}}</li>
-  <li>{{fill.asset.asset_symbol}}</li>
-  <li>{{fill.fill_side}}</li>
-  <li>{{fill.fill_qty_unsigned|intcomma}}</li>
-  <li>{{fill.fill_price}}</li>
-  <li>{{fill.tt_order_key}}</li>
-  <li>Comment: {{ fill.fill_text }}</li>
+  <li>Date: {{fill.pub_date}}</li>
+  <li>Asset: {{fill.asset.asset_symbol}}</li>
+  <li>Side: {{fill.fill_side}}</li>
+  <li>Qty: {{fill.fill_qty_unsigned|intcomma}}</li>
+  <li>Price: {{fill.fill_price}}</li>
+  <li>TT order key: {% if fill.tt_order_key %}{{fill.tt_order_key}}{% else %}None{% endif %}</li>
+  <li>Comment: {% if fill.fill_text %}{{ fill.fill_text }}{% else %}None{% endif %}</li>
 </ul>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}

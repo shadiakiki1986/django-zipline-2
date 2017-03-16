@@ -11,11 +11,11 @@
   <div class="row">
     <div class="col-xs-1"></div>
     <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.pub_date %}</div></div>
-    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.asset %}</div></div>
-    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.account %}</div></div>
+    <div class="col-xs-1"><div class="row">{% bootstrap_field field=form.asset %}</div></div>
     <div class="col-xs-1"><div class="row">{% bootstrap_field field=form.order_side %}</div></div>
-    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.amount_unsigned %}</div></div>
+    <div class="col-xs-1"><div class="row">{% bootstrap_field field=form.amount_unsigned %}</div></div>
+    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.account %}</div></div>
     <div class="col-xs-1"><div class="row">{% bootstrap_field field=form.order_text placeholder="some comments" %}</div></div>
-    <div class="col-xs-1">{% bootstrap_button content="Save" icon="star" button_type="submit" %}</div>
+    <div class="col-xs-1 col-xs-offset-2">{% bootstrap_button content="Save" icon="star" button_type="submit" button_class="btn-primary" %}</div>
   </div>
 </form>

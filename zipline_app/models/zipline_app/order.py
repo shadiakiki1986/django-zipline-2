@@ -21,10 +21,16 @@ class Order(models.Model):
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
     amount_unsigned = models.PositiveIntegerField(
       default=0,
-      validators=[MaxValueValidator(1000000), validate_nonzero]
+      validators=[MaxValueValidator(1000000), validate_nonzero],
+      verbose_name="Qty"
     )
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    order_side = models.CharField(max_length=1, choices=Fill.FILL_SIDE_CHOICES, default=Fill.LONG)
+    order_side = models.CharField(
+      max_length=1,
+      choices=Fill.FILL_SIDE_CHOICES,
+      default=Fill.LONG,
+      verbose_name="Side"
+    )
 
     def amount_signed(self):
       return self.amount_unsigned * (+1 if self.order_side==Fill.LONG else -1)

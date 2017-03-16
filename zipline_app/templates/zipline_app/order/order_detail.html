@@ -7,13 +7,13 @@
 
 Order Details
 <ul>
-  <li>{{order.asset.asset_symbol}}</li>
-  <li>{{order.order_side}}</li>
-  <li>{{order.amount_unsigned|intcomma}}</li>
-  <li><font color="red">{{order.filled|intcomma}}</font></li>
-  <li>{{order.pub_date}}</li>
-  <li>{{order.account.account_symbol}}</li>
-  <li>Comment: {{ order.order_text }}</li>
+  <li>Asset: {{order.asset.asset_symbol}}</li>
+  <li>Side: {{order.order_side}}</li>
+  <li>Qty: {{order.amount_unsigned|intcomma}}</li>
+  <li>Filled: <font color="red">{{order.filled|intcomma}}</font></li>
+  <li>Date: {{order.pub_date}}</li>
+  <li>Account: {{order.account.account_symbol}}</li>
+  <li>Comment: {% if order.order_text %}{{ order.order_text }}{% else %}None{% endif %}</li>
 </ul>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
