@@ -6,7 +6,7 @@ from ...utils import redirect_index_or_local
 
 class FillCreate(generic.CreateView):
   model = Fill
-  fields = ['pub_date','asset','fill_qty','fill_price','fill_text']
+  fields = ['pub_date', 'asset', 'fill_qty', 'fill_price', 'fill_text', 'tt_order_key']
   template_name = 'zipline_app/fill/fill_form.html'
   def get_success_url(self):
     messages.add_message(self.request, messages.INFO, "Successfully created fill: %s" % self.object)

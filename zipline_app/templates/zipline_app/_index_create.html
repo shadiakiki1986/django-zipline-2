@@ -114,11 +114,17 @@ $(document).ready(function(){
               <div class="col-xs-3">
                 {% bootstrap_field field=fill_form.asset layout='horizontal' %}
               </div>
-              <div class="col-xs-4">
+              <div class="col-xs-2">
                 {% bootstrap_field field=fill_form.fill_qty layout='horizontal' %}
               </div>
-              <div class="col-xs-4">
+              <div class="col-xs-2">
                 {% bootstrap_field field=fill_form.fill_price layout='horizontal' %}
+              </div>
+              <div class="col-xs-2">
+                {% bootstrap_field field=fill_form.tt_order_key layout='horizontal' %}
+              </div>
+              <div class="col-xs-2">
+                {% bootstrap_field field=fill_form.fill_text layout='horizontal' %}
               </div>
               <div class="col-xs-1">
                 {% bootstrap_button content="Save" button_type="submit" button_class="btn-primary" %}

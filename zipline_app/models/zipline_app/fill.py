@@ -58,6 +58,7 @@ class Fill(models.Model):
     )
     pub_date = models.DateTimeField('date published',default=timezone.now)
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
+    tt_order_key = models.CharField(max_length=20, blank=True)
 
     def __str__(self):
         return "%s, %s, %s (%s)" % (self.asset.asset_symbol, self.fill_qty, self.fill_price, self.fill_text)
