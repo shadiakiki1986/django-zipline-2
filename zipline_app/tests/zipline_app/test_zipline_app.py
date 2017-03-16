@@ -119,7 +119,7 @@ class OrderViewTests(TestCase):
         response = self.client.get(reverse('zipline_app:ordersOnly'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
-            ['<Order: A1, 10 (TEST01, Past order.)>']
+            ['<Order: A1, L, 10 (TEST01, Past order.)>']
         )
 
     def test_ordersOnly_view_with_a_future_order(self):
@@ -142,7 +142,7 @@ class OrderViewTests(TestCase):
         response = self.client.get(reverse('zipline_app:ordersOnly'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
-            ['<Order: A1, 10 (TEST01, Past order.)>']
+            ['<Order: A1, L, 10 (TEST01, Past order.)>']
         )
 
     def test_ordersOnly_view_with_two_past_orders(self):
@@ -154,7 +154,7 @@ class OrderViewTests(TestCase):
         response = self.client.get(reverse('zipline_app:ordersOnly'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
-            ['<Order: A1, 10 (TEST01, Past order 2.)>', '<Order: A1, 10 (TEST01, Past order 1.)>']
+            ['<Order: A1, L, 10 (TEST01, Past order 2.)>', '<Order: A1, L, 10 (TEST01, Past order 1.)>']
         )
 
     def test_index_view_combined_general(self):
@@ -185,13 +185,13 @@ class OrderViewTests(TestCase):
         self.assertQuerysetEqual(
             pointer['orders'],
             [
-              '<Order: A1, 10 (TEST01, Past order 1.)>',
+              '<Order: A1, L, 10 (TEST01, Past order 1.)>',
             ]
         )
         self.assertQuerysetEqual(
             pointer['fills'],
             [
-              '<Fill: A1, 20, 2.0 (test?)>',
+              '<Fill: A1, L 20, 2.0 (, test?)>',
             ]
         )
 

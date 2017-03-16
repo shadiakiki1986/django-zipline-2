@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils import timezone
 from ...models.zipline_app.zipline_app import ZlModel
 from .test_zipline_app import create_asset, create_order, create_account, a1
+from ...models.zipline_app.fill import Fill
 
 class OrderGeneralViewsTests(TestCase):
     def setUp(self):

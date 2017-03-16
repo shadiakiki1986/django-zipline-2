@@ -2,6 +2,7 @@ from django.test import TestCase
 from .test_zipline_app import create_asset, create_account, create_order, a1, a2, create_fill
 import pandas as pd
 from ...models.zipline_app.zipline_app import ZlModel, Order
+from ...models.zipline_app.fill import Fill
 
 class ZlModelMethodTests(TestCase):
     def setUp(self):

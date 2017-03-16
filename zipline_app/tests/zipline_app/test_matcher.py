@@ -260,7 +260,7 @@ class MatcherMethodTests(TestCase):
         self.assertEqual(txn["price"], 1) # this is 1 if fills are allowed to match with later orders, and 2 if not. The latter is the case ATM
 
         a1a=matcher.env.asset_finder.retrieve_asset(sid=1)
-        self.assertEqual(unused, {a1a:5})
+        self.assertEqual(unused, {a1a: [5]})
 
     def test_factory_fills_at_the_same_minute_before_order(self):
         matcher = mmm_Matcher()
@@ -296,7 +296,7 @@ class MatcherMethodTests(TestCase):
         self.assertEqual(txn["price"], 1.5) # average of two fills
 
         a1a=matcher.env.asset_finder.retrieve_asset(sid=1)
-        self.assertEqual(unused, {a1a:5})
+        self.assertEqual(unused, {a1a:[5]})
 
     def test_filterBySign(self):
         MID_DATE_1 = pd.Timestamp('2013-01-07 17:01', tz='utc')
