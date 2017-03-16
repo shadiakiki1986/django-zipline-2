@@ -11,7 +11,4 @@ install:
   - pip show       setuptools numpy pip
   - pip install -r requirements.txt --cache-dir=$CACHE_DIR
 script:
-  - python manage.py test zipline_app.tests.zipline_app.asset
-  - python manage.py test zipline_app.tests.zipline_app.other
-  - python manage.py test zipline_app.tests.zipline_app.matcher
-  - python manage.py test zipline_app.tests.zipline_app.zlmodel
+  - python manage.py test zipline_app.tests
