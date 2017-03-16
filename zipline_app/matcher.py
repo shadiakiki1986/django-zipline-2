@@ -427,7 +427,7 @@ def factory(matcher: Matcher, fills_all: dict, orders_all: dict, assets: dict):
         if sid not in all_open_orders:
           all_open_orders[sid]=ordersList
           continue
-        all_open_orders[sid] = numpy.concatenate(all_open_orders[sid],ordersList)
+        all_open_orders[sid] = numpy.concatenate((all_open_orders[sid],ordersList))
       for sid, nf in sub_unused.items():
         if sid not in all_unused:
           all_unused[sid]=[nf]

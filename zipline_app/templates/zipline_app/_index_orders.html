@@ -6,8 +6,10 @@
 
   <div class="col-xs-2">{{order.account.account_symbol}}</div>
 
-  <div class="col-xs-1 text-right">{{order.order_side}}</div>
-  <div class="col-xs-2 text-right">{{order.amount_unsigned|intcomma}}</div>
+  <div class="col-xs-3 text-right">
+    {{order.order_side}}
+    {{order.amount_unsigned|intcomma}}
+  </div>
   <div class="col-xs-2 text-right text-primary">{{order.filled|intcomma}}</div>
   <div class="col-xs-3 text-right text-primary">{{order.avgPrice|floatformat:"2"|intcomma}}</div>
 

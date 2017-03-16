@@ -6,6 +6,24 @@ from ...models.zipline_app.zipline_app import ZlModel
 from .test_zipline_app import create_asset, create_order, create_account, a1
 from ...models.zipline_app.fill import Fill
 
+class OrderModelTests(TestCase):
+    def setUp(self):
+      ZlModel.clear()
+      self.acc1 = create_account(symbol="TEST01")
+      self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
+
+    def test_long(self):
+        o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=Fill.LONG, amount_unsigned=10, account=self.acc1)
+
+    def test_short(self):
+        o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=Fill.SHORT, amount_unsigned=10, account=self.acc1)
+
+    def test_signed(self):
+        o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=Fill.LONG, amount_unsigned=10, account=self.acc1)
+        self.assertEqual(o1.amount_signed(), 10)
+        o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=Fill.SHORT, amount_unsigned=10, account=self.acc1)
+        self.assertEqual(o1.amount_signed(), -10)
+
 class OrderGeneralViewsTests(TestCase):
     def setUp(self):
       ZlModel.clear()
