@@ -40,5 +40,5 @@ SQLAlchemy==1.1.5
 statsmodels==0.8.0
 testfixtures==4.13.4
 toolz==0.8.2
-zipline==1.0.2
+git+git://github.com/shadiakiki1986/zipline.git@bugfix_index_should_be_int
 zope.interface==4.3.3
