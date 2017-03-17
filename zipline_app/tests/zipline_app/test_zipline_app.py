@@ -168,7 +168,7 @@ class OrderViewTests(TestCase):
         f1 = create_fill(fill_text="test?",days=-30, asset=self.asset, fill_side=Fill.LONG, fill_qty_unsigned=20, fill_price=2)
         f2 = create_fill(fill_text="test?",days=-0.5, asset=self.asset, fill_side=Fill.LONG, fill_qty_unsigned=20, fill_price=2)
         sleep(0.05)
-        response = self.client.get(reverse('zipline_app:index'))
+        response = self.client.get(reverse('zipline_app:blotter-sideBySide'))
 
         pointer = response.context['combined'][2]
         self.assertEqual(
@@ -198,7 +198,7 @@ class OrderViewTests(TestCase):
     def test_index_unused_fills(self):
         f1 = create_fill(fill_text="test?",days=-30, asset=self.asset, fill_side=Fill.LONG, fill_qty_unsigned=20, fill_price=2)
         sleep(0.05)
-        response = self.client.get(reverse('zipline_app:index'))
+        response = self.client.get(reverse('zipline_app:blotter-sideBySide'))
         self.assertEqual(len(ZlModel.zl_unused),1)
         self.assertContains(response, "Assets with extra fills")
 
@@ -212,12 +212,12 @@ class OrderViewTests(TestCase):
 
         time = o1b.pub_date
         sleep(0.05)
-        response = self.client.get(reverse('zipline_app:index'))
+        response = self.client.get(reverse('zipline_app:blotter-sideBySide'))
         self.assertContains(response, time.strftime("%Y-%m-%d"))
 
         o1b.delete()
         sleep(0.05)
-        response = self.client.get(reverse('zipline_app:index'))
+        response = self.client.get(reverse('zipline_app:blotter-sideBySide'))
         self.assertNotContains(response, time.strftime("%Y-%m-%d"))
 
     @skip("This test is not capturing the messages queue for some reason, and I couldnt get it to work")
@@ -246,16 +246,16 @@ class OrderViewTests(TestCase):
     def test_fills_required_per_asset(self):
         o1 = create_order(order_text="test", days=-10, asset=self.asset, order_side=Fill.LONG, amount_unsigned=10, account=self.acc1)
         sleep(0.05)
-        response = self.client.get(reverse('zipline_app:index'))
+        response = self.client.get(reverse('zipline_app:blotter-sideBySide'))
         self.assertEqual(response.context['fills_required_per_asset'], {self.asset:10})
         self.assertContains(response, "Assets with required fills")
         self.assertContains(response, self.asset.asset_symbol+": 10")
 
         f1 = create_fill(fill_text="test?",days=-10, asset=self.asset, fill_side=Fill.LONG, fill_qty_unsigned=5, fill_price=2)
-        response = self.client.get(reverse('zipline_app:index'))
+        response = self.client.get(reverse('zipline_app:blotter-sideBySide'))
         self.assertEqual(response.context['fills_required_per_asset'], {self.asset:5})
 
         f2 = create_fill(fill_text="test?",days=-10, asset=self.asset, fill_side=Fill.LONG, fill_qty_unsigned=5, fill_price=2)
-        response = self.client.get(reverse('zipline_app:index'))
+        response = self.client.get(reverse('zipline_app:blotter-sideBySide'))
         self.assertEqual(response.context['fills_required_per_asset'], {})
         self.assertNotContains(response, "Assets with required fills")

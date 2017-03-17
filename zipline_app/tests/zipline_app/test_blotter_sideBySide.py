@@ -4,7 +4,7 @@ from django.urls import reverse
 from ...models.zipline_app.fill import Fill
 from ...models.zipline_app.zipline_app import ZlModel
 
-class IndexViewsTests(TestCase):
+class BlotterSideBySideViewsTests(TestCase):
   def setUp(self):
     ZlModel.clear()
     self.acc = create_account("test acc")
@@ -12,7 +12,7 @@ class IndexViewsTests(TestCase):
 
   def test_one_order(self):
     order = create_order(order_text="random order",days=-1, asset=self.ass, order_side=Fill.LONG, amount_unsigned=10, account=self.acc)
-    url = reverse('zipline_app:index')
+    url = reverse('zipline_app:blotter-sideBySide')
     response = self.client.get(url, follow=True)
     self.assertContains(response, "random order")
 
@@ -20,7 +20,7 @@ class IndexViewsTests(TestCase):
     o_l = create_order(order_text="long order", days=-1, asset=self.ass, order_side=Fill.LONG,  amount_unsigned=10, account=self.acc)
     o_s = create_order(order_text="short order",days=-1, asset=self.ass, order_side=Fill.SHORT, amount_unsigned=10, account=self.acc)
 
-    url = reverse('zipline_app:index')
+    url = reverse('zipline_app:blotter-sideBySide')
     response = self.client.get(url, follow=True)
     self.assertContains(response, "long order")
     self.assertContains(response, "short order")

@@ -8,7 +8,7 @@ urlpatterns = [
     # ex: /<root>/
     url(r'^$', views.IndexView.as_view(), name='index'),
     # ex: /<root>/blotter/sideBySide
-    url(r'^blotter/sideBySide/$', views.IndexView.as_view(), name='blotter-sideBySide'),
+    url(r'^blotter/sideBySide/$', views.BlotterSideBySideView.as_view(), name='blotter-sideBySide'),
     # ex: /<root>/blotter/engine/
     url(r'^blotter/engine/$', views.BlotterEngineView.as_view(), name='blotter-engine'),
 

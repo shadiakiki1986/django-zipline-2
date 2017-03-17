@@ -13,8 +13,11 @@ from numpy import concatenate
 from ...models.zipline_app.zipline_app import Order, Fill, ZlModel, Asset
 from ...forms import OrderForm, FillForm, AssetForm, AccountForm
 
-class IndexView(generic.ListView):
+class IndexView(generic.base.TemplateView):
     template_name = 'zipline_app/index.html'
+
+class BlotterSideBySideView(generic.ListView):
+    template_name = 'zipline_app/blotter/sideBySide/index.html'
     context_object_name = 'combined'
 
     def fills_required_per_asset(self):
@@ -60,7 +63,7 @@ class IndexView(generic.ListView):
         return combined
 
     def get_context_data(self, *args, **kwargs):
-        context = super(IndexView, self).get_context_data(*args, **kwargs)
+        context = super(BlotterSideBySideView, self).get_context_data(*args, **kwargs)
         context["order_form"]=OrderForm()
         context["fill_form"]=FillForm()
         context["asset_form"]=AssetForm()
