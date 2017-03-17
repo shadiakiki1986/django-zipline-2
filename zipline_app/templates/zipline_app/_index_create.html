@@ -1,147 +1,191 @@
 {# Load the tag library #}
 {% load bootstrap3 %}
 
-<div class="row">
-  <div class="col-xs-3">{% bootstrap_button content="Account" icon="plus" href="#accounts-new" extra_classes="create-button" %}</div>
-  <div class="col-xs-3">{% bootstrap_button content="Asset"   icon="plus" href="#assets-new"   extra_classes="create-button" %}</div>
-  <div class="col-xs-3">{% bootstrap_button content="Order"   icon="plus" href="#orders-new"  extra_classes="create-button" %}</div>
-  <div class="col-xs-3">{% bootstrap_button content="Fill"    icon="plus" href="#fills-new"   extra_classes="create-button" %}</div>
-</div>
-
 <!--
-  jquery show hide div's with a href tag
-  https://jsfiddle.net/bessppxz/
-  http://stackoverflow.com/a/12897443/4126114
-
-  jquery children/siblings
-  https://api.jquery.com/category/traversing/tree-traversal/
+     Button trigger modal from
+     http://getbootstrap.com/javascript/#live-demo
 -->
-<script>
-$(document).ready(function(){
-    $("#create-container").children().hide();
-    $(".create-button").on("click", function (e) {
-        e.preventDefault();
-        var idname= $(this).attr("href");
-        $(idname).show("slow").siblings().hide("slow");
 
-        $('.create-button.active').removeClass('active');
-        if(!$(this).hasClass('active')) {
-          $(this).addClass('active');
-        }
-    });
-});
-</script>
+<!-- Modal -->
+<div class="modal fade" id="accounts-new" tabindex="-1" role="dialog" aria-labelledby="accounts-new-label">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
 
-<div style="margin-top:5px;margin-bottom:5px"></div>
+      {# {% include "zipline_app/account/_account_form.html" %} #}
+      <form action="{% url 'zipline_app:accounts-new' %}" method="post" class="form">
+        {% csrf_token %}
+        <!-- hidden form field -->
+        <input type="hidden" name="source" value="combined">
 
-<div id="create-container">
-  <div class="row" id="accounts-new">
-    {# {% include "zipline_app/account/_account_form.html" %} #}
-    <form action="{% url 'zipline_app:accounts-new' %}" method="post" class="form">
-      {% csrf_token %}
-      <!-- hidden form field -->
-      <input type="hidden" name="source" value="combined">
-      <div class="row">
-        <div class="col-xs-10">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="accounts-new-label">New account</h4>
+        </div>
+
+        <div class="modal-body">
           {% bootstrap_form account_form layout='horizontal' %}
         </div>
-        <div class="col-xs-2">
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           {% bootstrap_button content="Save" button_type="submit" button_class="btn-primary" %}
         </div>
-      </div>
-    </form>
+      </form>
+
+    </div>
   </div>
+</div>
 
-  <div class="row" id="assets-new">
-    {# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
-    <form action="{% url 'zipline_app:assets-new' %}" method="post" class="form">
-      {% csrf_token %}
-      <!-- hidden form field -->
-      <input type="hidden" name="source" value="combined">
-      {% bootstrap_form asset_form layout='horizontal' %}
-      <div class="col-xs-1 col-xs-offset-11">
-        {% bootstrap_button content="Save" button_type="submit" button_class="btn-primary" %}
-      </div>
-    </form>
+<!-- Modal -->
+<div class="modal fade" id="assets-new" tabindex="-1" role="dialog" aria-labelledby="assets-new-label">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      {# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
+      <form action="{% url 'zipline_app:assets-new' %}" method="post" class="form">
+        {% csrf_token %}
+        <!-- hidden form field -->
+        <input type="hidden" name="source" value="combined">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="assets-new-label">New asset</h4>
+        </div>
+
+        <div class="modal-body">
+          {% bootstrap_form asset_form layout='horizontal' %}
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          {% bootstrap_button content="Save" button_type="submit" button_class="btn-primary" %}
+        </div>
+      </form>
+
+    </div>
   </div>
+</div>
 
-  <div class="row" id="orders-new">
+<!-- Modal -->
+<div class="modal fade" id="orders-new" tabindex="-1" role="dialog" aria-labelledby="orders-new-label">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
 
-  <!--
-    <form action="{% url 'zipline_app:orders-new' %}" method="post">
-      {% csrf_token %}
-      {{ order_form.as_p }}
-      <input type="hidden" name="source" value="combined">
-      <input type="submit" value="Save" />
-    </form>
-  -->
+      <!--
+        <form action="{% url 'zipline_app:orders-new' %}" method="post">
+          {% csrf_token %}
+          {{ order_form.as_p }}
+          <input type="hidden" name="source" value="combined">
+          <input type="submit" value="Save" />
+        </form>
+      -->
 
-          <form action="{% url 'zipline_app:orders-new' %}" method="post" class="form">
-            {% csrf_token %}
-            <!-- hidden timestamp -->
-            <div style="display: none;">{% bootstrap_field field=order_form.pub_date layout='horizontal' %}</div>
-            <!-- hidden form field -->
-            <input type="hidden" name="source" value="combined">
+      {# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
+      <form action="{% url 'zipline_app:orders-new' %}" method="post" class="form">
+        {% csrf_token %}
+        <!-- hidden timestamp -->
+        <div style="display: none;">{% bootstrap_field field=order_form.pub_date layout='horizontal' %}</div>
 
-            <div class="row">
-              <div class="col-xs-3">
-                <div class="row">
-                  {% bootstrap_field field=order_form.asset layout='horizontal' %}
-                </div>
-              </div>
-              <div class="col-xs-3">
+        <!-- hidden form field -->
+        <input type="hidden" name="source" value="combined">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="orders-new-label">New order</h4>
+        </div>
+
+        <div class="modal-body">
+                {% bootstrap_field field=order_form.asset layout='horizontal' %}
                 {% bootstrap_field field=order_form.account layout='horizontal' %}
-              </div>
-              <div class="col-xs-2">
                 {% bootstrap_field field=order_form.order_side layout='horizontal' %}
-              </div>
-              <div class="col-xs-3 text-right">
                 {% bootstrap_field field=order_form.amount_unsigned layout='horizontal' %}
-              </div>
-              <div class="col-xs-1 text-right">
-                {% bootstrap_button content="Save" button_type="submit" button_class="btn-primary" %}
-              </div>
-            </div>
-          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          {% bootstrap_button content="Save" button_type="submit" button_class="btn-primary" %}
+        </div>
+      </form>
+
+    </div>
   </div>
+</div>
 
-  <div class="row" id="fills-new">
-          <form action="{% url 'zipline_app:fills-new' %}" method="post" class="form">
-            {% csrf_token %}
-            <!-- hidden timestamp -->
-            <div style="display: none;">{% bootstrap_field field=fill_form.pub_date layout='horizontal' %}</div>
-            <!-- hidden form field -->
-            <input type="hidden" name="source" value="combined">
+<!-- Modal -->
+<div class="modal fade" id="fills-new" tabindex="-1" role="dialog" aria-labelledby="fills-new-label">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
 
-            <div class="row">
-              <div class="col-xs-2">
+      <!--
+        <form action="{% url 'zipline_app:fills-new' %}" method="post">
+          {% csrf_token %}
+          {{ fill_form.as_p }}
+          <input type="hidden" name="source" value="combined">
+          <input type="submit" value="Save" />
+        </form>
+      -->
+
+      {# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
+      <form action="{% url 'zipline_app:fills-new' %}" method="post" class="form">
+        {% csrf_token %}
+        <!-- hidden timestamp -->
+        <div style="display: none;">{% bootstrap_field field=fill_form.pub_date layout='horizontal' %}</div>
+
+        <!-- hidden form field -->
+        <input type="hidden" name="source" value="combined">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="fills-new-label">New fill</h4>
+        </div>
+
+        <div class="modal-body">
                 {% bootstrap_field field=fill_form.asset layout='horizontal' %}
-              </div>
-              <div class="col-xs-2">
                 {% bootstrap_field field=fill_form.fill_side layout='horizontal' %}
-              </div>
-              <div class="col-xs-2">
                 {% bootstrap_field field=fill_form.fill_qty_unsigned layout='horizontal' %}
-              </div>
-              <div class="col-xs-2">
                 {% bootstrap_field field=fill_form.fill_price layout='horizontal' %}
-              </div>
-              <div class="col-xs-3">
-                <div class='row'>
-                  {% bootstrap_field field=fill_form.tt_order_key layout='inline' %}
-                </div>
-                <div class="row">
-                  {% bootstrap_field field=fill_form.fill_text layout='inline' %}
-                </div>
-              </div>
-              <div class="col-xs-1">
-                {% bootstrap_button content="Save" button_type="submit" button_class="btn-primary" %}
-              </div>
-            </div>
-          </div>
-          </form>
-  </div>
+                {% bootstrap_field field=fill_form.tt_order_key layout='horizontal' %}
+                {% bootstrap_field field=fill_form.fill_text layout='horizontal' %}
+        </div>
 
-</div><!-- div.container -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          {% bootstrap_button content="Save" button_type="submit" button_class="btn-primary" %}
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ######################################### -->
+
+<div class="row">
+  <div class="col-xs-3">
+    <button type="button" class="btn" data-toggle="modal" data-target="#accounts-new">
+      <span class="glyphicon glyphicon-plus"></span>
+      Account
+    </button>
+  </div>
+  <div class="col-xs-3">
+    <button type="button" class="btn" data-toggle="modal" data-target="#assets-new">
+      <span class="glyphicon glyphicon-plus"></span>
+      Asset
+    </button>
+  </div>
+  <div class="col-xs-3">
+    <button type="button" class="btn" data-toggle="modal" data-target="#orders-new">
+      <span class="glyphicon glyphicon-plus"></span>
+      Order
+    </button>
+  </div>
+  <div class="col-xs-3">
+    <button type="button" class="btn" data-toggle="modal" data-target="#fills-new">
+      <span class="glyphicon glyphicon-plus"></span>
+      Fill
+    </button>
+  </div>
+</div>
 
 <div style="margin-top:5px;margin-bottom:5px"></div>
