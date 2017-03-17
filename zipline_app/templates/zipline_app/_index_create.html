@@ -1,6 +1,7 @@
 {# Load the tag library #}
 {% load bootstrap3 %}
 
+
 <!--
      Button trigger modal from
      http://getbootstrap.com/javascript/#live-demo
@@ -128,8 +129,6 @@
       {# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
       <form action="{% url 'zipline_app:fills-new' %}" method="post" class="form">
         {% csrf_token %}
-        <!-- hidden timestamp -->
-        <div style="display: none;">{% bootstrap_field field=fill_form.pub_date layout='horizontal' %}</div>
 
         <!-- hidden form field -->
         <input type="hidden" name="source" value="combined">
@@ -140,6 +139,7 @@
         </div>
 
         <div class="modal-body">
+                {% bootstrap_field field=fill_form.pub_date layout='horizontal' %}
                 {% bootstrap_field field=fill_form.asset layout='horizontal' %}
                 {% bootstrap_field field=fill_form.fill_side layout='horizontal' %}
                 {% bootstrap_field field=fill_form.fill_qty_unsigned layout='horizontal' %}
@@ -158,6 +158,17 @@
   </div>
 </div>
 
+<!-- How to reset form body in bootstrap modal box
+     http://stackoverflow.com/questions/15827262/ddg#20918538
+     -->
+<script type="text/javascript">
+$('.modal').on('hidden.bs.modal', function(){
+      $(this).find('form')[0].reset();
+      $(this).find('input').prop('disabled',false);
+      $(this).find('select').prop('disabled',false);
+      $(this).find('hidden.extra-dyn').remove();
+});
+</script>
 
 <!-- ######################################### -->
 
