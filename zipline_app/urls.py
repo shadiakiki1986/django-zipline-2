@@ -7,8 +7,10 @@ app_name='zipline_app'
 urlpatterns = [
     # ex: /<root>/
     url(r'^$', views.IndexView.as_view(), name='index'),
-    # ex: /<root>/ordersOnly/
-    url(r'^ordersOnly/$', views.OrdersOnlyView.as_view(), name='ordersOnly'),
+    # ex: /<root>/blotter/sideBySide
+    url(r'^blotter/sideBySide/$', views.IndexView.as_view(), name='blotter-sideBySide'),
+    # ex: /<root>/blotter/engine/
+    url(r'^blotter/engine/$', views.OrdersOnlyView.as_view(), name='blotter-engine'),
 
     # ex: /<root>/5/results/
     url(r'^(?P<pk>[0-9]+)/results/$', views.ResultsView.as_view(), name='results'),

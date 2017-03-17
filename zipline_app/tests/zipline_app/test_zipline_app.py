@@ -101,57 +101,57 @@ class OrderViewTests(TestCase):
       self.acc1 = create_account(symbol="TEST01")
       self.asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
 
-    def test_ordersOnly_view_with_no_orders(self):
+    def test_blotter_engine_view_with_no_orders(self):
         """
         If no orders exist, an appropriate message should be displayed.
         """
-        response = self.client.get(reverse('zipline_app:ordersOnly'))
+        response = self.client.get(reverse('zipline_app:blotter-engine'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "No orders are available.")
         self.assertQuerysetEqual(response.context['latest_order_list'], [])
 
-    def test_ordersOnly_view_with_a_past_order(self):
+    def test_blotter_engine_view_with_a_past_order(self):
         """
         Orders with a pub_date in the past should be displayed on the
-        ordersOnly page.
+        blotter_engine page.
         """
         create_order(order_text="Past order.", days=-30, asset=self.asset, order_side=Fill.LONG, amount_unsigned=10, account=self.acc1)
-        response = self.client.get(reverse('zipline_app:ordersOnly'))
+        response = self.client.get(reverse('zipline_app:blotter-engine'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
             ['<Order: A1, L, 10 (TEST01, Past order.)>']
         )
 
-    def test_ordersOnly_view_with_a_future_order(self):
+    def test_blotter_engine_view_with_a_future_order(self):
         """
         Orders with a pub_date in the future should not be displayed on
-        the ordersOnly page.
+        the blotter_engine page.
         """
         create_order(order_text="Future order.", days=30, asset=self.asset, order_side=Fill.LONG, amount_unsigned=10, account=self.acc1)
-        response = self.client.get(reverse('zipline_app:ordersOnly'))
+        response = self.client.get(reverse('zipline_app:blotter-engine'))
         self.assertContains(response, "No orders are available.")
         self.assertQuerysetEqual(response.context['latest_order_list'], [])
 
-    def test_ordersOnly_view_with_future_order_and_past_order(self):
+    def test_blotter_engine_view_with_future_order_and_past_order(self):
         """
         Even if both past and future orders exist, only past orders
         should be displayed.
         """
         create_order(order_text="Past order.", days=-30, asset=self.asset, order_side=Fill.LONG, amount_unsigned=10, account=self.acc1)
         create_order(order_text="Future order.", days=30, asset=self.asset, order_side=Fill.LONG, amount_unsigned=10, account=self.acc1)
-        response = self.client.get(reverse('zipline_app:ordersOnly'))
+        response = self.client.get(reverse('zipline_app:blotter-engine'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
             ['<Order: A1, L, 10 (TEST01, Past order.)>']
         )
 
-    def test_ordersOnly_view_with_two_past_orders(self):
+    def test_blotter_engine_view_with_two_past_orders(self):
         """
-        The orders ordersOnly page may display multiple orders.
+        The orders blotter_engine page may display multiple orders.
         """
         create_order(order_text="Past order 1.", days=-30, asset=self.asset, order_side=Fill.LONG, amount_unsigned=10, account=self.acc1)
         create_order(order_text="Past order 2.", days=-5, asset=self.asset, order_side=Fill.LONG, amount_unsigned=10, account=self.acc1)
-        response = self.client.get(reverse('zipline_app:ordersOnly'))
+        response = self.client.get(reverse('zipline_app:blotter-engine'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
             ['<Order: A1, L, 10 (TEST01, Past order 2.)>', '<Order: A1, L, 10 (TEST01, Past order 1.)>']

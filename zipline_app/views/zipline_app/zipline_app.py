@@ -92,7 +92,7 @@ def vote(request, order_id):
         return HttpResponseRedirect(reverse('zipline_app:results', args=(order.id,)))
 
 class OrdersOnlyView(generic.ListView):
-    template_name = 'zipline_app/ordersOnly.html'
+    template_name = 'zipline_app/blotter/engine.html'
     context_object_name = 'latest_order_list'
 
     def get_queryset(self):
