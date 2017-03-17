@@ -1,4 +1,4 @@
-# django-zipline
+# django-zipline [![Build Status](https://travis-ci.org/shadiakiki1986/django-zipline.svg?branch=master)](https://travis-ci.org/shadiakiki1986/django-zipline)
 (WIP)  A Django app that wraps the Zipline library
 
 At the time of this writing (2017-02-16),
