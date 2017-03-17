@@ -91,7 +91,7 @@ def vote(request, order_id):
         # user hits the Back button.
         return HttpResponseRedirect(reverse('zipline_app:results', args=(order.id,)))
 
-class OrdersOnlyView(generic.ListView):
+class BlotterEngineView(generic.ListView):
     template_name = 'zipline_app/blotter/engine.html'
     context_object_name = 'latest_order_list'
 
@@ -108,7 +108,7 @@ class OrdersOnlyView(generic.ListView):
     # Can I have multiple lists in a Django generic.ListView?
     # http://stackoverflow.com/a/18813102/4126114
     def get_context_data(self, *args, **kwargs):
-        context = super(OrdersOnlyView, self).get_context_data(*args, **kwargs)
+        context = super(BlotterEngineView, self).get_context_data(*args, **kwargs)
         """Return the last five published fills."""
         context['latest_fill_list'] = Fill.objects.filter(
             pub_date__lte=timezone.now()
