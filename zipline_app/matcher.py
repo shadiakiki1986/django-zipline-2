@@ -6,6 +6,7 @@ from zipline.finance.blotter import Blotter
 #from zipline.finance.slippage import FixedSlippage
 #slippage_func = FixedSlippage(spread=0.0)
 from zipline.finance.slippage import VolumeShareSlippage
+from zipline.finance.asset_restrictions import NoRestrictions
 
 # try to use a data portal
 from zipline.data.data_portal import DataPortal
@@ -322,11 +323,14 @@ class Matcher:
       equity_minute_reader=equity_minute_reader
     )
 
+    restrictions=NoRestrictions()
+
     bd = BarData(
       data_portal=dp,
       simulation_dt_func=lambda: blotter.current_dt,
       data_frequency=self.sim_params.data_frequency,
-      trading_calendar=self.trading_calendar
+      trading_calendar=self.trading_calendar,
+      restrictions=restrictions
     )
 
     return bd
