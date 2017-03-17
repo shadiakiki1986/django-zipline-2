@@ -41,7 +41,7 @@ class FillDetailView(generic.DetailView):
 
 class FillUpdateView(generic.UpdateView):
   model = Fill
-  fields = ['pub_date', 'asset', 'fill_side', 'fill_qty_unsigned', 'fill_price', 'fill_text']
+  fields = ['pub_date', 'asset', 'fill_side', 'fill_qty_unsigned', 'fill_price', 'fill_text', 'tt_order_key']
   template_name = 'zipline_app/fill/fill_form.html'
 
   def get_success_url(self):

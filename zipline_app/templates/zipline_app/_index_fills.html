@@ -31,9 +31,10 @@
     </div>
   </div>
 </div>
-{%if fill.fill_text %}
-<div class="row">
-  <div class="col-xs-12 text-muted text-right">{{ fill.fill_text }}</div>
+{%if fill.fill_text or fill.tt_order_key %}
+<div class="row text-muted">
+  <div class="col-xs-4 text-left">{{ fill.tt_order_key }}</div>
+  <div class="col-xs-8 text-right">{{ fill.fill_text }}</div>
 </div>
 {% endif %}
 {% endfor %}

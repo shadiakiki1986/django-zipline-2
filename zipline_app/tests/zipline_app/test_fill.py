@@ -19,7 +19,7 @@ class FillViewsTests(TestCase):
 
     def test_delete(self):
         f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=Fill.LONG, fill_qty_unsigned=20, fill_price=2)
-        url = reverse('zipline_app:fills-delete', args=(self.a1a.id,))
+        url = reverse('zipline_app:fills-delete', args=(f1.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -32,11 +32,25 @@ class FillViewsTests(TestCase):
         response = self.client.post(url, {'pub_date':time, 'asset':self.a1a.id, 'fill_side': Fill.LONG, 'fill_qty_unsigned':1, 'fill_price':largeqty})
         self.assertContains(response,"Ensure this value is less than or equal to")
 
-    def test_update(self):
+    def test_update_get(self):
         f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=Fill.LONG, fill_qty_unsigned=20, fill_price=2)
-        url = reverse('zipline_app:fills-update', args=(self.a1a.id,))
+        url = reverse('zipline_app:fills-update', args=(f1.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+    def test_update_post_wo_tt_order_key(self):
+        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=Fill.LONG, fill_qty_unsigned=20, fill_price=2)
+        url = reverse('zipline_app:fills-update', args=(f1.id,))
+        f2={'pub_date':f1.pub_date, 'asset':f1.asset, 'fill_side': f1.fill_side, 'fill_qty_unsigned':4444, 'fill_price':f1.fill_price}
+        response = self.client.post(url,f2)
+        self.assertContains(response,"4444")
+
+    def test_update_post_wi_tt_order_key(self):
+        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=Fill.LONG, fill_qty_unsigned=20, fill_price=2, tt_order_key='bla key')
+        url = reverse('zipline_app:fills-update', args=(f1.id,))
+        f1={'pub_date':f1.pub_date, 'asset':f1.asset, 'fill_side': f1.fill_side, 'fill_qty_unsigned':f1.fill_qty_unsigned, 'fill_price':f1.fill_price, 'tt_order_key':'foo key'}
+        response = self.client.post(url,f1)
+        self.assertContains(response,"foo key")
 
     def test_new_fill_zero_qty(self):
         url = reverse('zipline_app:fills-new')
