@@ -96,10 +96,46 @@
         </div>
 
         <div class="modal-body">
-                {% bootstrap_field field=order_form.asset layout='horizontal' %}
-                {% bootstrap_field field=order_form.account layout='horizontal' %}
-                {% bootstrap_field field=order_form.order_side layout='horizontal' %}
-                {% bootstrap_field field=order_form.amount_unsigned layout='horizontal' %}
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=order_form.pub_date layout='horizontal' %}
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=order_form.asset layout='horizontal' %}
+            </div>
+            <div class='col-xs-4'>
+              <input class="ac-asset-input" placeholder="Search" />
+              <div class="ac-asset-response"></div>
+              <div class="ac-asset-status"></div>
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=order_form.account layout='horizontal' %}
+            </div>
+            <div class='col-xs-4'>
+              <input class="ac-account-input" placeholder="Search" />
+              <div class="ac-account-response"></div>
+              <div class="ac-account-status"></div>
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=order_form.order_side layout='horizontal' %}
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=order_form.amount_unsigned layout='horizontal' %}
+            </div>
+          </div>
+
         </div>
 
         <div class="modal-footer">
@@ -139,13 +175,53 @@
         </div>
 
         <div class="modal-body">
-                {% bootstrap_field field=fill_form.pub_date layout='horizontal' %}
-                {% bootstrap_field field=fill_form.asset layout='horizontal' %}
-                {% bootstrap_field field=fill_form.fill_side layout='horizontal' %}
-                {% bootstrap_field field=fill_form.fill_qty_unsigned layout='horizontal' %}
-                {% bootstrap_field field=fill_form.fill_price layout='horizontal' %}
-                {% bootstrap_field field=fill_form.tt_order_key layout='horizontal' %}
-                {% bootstrap_field field=fill_form.fill_text layout='horizontal' %}
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=fill_form.pub_date layout='horizontal' %}
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=fill_form.asset layout='horizontal' %}
+            </div>
+            <div class='col-xs-4'>
+              <input class="ac-asset-input form-control" placeholder="Search" />
+              <div class="ac-asset-response"></div>
+              <div class="ac-asset-status"></div>
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=fill_form.fill_side layout='horizontal' %}
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=fill_form.fill_qty_unsigned layout='horizontal' %}
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=fill_form.fill_price layout='horizontal' %}
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=fill_form.tt_order_key layout='horizontal' %}
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=fill_form.fill_text layout='horizontal' %}
+            </div>
+          </div>
+
         </div>
 
         <div class="modal-footer">
@@ -158,15 +234,48 @@
   </div>
 </div>
 
-<!-- How to reset form body in bootstrap modal box
-     http://stackoverflow.com/questions/15827262/ddg#20918538
-     -->
 <script type="text/javascript">
-$('.modal').on('hidden.bs.modal', function(){
-      $(this).find('form')[0].reset();
-      $(this).find('input').prop('disabled',false);
-      $(this).find('select').prop('disabled',false);
-      $(this).find('hidden.extra-dyn').remove();
+$(function() {
+  <!-- How to reset form body in bootstrap modal box
+       http://stackoverflow.com/questions/15827262/ddg#20918538
+       -->
+  $('.modal').on('hidden.bs.modal', function(){
+        $(this).find('form')[0].reset();
+        $(this).find('input').prop('disabled',false);
+        $(this).find('select').prop('disabled',false);
+        $(this).find('hidden.extra-dyn').remove();
+  });
+
+
+
+  <!-- convert asset/account input to autocomplete from jquery ui -->
+  function createAutocomplete(id,name) {
+    $(id+" .ac-"+name+"-input").autocomplete({
+      source: "/autocomplete/"+name+"/",
+      appendTo: $(id+" .ac-"+name+"-response"),
+      response: function( event, ui ) {
+        if(ui.content.length==0) {
+          $(id+" .ac-"+name+"-status").text("No results");
+        } else {
+          $(id+" .ac-"+name+"-status").text("");
+        }
+      },
+      search: function( event, ui ) {
+        $(id+" .ac-"+name+"-status").text("Searching...");
+      },
+      autoFocus: true,
+      select: function( event, ui ) {
+        $(id+" form select[name='"+name+"']").val(ui.item.value);
+        $(id+" .ac-"+name+"-input").val("");
+        event.preventDefault();
+      }
+    });
+  }
+
+  createAutocomplete("#orders-new","account");
+  createAutocomplete("#orders-new","asset");
+  createAutocomplete("#fills-new","asset");
+
 });
 </script>
 

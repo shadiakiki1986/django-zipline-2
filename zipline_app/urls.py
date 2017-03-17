@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
 from .views.zipline_app import zipline_app as views
-from .views.zipline_app import order, asset, fill, account
+from .views.zipline_app import order, asset, fill, account, autocomplete
 
 app_name='zipline_app'
 urlpatterns = [
@@ -58,5 +58,10 @@ urlpatterns = [
     url(r'^orders/(?P<pk>[0-9]+)/delete/$', order.OrderDelete.as_view(), name='orders-delete'),
     # ex: /<root>/orders/5/update/
     url(r'^orders/(?P<pk>[0-9]+)/update/$', order.OrderUpdateView.as_view(), name='orders-update'),
+
+    # Autocomplete Input Field In Django Template with Jquery-UI
+    # http://blog.appliedinformaticsinc.com/autocomplete-input-field-in-django-template-with-jquery-ui/
+    url(r'^autocomplete/asset/$',   autocomplete.AutoCompleteAssetView.as_view(),   name='autocomplete-asset'),
+    url(r'^autocomplete/account/$', autocomplete.AutoCompleteAccountView.as_view(), name='autocomplete-account'),
 
 ]
