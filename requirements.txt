@@ -42,5 +42,5 @@ statsmodels==0.8.0
 tables==3.3.0
 testfixtures==4.13.4
 toolz==0.8.2
-zipline==1.1.0+14.g5fd20e1
+git+git://github.com/quantopian/zipline@5fd20e1
 zope.interface==4.3.3
