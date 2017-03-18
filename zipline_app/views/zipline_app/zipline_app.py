@@ -16,7 +16,16 @@ from ...forms import OrderForm, FillForm, AssetForm, AccountForm
 class IndexView(generic.base.TemplateView):
     template_name = 'zipline_app/index.html'
 
-class BlotterSideBySideView(generic.ListView):
+class BlotterBaseView(generic.ListView):
+    def get_context_data(self, *args, **kwargs):
+        context = super(BlotterBaseView, self).get_context_data(*args, **kwargs)
+        context["order_form"]=OrderForm()
+        context["fill_form"]=FillForm()
+        context["asset_form"]=AssetForm()
+        context["account_form"]=AccountForm()
+        return context
+
+class BlotterSideBySideView(BlotterBaseView):
     template_name = 'zipline_app/blotter/sideBySide/index.html'
     context_object_name = 'combined'
 
@@ -64,10 +73,6 @@ class BlotterSideBySideView(generic.ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(BlotterSideBySideView, self).get_context_data(*args, **kwargs)
-        context["order_form"]=OrderForm()
-        context["fill_form"]=FillForm()
-        context["asset_form"]=AssetForm()
-        context["account_form"]=AccountForm()
         context["zl_unused"] = ZlModel.zl_unused.items()
         context["fills_required_per_asset"]=self.fills_required_per_asset()
         return context
@@ -94,7 +99,7 @@ def vote(request, order_id):
         # user hits the Back button.
         return HttpResponseRedirect(reverse('zipline_app:results', args=(order.id,)))
 
-class BlotterEngineView(generic.ListView):
+class BlotterEngineView(BlotterBaseView):
     template_name = 'zipline_app/blotter/engine.html'
     context_object_name = 'latest_order_list'
 

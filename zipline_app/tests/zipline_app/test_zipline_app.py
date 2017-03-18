@@ -109,6 +109,7 @@ class OrderViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "No orders are available.")
         self.assertQuerysetEqual(response.context['latest_order_list'], [])
+        self.assertContains(response, "New fill")
 
     def test_blotter_engine_view_with_a_past_order(self):
         """

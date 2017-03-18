@@ -1,10 +1,23 @@
 {% extends "zipline_app/base.html" %}
 
 {% block content %}
-  <div class="btn-group pull-right" role="group" aria-label="view">
-    <a class="btn btn-default" href="{% url 'zipline_app:blotter-sideBySide' %}">Side-by-side</a>
-    <a class="btn btn-default" href="{% url 'zipline_app:blotter-engine' %}">Engine</a>
+ {% include 'zipline_app/blotter/_create_modals.html' %}
+
+  <div class='row'>
+    <div class='col-xs-9'>
+      {% include 'zipline_app/blotter/_create_buttons.html' %}
+
+    </div>
+    <div class='col-xs-3'>
+      <div class="btn-group pull-right" role="group" aria-label="view">
+        <a class="btn btn-default" href="{% url 'zipline_app:blotter-sideBySide' %}">Side-by-side</a>
+        <a class="btn btn-default" href="{% url 'zipline_app:blotter-engine' %}">Engine</a>
+      </div>
+    </div>
   </div>
+
+  <div style="margin-top:5px;margin-bottom:5px"></div>
+
   <div>
       {% block content_blotter %}
       {% endblock %}
