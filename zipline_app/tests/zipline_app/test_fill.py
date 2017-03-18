@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .test_zipline_app import create_fill, create_asset, a1
+from .test_zipline_app import create_fill, create_asset, a1, create_order, create_account
 from django.urls import reverse
 from ...models.zipline_app.fill import Fill
 from ...models.zipline_app.side import LONG
@@ -67,3 +67,20 @@ class FillViewsTests(TestCase):
         response = self.client.post(url,f1)
         self.assertContains(response,"Enter a positive number.")
 
+    def test_new_fill_dedicated_to_order(self):
+        acc = create_account("test acc")
+        o1 = create_order(order_text="test", days=-10, asset=self.a1a, order_side=LONG, amount_unsigned=10, account=acc)
+
+        url = reverse('zipline_app:fills-new')
+        time = '2015-01-01 06:00:00'
+        f1={'pub_date':time, 'asset':self.a1a.id, 'fill_side': LONG, 'fill_qty_unsigned':1, 'fill_price':1, 'dedicated_to_order':o1.id}
+        response = self.client.post(url,f1,follow=True)
+
+        expected = reverse('zipline_app:orders-detail', args=(o1.id,))
+        self.assertContains(response, expected)
+
+        # check that it also shows up in the blotter (twice)
+        url = reverse('zipline_app:blotter-sideBySide')
+        response = self.client.get(url,follow=True)
+        actual = ''.join([str(x) for x in list(response)])
+        self.assertEqual(actual.count(expected),2)

@@ -12,7 +12,10 @@ class OrderForm(ModelForm):
 class FillForm(ModelForm):
   class Meta:
     model = Fill
-    fields = ['pub_date', 'asset', 'fill_qty_unsigned', 'fill_side', 'fill_price', 'fill_text', 'tt_order_key']
+    fields = [
+      'pub_date', 'asset', 'fill_qty_unsigned', 'fill_side', 'fill_price', 'fill_text', 'tt_order_key',
+      'dedicated_to_order'
+    ]
 
 class AssetForm(ModelForm):
   class Meta:

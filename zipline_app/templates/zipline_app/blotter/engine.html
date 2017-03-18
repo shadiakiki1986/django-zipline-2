@@ -50,6 +50,7 @@
       <th>&nbsp;</th>
       <th>&nbsp;</th>
       <th>Price</th>
+      <th>Order</th>
       <th>Comment</th>
       <th>&nbsp;</th>
     </thead>
@@ -65,8 +66,9 @@
         <td width=" 5%">{{fill.fill_side}}</td>
         <td width="10%">{{fill.fill_qty_unsigned}}</td>
         <td width=" 5%">&nbsp;</td>
-        <td width="10%">&nbsp;</td>
+        <td width=" 5%">&nbsp;</td>
         <td width="10%">{{fill.fill_price}}</td>
+        <td width=" 5%" nowrap>{{ fill.dedicated_to_order }}</td>
         <td width="10%" nowrap>{{ fill.fill_text }}</td>
         <td width="10%"><a href="{% url 'zipline_app:fills-detail' fill.id %}">Details</a></td>
       </tr>

@@ -21,7 +21,7 @@ class Fill(models.Model):
     # 2017-03-17: relink fill to order as a "dedicated to order" field
     # 2017-01-12: unlink orders from fills and use zipline engine to perform matching
     # order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    dedicated_to_order = models.ForeignKey(Order, null=True, default=None)
+    dedicated_to_order = models.ForeignKey(Order, null=True, default=None, verbose_name="Order")
 
     fill_text = models.CharField(max_length=200, blank=True)
     votes = models.IntegerField(default=0)
@@ -49,7 +49,10 @@ class Fill(models.Model):
       return self.fill_qty_unsigned * (+1 if self.fill_side==LONG else -1)
 
     def __str__(self):
-        return "%s, %s %s, %s (%s, %s)" % (self.asset.asset_symbol, self.fill_side, self.fill_qty_unsigned, self.fill_price, self.tt_order_key, self.fill_text)
+        return "%s, %s %s, %s (%s, %s)%s" % (
+          self.asset.asset_symbol, self.fill_side, self.fill_qty_unsigned, self.fill_price, self.tt_order_key, self.fill_text,
+          "" if self.dedicated_to_order is None else " - dedicated to %s"%self.dedicated_to_order
+        )
 
     def has_unused(self):
       return self.asset.id in ZlModel.zl_unused

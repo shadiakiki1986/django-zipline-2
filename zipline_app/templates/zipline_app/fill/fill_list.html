@@ -17,8 +17,11 @@
       <div class="col-xs-1"><a href="{% url 'zipline_app:assets-list' %}">{{ fill.asset.asset_symbol }}</a></div>
       <div class="col-xs-1">{{ fill.fill_side}}</div>
       <div class="col-xs-1 text-right">{{ fill.fill_qty_unsigned|intcomma}}</div>
-      <div class="col-xs-2 text-right">{{ fill.fill_price }}</div>
+      <div class="col-xs-1 text-right">{{ fill.fill_price }}</div>
       <div class="col-xs-1">{{ fill.tt_order_key}}</div>
+      <div class="col-xs-1">
+        {% include 'zipline_app/fill/_fill_dedicated_to_order.html' %}
+      </div>
       <div class="col-xs-2">{{ fill.fill_text }}</div>
       <div class="col-xs-1">&nbsp;</div>
     </div>

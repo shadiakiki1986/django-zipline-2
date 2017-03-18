@@ -47,9 +47,13 @@ def create_order(order_text, days, asset, order_side, amount_unsigned, account):
       account=account
     )
 
-def create_fill(fill_text, days, asset, fill_side, fill_qty_unsigned, fill_price, tt_order_key=""):
+def create_fill(fill_text, days, asset, fill_side, fill_qty_unsigned, fill_price, tt_order_key="", dedicated_to_order=None):
     time = timezone.now() + datetime.timedelta(days=days)
-    return Fill.objects.create(fill_text=fill_text, pub_date=time, asset=asset, fill_side=fill_side, fill_qty_unsigned=fill_qty_unsigned, fill_price=fill_price, tt_order_key=tt_order_key)
+    return Fill.objects.create(
+      fill_text=fill_text, pub_date=time, asset=asset,
+      fill_side=fill_side, fill_qty_unsigned=fill_qty_unsigned, fill_price=fill_price,
+      tt_order_key=tt_order_key, dedicated_to_order=dedicated_to_order
+    )
 
 class OrderMethodTests(TestCase):
     def setUp(self):
