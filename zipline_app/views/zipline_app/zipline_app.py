@@ -23,11 +23,13 @@ class BlotterBaseView(generic.ListView):
         context["fill_form"]=FillForm()
         context["asset_form"]=AssetForm()
         context["account_form"]=AccountForm()
+        context["source"]=self.source
         return context
 
 class BlotterSideBySideView(BlotterBaseView):
     template_name = 'zipline_app/blotter/sideBySide/index.html'
     context_object_name = 'combined'
+    source="sideBySide"
 
     def fills_required_per_asset(self):
       fills = {}
@@ -79,6 +81,7 @@ class BlotterSideBySideView(BlotterBaseView):
 
 class BlotterConcealedView(BlotterSideBySideView):
     template_name = 'zipline_app/blotter/concealed.html'
+    source="concealed"
 
 class ResultsView(generic.DetailView):
     model = Order
@@ -105,6 +108,7 @@ def vote(request, order_id):
 class BlotterEngineView(BlotterBaseView):
     template_name = 'zipline_app/blotter/engine.html'
     context_object_name = 'latest_order_list'
+    source="engine"
 
     def get_queryset(self):
         """Return the last five published orders."""

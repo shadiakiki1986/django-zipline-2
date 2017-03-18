@@ -16,7 +16,7 @@
       <form action="{% url 'zipline_app:accounts-new' %}" method="post" class="form">
         {% csrf_token %}
         <!-- hidden form field -->
-        <input type="hidden" name="source" value="combined">
+        <input type="hidden" name="source" value="{{source}}">
 
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -46,7 +46,7 @@
       <form action="{% url 'zipline_app:assets-new' %}" method="post" class="form">
         {% csrf_token %}
         <!-- hidden form field -->
-        <input type="hidden" name="source" value="combined">
+        <input type="hidden" name="source" value="{{source}}">
 
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -76,7 +76,7 @@
         <form action="{% url 'zipline_app:orders-new' %}" method="post">
           {% csrf_token %}
           {{ order_form.as_p }}
-          <input type="hidden" name="source" value="combined">
+          <input type="hidden" name="source" value="{{source}}">
           <input type="submit" value="Save" />
         </form>
       -->
@@ -88,7 +88,7 @@
         <div style="display: none;">{% bootstrap_field field=order_form.pub_date layout='horizontal' %}</div>
 
         <!-- hidden form field -->
-        <input type="hidden" name="source" value="combined">
+        <input type="hidden" name="source" value="{{source}}">
 
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -157,7 +157,7 @@
         <form action="{% url 'zipline_app:fills-new' %}" method="post">
           {% csrf_token %}
           {{ fill_form.as_p }}
-          <input type="hidden" name="source" value="combined">
+          <input type="hidden" name="source" value="{{source}}">
           <input type="submit" value="Save" />
         </form>
       -->
@@ -167,7 +167,7 @@
         {% csrf_token %}
 
         <!-- hidden form field -->
-        <input type="hidden" name="source" value="combined">
+        <input type="hidden" name="source" value="{{source}}">
 
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
