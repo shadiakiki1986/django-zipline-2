@@ -411,7 +411,6 @@ class Matcher:
 from testfixtures import TempDirectory
 
 def factory(matcher: Matcher, fills_all: dict, orders_all: dict, assets: dict):
-  fills_all, orders_all = Matcher.chopSeconds(fills_all, orders_all)
   matcher.write_assets(assets)
 
   all_closed=[]
@@ -422,6 +421,8 @@ def factory(matcher: Matcher, fills_all: dict, orders_all: dict, assets: dict):
 
   for mySign in [-1,+1]:
     fills_sub, orders_sub = Matcher.filterBySign(mySign, fills_all, orders_all)
+    fills_sub, orders_sub = Matcher.chopSeconds(fills_sub, orders_sub)
+
     with TempDirectory() as tempdir:
       sub_closed, sub_txns, open_orders_sub, sub_unused, sub_minutes = _factory_sub(matcher, fills_sub, orders_sub, assets)
 

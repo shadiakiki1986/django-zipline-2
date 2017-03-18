@@ -50,6 +50,17 @@ class FillModelTests(TestCase):
     f1 = create_fill_from_order( order=order, fill_text="test fill", fill_price=22, tt_order_key="test key")
     f1.clean()
 
+  # two opposite fills  within the same minute with the same quantities
+  # cause an error: ZeroDivisionError: Weights sum to zero, can't be normalized
+  # zipline_app/matcher.py", line 146, in <lambda>
+  # grouped_close = grouped.apply(lambda g: numpy.average(g['close'],weights=g['volume']))
+  def test_two_opposite_fills_same_minute(self):
+    qty = 10
+    o_l = create_order(order_text="long order",  days=-1,  asset=self.a1a, order_side=LONG,  amount_unsigned=qty,   account=self.acc)
+    o_s = create_order(order_text="short order", days=-1,  asset=self.a1a, order_side=SHORT, amount_unsigned=qty,   account=self.acc)
+    f_l = create_fill_from_order(order=o_l, fill_text="test fill long", fill_price=2)
+    f_s = create_fill_from_order(order=o_s, fill_text="test fill short", fill_price=2)
+
 class FillViewsTests(TestCase):
     def setUp(self):
         self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
