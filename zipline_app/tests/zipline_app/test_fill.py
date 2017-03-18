@@ -139,9 +139,3 @@ class FillViewsTests(TestCase):
         expected = reverse('zipline_app:orders-detail', args=(o1.id,))
         self.assertNotContains(response, "has-error")
         self.assertContains(response, expected)
-
-        # check that it also shows up in the blotter (twice)
-        url = reverse('zipline_app:blotter-sideBySide')
-        response = self.client.get(url,follow=True)
-        actual = ''.join([str(x) for x in list(response)])
-        self.assertEqual(actual.count(expected),2)

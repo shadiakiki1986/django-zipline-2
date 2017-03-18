@@ -24,13 +24,6 @@
           <a href="{% url 'zipline_app:fills-detail' fill.id %}">
             #{{fill.id}}
           </a>
-          {% if fill.dedicated_to_order is not None %}
-            (for
-            <a href="{% url 'zipline_app:orders-detail' fill.dedicated_to_order.id %}">
-              #{{fill.dedicated_to_order.id}}
-            </a>
-            )
-          {% endif %}
         </abbr>
 
       </div>
