@@ -13,6 +13,16 @@ Order Details
   <li>Filled: <font color="red">{{order.filled|intcomma}}</font></li>
   <li>Date: {{order.pub_date}}</li>
   <li>Account: {{order.account.account_symbol}}</li>
+  <li>
+    Dedicated fill:
+    {% if order.dedicated_fill is not None %}
+    <a href="{% url 'zipline_app:fills-detail' order.dedicated_fill.id %}">
+      #{{order.dedicated_fill.id}}
+    </a>
+    {% else %}
+    None
+    {% endif %}
+  </li>
   <li>Comment: {% if order.order_text %}{{ order.order_text }}{% else %}None{% endif %}</li>
 </ul>
 
