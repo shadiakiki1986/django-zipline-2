@@ -11,6 +11,8 @@ urlpatterns = [
     url(r'^blotter/sideBySide/$', views.BlotterSideBySideView.as_view(), name='blotter-sideBySide'),
     # ex: /<root>/blotter/engine/
     url(r'^blotter/engine/$', views.BlotterEngineView.as_view(), name='blotter-engine'),
+    # ex: /<root>/blotter/concealed/
+    url(r'^blotter/concealed/$', views.BlotterConcealedView.as_view(), name='blotter-concealed'),
 
     # ex: /<root>/5/results/
     url(r'^(?P<pk>[0-9]+)/results/$', views.ResultsView.as_view(), name='results'),

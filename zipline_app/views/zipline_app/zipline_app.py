@@ -77,6 +77,9 @@ class BlotterSideBySideView(BlotterBaseView):
         context["fills_required_per_asset"]=self.fills_required_per_asset()
         return context
 
+class BlotterConcealedView(BlotterSideBySideView):
+    template_name = 'zipline_app/blotter/concealed.html'
+
 class ResultsView(generic.DetailView):
     model = Order
     template_name = 'zipline_app/results.html'

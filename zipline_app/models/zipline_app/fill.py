@@ -10,6 +10,8 @@ from .asset import Asset
 from .zlmodel import ZlModel
 from .order import Order
 from .side import LONG, FILL_SIDE_CHOICES, validate_nonzero, PositiveFloatFieldForm
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
 
 class PositiveFloatFieldModel(models.FloatField):
   def formfield(self, **kwargs):
@@ -56,6 +58,22 @@ class Fill(models.Model):
 
     def has_unused(self):
       return self.asset.id in ZlModel.zl_unused
+
+    # validating a model
+    # https://docs.djangoproject.com/en/1.10/ref/models/instances/#django.db.models.Model.clean
+    def clean(self):
+      if self.dedicated_to_order is not None:
+        errors = {}
+        if self.fill_side!=self.dedicated_to_order.order_side:
+          errors['fill_side']=_('Dedicated fill side doesnt match with order')
+        if self.fill_qty_unsigned!=self.dedicated_to_order.amount_unsigned:
+          errors['fill_qty_unsigned']=_('Dedicated fill qty doesnt match with order')
+        if self.asset!=self.dedicated_to_order.asset:
+          errors['asset']=_('Dedicated fill asset doesnt match with order')
+        if self.pub_date!=self.dedicated_to_order.pub_date:
+          errors['pub_date']=_('Dedicated fill date doesnt match with order')
+        if len(errors)>0:
+          raise ValidationError(errors)
 
 # using get_success_url
 #    def get_absolute_url(self):

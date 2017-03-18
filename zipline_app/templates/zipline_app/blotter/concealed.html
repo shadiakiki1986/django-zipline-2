@@ -25,20 +25,8 @@
                 <div class="col-xs-10 text-left"><b>Orders</b></div>
               </div>
             </div>
-            <div class="col-xs-5">
-              <div class="row">
-                <div class="col-xs-2"><!-- asset --></div>
-                <div class="col-xs-10">
-                  <div class="row">
-                    <div class="col-xs-2"><!-- not sure what this is --></div>
-                    <div class="col-xs-10 text-left"><b>Fills</b></div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
-        <div class="col-xs-1"><!-- timestamp --></div>
       </div>
     </em>
 
@@ -57,20 +45,6 @@
                     <div class="col-xs-2 text-right"><abbr title="Filled">F</abbr></div>
                     <div class="col-xs-3 text-right"><abbr title="Average Price">P</abbr></div>
                     <div class="col-xs-2"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-xs-5">
-              <div class="row">
-                <div class="col-xs-2">Asset</div>
-
-                <div class="col-xs-10">
-                  <div class="row">
-                    <div class="col-xs-4 text-right"><abbr title="Quantity">Q</abbr></div>
-                    <div class="col-xs-4 text-right"><abbr title="Price">P</abbr></div>
-                    <div class="col-xs-4"></div>
                   </div>
                 </div>
               </div>
@@ -119,29 +93,9 @@
                 </div>
               </div>
             </div>
-            <div class="col-xs-5">
-              <div class="row">
-                <div class="col-xs-2" title="{{duo.asset}}">
-                  {% if duo.fills|length > 0 %}
-                  {{duo.asset.asset_symbol}}
-                  {% endif %}
-                </div>
-
-                <div class="col-xs-10">
-                  {% include 'zipline_app/blotter/sideBySide/_fills.html' %}
-                </div>
-              </div>
-            </div>
 
           </div>
           {% endfor %}
-        </div>
-
-        <div class="col-xs-1 text-left">
-          <em>
-            <div class="row"><b>{{minute.minute|date:"H:i"}}</b></div>
-            {#<div class="row small text-muted">{{minute.minute|date:"Y-m-d"}}</div>#}
-          </em>
         </div>
 
     </div>
