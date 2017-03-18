@@ -6,27 +6,31 @@
      http://getbootstrap.com/javascript/#live-demo
 -->
 
-<div class="col-xs-3">
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#accounts-new">
+<div class='btn-group'>
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Create
     <span class="glyphicon glyphicon-plus"></span>
-    Account
   </button>
-</div>
-<div class="col-xs-3">
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#assets-new">
-    <span class="glyphicon glyphicon-plus"></span>
-    Asset
-  </button>
-</div>
-<div class="col-xs-3">
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#orders-new">
-    <span class="glyphicon glyphicon-plus"></span>
-    Order
-  </button>
-</div>
-<div class="col-xs-3">
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#fills-new">
-    <span class="glyphicon glyphicon-plus"></span>
-    Fill
-  </button>
+  <ul class="dropdown-menu dropdown-menu-right">
+    <li>
+      <a href="#" data-toggle="modal" data-target="#accounts-new">
+        Account
+      </a>
+    </li>
+    <li>
+      <a href="#" data-toggle="modal" data-target="#assets-new">
+        Asset
+      </a>
+    </li>
+    <li>
+      <a href="#" data-toggle="modal" data-target="#orders-new">
+        Order
+      </a>
+    </li>
+    <li>
+      <a href="#" data-toggle="modal" data-target="#fills-new">
+        Fill
+      </a>
+    </li>
+  </ul>
 </div>
