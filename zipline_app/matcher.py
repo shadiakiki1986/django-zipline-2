@@ -421,6 +421,8 @@ def factory(matcher: Matcher, fills_all: dict, orders_all: dict, assets: dict):
 
   for mySign in [-1,+1]:
     fills_sub, orders_sub = Matcher.filterBySign(mySign, fills_all, orders_all)
+    # eventhough the orders/fills models contain their own floored-minute value,
+    # flooring here again as a safety measure
     fills_sub, orders_sub = Matcher.chopSeconds(fills_sub, orders_sub)
 
     with TempDirectory() as tempdir:

@@ -7,7 +7,7 @@ from ...models.zipline_app.zipline_app import ZlModel
 from django.core.exceptions import ValidationError
 
 def create_fill_from_order(order, fill_text, fill_price, tt_order_key=""):
-    f1 = Fill.objects.create(
+    return Fill.objects.create(
       fill_text="test fill", pub_date=order.pub_date, asset=order.asset,
       fill_side=order.order_side, fill_qty_unsigned=order.amount_unsigned,
       fill_price=22,
@@ -22,33 +22,28 @@ class FillModelTests(TestCase):
 
   def test_clean_invalid_dedicated_order_qty(self):
     order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=LONG, amount_unsigned=10,   account=self.acc                          )
-    f1 = create_fill(    fill_text="test fill",     days=-1, asset=self.a1a, fill_side=LONG,  fill_qty_unsigned=20, fill_price=2,     dedicated_to_order=order)
     with self.assertRaises(ValidationError):
-      f1.clean()
+      f1 = create_fill(    fill_text="test fill",     days=-1, asset=self.a1a, fill_side=LONG,  fill_qty_unsigned=20, fill_price=2,     dedicated_to_order=order)
 
   def test_clean_invalid_dedicated_order_side(self):
     order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=LONG, amount_unsigned=10,   account=self.acc                          )
-    f1 = create_fill(    fill_text="test fill",     days=-1, asset=self.a1a, fill_side=SHORT,  fill_qty_unsigned=10, fill_price=2,     dedicated_to_order=order)
     with self.assertRaises(ValidationError):
-      f1.clean()
+      f1 = create_fill(    fill_text="test fill",     days=-1, asset=self.a1a, fill_side=SHORT,  fill_qty_unsigned=10, fill_price=2,     dedicated_to_order=order)
 
   def test_clean_invalid_dedicated_order_asset(self):
     order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=LONG, amount_unsigned=10,   account=self.acc                          )
     a2a = create_asset(a2["symbol"],a2["exchange"],a2["name"])
-    f1 = create_fill(    fill_text="test fill",     days=-1, asset=a2a, fill_side=LONG,  fill_qty_unsigned=10, fill_price=2,     dedicated_to_order=order)
     with self.assertRaises(ValidationError):
-      f1.clean()
+      f1 = create_fill(    fill_text="test fill",     days=-1, asset=a2a, fill_side=LONG,  fill_qty_unsigned=10, fill_price=2,     dedicated_to_order=order)
 
   def test_clean_invalid_dedicated_order_pub_date(self):
     order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=LONG, amount_unsigned=10,   account=self.acc                          )
-    f1 = create_fill(    fill_text="test fill",     days=-30, asset=self.a1a, fill_side=LONG,  fill_qty_unsigned=10, fill_price=2,     dedicated_to_order=order)
     with self.assertRaises(ValidationError):
-      f1.clean()
+      f1 = create_fill(    fill_text="test fill",     days=-30, asset=self.a1a, fill_side=LONG,  fill_qty_unsigned=10, fill_price=2,     dedicated_to_order=order)
 
   def test_clean_valid_dedicated_order(self):
     order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=LONG, amount_unsigned=10,   account=self.acc                          )
     f1 = create_fill_from_order( order=order, fill_text="test fill", fill_price=22, tt_order_key="test key")
-    f1.clean()
 
   # two opposite fills  within the same minute with the same quantities
   # cause an error: ZeroDivisionError: Weights sum to zero, can't be normalized
@@ -127,13 +122,22 @@ class FillViewsTests(TestCase):
     def test_new_fill_dedicated_to_order(self):
         acc = create_account("test acc")
         o1 = create_order(order_text="test", days=-10, asset=self.a1a, order_side=LONG, amount_unsigned=10, account=acc)
+        o1.clean()
+        o1.save()
 
         url = reverse('zipline_app:fills-new')
-        time = '2015-01-01 06:00:00'
-        f1={'pub_date':time, 'asset':self.a1a.id, 'fill_side': LONG, 'fill_qty_unsigned':1, 'fill_price':1, 'dedicated_to_order':o1.id}
+        f1={
+          'pub_date':o1.pub_date.replace(hour=o1.pub_date.hour+2).strftime('%Y-%m-%d %H:%M'),
+          'asset':o1.asset.id,
+          'fill_side': o1.order_side,
+          'fill_qty_unsigned':o1.amount_unsigned,
+          'fill_price':1,
+          'dedicated_to_order':o1.id
+        }
         response = self.client.post(url,f1,follow=True)
 
         expected = reverse('zipline_app:orders-detail', args=(o1.id,))
+        self.assertNotContains(response, "has-error")
         self.assertContains(response, expected)
 
         # check that it also shows up in the blotter (twice)

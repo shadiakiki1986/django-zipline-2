@@ -12,12 +12,13 @@ from .side import LONG, FILL_SIDE_CHOICES, validate_nonzero
 
 from numpy import average
 from django.core.validators import MaxValueValidator, MinValueValidator
+from ...utils import now_minute, chopSeconds
 
 # Create your models here.
 
 class Order(models.Model):
     order_text = models.CharField(max_length=200, blank=True)
-    pub_date = models.DateTimeField('date published',default=timezone.now)
+    pub_date = models.DateTimeField('date published',default=now_minute)
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
     amount_unsigned = models.PositiveIntegerField(
       default=0,
@@ -59,6 +60,17 @@ class Order(models.Model):
       sub = self.fills()
       avg = average(a=[txn["price"] for txn in sub], weights=[txn["amount"] for txn in sub])
       return avg
+
+    def clean(self):
+      # drop seconds from pub_date
+      self.pub_date = chopSeconds(self.pub_date)
+
+    # access one-to-one reverse field
+    # https://docs.djangoproject.com/en/1.10/topics/db/examples/one_to_one/
+    def dedicated_fill(self):
+      if hasattr(self,'fill'):
+        return self.fill
+      return None
 
     was_published_recently.admin_order_field = 'pub_date'
     was_published_recently.boolean = True

@@ -21,6 +21,8 @@ class BlotterConcealedViewsTests(TestCase):
     self.assertContains(response, "random order")
     self.assertNotContains(response, "test fill")
 
+    self.assertContains(response, "Filled by")
+
   def test_two_orders_different(self):
     o_l = create_order(order_text="long order",  days=-1,  asset=self.ass, order_side=LONG,  amount_unsigned=10,   account=self.acc)
     o_s = create_order(order_text="short order", days=-1,  asset=self.ass, order_side=SHORT, amount_unsigned=20,   account=self.acc)

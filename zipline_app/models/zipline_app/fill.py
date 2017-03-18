@@ -12,6 +12,7 @@ from .order import Order
 from .side import LONG, FILL_SIDE_CHOICES, validate_nonzero, PositiveFloatFieldForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
+from ...utils import now_minute, chopSeconds
 
 class PositiveFloatFieldModel(models.FloatField):
   def formfield(self, **kwargs):
@@ -23,7 +24,7 @@ class Fill(models.Model):
     # 2017-03-17: relink fill to order as a "dedicated to order" field
     # 2017-01-12: unlink orders from fills and use zipline engine to perform matching
     # order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    dedicated_to_order = models.ForeignKey(Order, null=True, default=None, verbose_name="Order")
+    dedicated_to_order = models.OneToOneField(Order, null=True, default=None, verbose_name="Order")
 
     fill_text = models.CharField(max_length=200, blank=True)
     votes = models.IntegerField(default=0)
@@ -36,7 +37,7 @@ class Fill(models.Model):
       default=0,
       validators=[MaxValueValidator(1000000), MinValueValidator(0), validate_nonzero],
     )
-    pub_date = models.DateTimeField('date published',default=timezone.now)
+    pub_date = models.DateTimeField('date published',default=now_minute)
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
     tt_order_key = models.CharField(max_length=20, blank=True)
 
@@ -62,6 +63,10 @@ class Fill(models.Model):
     # validating a model
     # https://docs.djangoproject.com/en/1.10/ref/models/instances/#django.db.models.Model.clean
     def clean(self):
+      # drop seconds from pub_date
+      self.pub_date = chopSeconds(self.pub_date)
+
+      # check that linked order matches with local properties
       if self.dedicated_to_order is not None:
         errors = {}
         if self.fill_side!=self.dedicated_to_order.order_side:
@@ -71,7 +76,13 @@ class Fill(models.Model):
         if self.asset!=self.dedicated_to_order.asset:
           errors['asset']=_('Dedicated fill asset doesnt match with order')
         if self.pub_date!=self.dedicated_to_order.pub_date:
-          errors['pub_date']=_('Dedicated fill date doesnt match with order')
+          errors['pub_date']=_(
+            'Dedicated fill date (%s) doesnt match with order (%s)'
+            %(
+              self.pub_date,
+              self.dedicated_to_order.pub_date
+            )
+          )
         if len(errors)>0:
           raise ValidationError(errors)
 

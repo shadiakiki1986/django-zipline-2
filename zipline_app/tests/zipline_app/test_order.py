@@ -6,6 +6,7 @@ from ...models.zipline_app.zipline_app import ZlModel
 from .test_zipline_app import create_asset, create_order, create_account, a1
 from ...models.zipline_app.fill import Fill
 from ...models.zipline_app.side import LONG, SHORT
+from .test_fill import create_fill_from_order
 
 class OrderModelTests(TestCase):
     def setUp(self):
@@ -24,6 +25,11 @@ class OrderModelTests(TestCase):
         self.assertEqual(o1.amount_signed(), 10)
         o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=SHORT, amount_unsigned=10, account=self.acc1)
         self.assertEqual(o1.amount_signed(), -10)
+
+    def test_dedicated_fill(self):
+        o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=LONG, amount_unsigned=10, account=self.acc1)
+        f1 = create_fill_from_order(order=o1, fill_text="fill text", fill_price=1)
+        self.assertEqual(o1.dedicated_fill(), f1)
 
 class OrderGeneralViewsTests(TestCase):
     def setUp(self):
