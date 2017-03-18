@@ -1,0 +1,12 @@
+{% extends "zipline_app/base.html" %}
+
+{% block content %}
+  <div class="btn-group pull-right" role="group" aria-label="view">
+    <a class="btn btn-default" href="{% url 'zipline_app:blotter-sideBySide' %}">Side-by-side</a>
+    <a class="btn btn-default" href="{% url 'zipline_app:blotter-engine' %}">Engine</a>
+  </div>
+  <div>
+      {% block content_blotter %}
+      {% endblock %}
+  </div>
+{% endblock %}

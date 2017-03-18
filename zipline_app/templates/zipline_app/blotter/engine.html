@@ -1,7 +1,7 @@
-{% extends "zipline_app/base.html" %}
+{% extends "zipline_app/blotter/base.html" %}
 {% load humanize %}
 
-{% block content %}
+{% block content_blotter %}
 {% if latest_order_list %}
     <table class="table">
       <caption>Orders</caption>
