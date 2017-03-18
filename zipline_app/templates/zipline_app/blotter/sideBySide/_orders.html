@@ -66,7 +66,7 @@ $(function() {
   $('.fill-from-order').unbind().click(function(){
       // get all data-... attributes
       var data = {
-        'id': $(this).attr('data-order-id'),
+        'order-id': $(this).attr('data-order-id'),
         'pub_date': $(this).attr('data-order-pub_date'),
         'order_side': $(this).attr('data-order-order_side'),
         'amount_unsigned': $(this).attr('data-order-amount_unsigned'),
@@ -78,6 +78,7 @@ $(function() {
       $('#fills-new select[name="fill_side"]').val(data['order_side']);
       $('#fills-new input[name="fill_qty_unsigned"]').val(data['amount_unsigned']);
       $('#fills-new select[name="asset"]').val(data['asset-id']);
+      $('#fills-new select[name="dedicated_to_order"]').val(data['order-id']);
 
       // set to disabled to disallow user from changing
       // note that 'readonly' does not work for select
@@ -85,6 +86,7 @@ $(function() {
       $('#fills-new select[name="fill_side"]').prop('disabled', true);
       $('#fills-new input[name="fill_qty_unsigned"]').prop('disabled', true);
       $('#fills-new select[name="asset"]').prop('disabled', true);
+      $('#fills-new select[name="dedicated_to_order"]').prop('disabled', true);
 
       // since disabled fields do not get posted, add hidden fields
       // http://stackoverflow.com/a/2834115/4126114
@@ -93,6 +95,7 @@ $(function() {
       $('<input/>', {type:'hidden', class:'extra-dyn', name:'fill_side',         value:data['order_side']     }).appendTo(form);
       $('<input/>', {type:'hidden', class:'extra-dyn', name:'fill_qty_unsigned', value:data['amount_unsigned']}).appendTo(form);
       $('<input/>', {type:'hidden', class:'extra-dyn', name:'asset',             value:data['asset-id']       }).appendTo(form);
+      $('<input/>', {type:'hidden', class:'extra-dyn', name:'dedicated_to_order',value:data['order-id']       }).appendTo(form);
   });
 });
 </script>
