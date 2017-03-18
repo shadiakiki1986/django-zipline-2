@@ -39,7 +39,10 @@ class SignalProcessor:
     if sender.__name__=="Asset": ZlModel.delete_asset(instance)
     SignalProcessor.update_if_mine(sender)
 
-  def ready():
-    logger.debug("Signal: %s, %s" % ("ready", ""))
+  def ready(sender, environ, **kwargs):
+    if ZlModel.md5 is not None:
+      logger.debug("Signal: %s, %s" % ("connection_created", "ignoring since already received"))
+      return
+    logger.debug("Signal: %s, %s" % ("connection_created", "proceeding with update"))
     ZlModel.init(Fill.objects.all(), Order.objects.all(), Asset.objects.all())
     ZlModel.update()

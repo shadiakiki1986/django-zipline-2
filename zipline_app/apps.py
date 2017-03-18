@@ -3,8 +3,8 @@ from __future__ import unicode_literals
 from django.apps import AppConfig
 from django.db import models
 # connecting signals
-from django.db.backends.signals import connection_created
-
+#from django.db.backends.signals import connection_created
+from django.core.signals import request_started
 
 class ZiplineAppConfig(AppConfig):
     name = 'zipline_app'
@@ -21,5 +21,4 @@ class ZiplineAppConfig(AppConfig):
       # This runs at every page reload. Instead, just run it directly here once
       # eventhough this is supposed to run only once, I am seeing it run twice,
       # but twice is still better than at each reload
-      #connection_created.connect(SignalProcessor.connection_created)
-      SignalProcessor.ready()
+      request_started.connect(SignalProcessor.ready)
