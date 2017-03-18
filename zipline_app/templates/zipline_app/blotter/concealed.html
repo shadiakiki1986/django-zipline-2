@@ -94,6 +94,18 @@
               </div>
             </div>
 
+            <div class="col-xs-5">
+            {# re-iterate over orders to show the dedicated fills #}
+            {% for order in duo.orders %}
+              {% if order.dedicated_fill is not None %}
+              Filled by
+              <a href="{% url 'zipline_app:fills-detail' order.dedicated_fill.id %}">
+                #{{order.dedicated_fill.id}}
+              </a>
+              {% endif %}
+            {% endfor %}
+            </div>
+
           </div>
           {% endfor %}
         </div>

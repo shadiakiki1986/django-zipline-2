@@ -41,19 +41,11 @@
             #{{order.id}}
           </a>
         </abbr>
-
-        {% if order.dedicated_fill is not None %}
-        Filled by
-        <a href="{% url 'zipline_app:fills-detail' order.dedicated_fill.id %}">
-          #{{order.dedicated_fill.id}}
-        </a>
-        {% endif %}
       </div>
-
     </div>
   </div>
-
 </div>
+
 {% if order.order_text %}
   <div class="row">
     <div class="col-xs-12 text-muted text-left">{{ order.order_text }}</div>
