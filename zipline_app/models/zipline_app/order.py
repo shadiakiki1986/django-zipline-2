@@ -8,7 +8,7 @@ from django.urls import reverse
 from .asset import Asset
 from .account import Account
 from .zlmodel import ZlModel
-from .fill import Fill, validate_nonzero
+from .side import LONG, FILL_SIDE_CHOICES, validate_nonzero
 
 from numpy import average
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -27,13 +27,13 @@ class Order(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     order_side = models.CharField(
       max_length=1,
-      choices=Fill.FILL_SIDE_CHOICES,
-      default=Fill.LONG,
+      choices=FILL_SIDE_CHOICES,
+      default=LONG,
       verbose_name="Side"
     )
 
     def amount_signed(self):
-      return self.amount_unsigned * (+1 if self.order_side==Fill.LONG else -1)
+      return self.amount_unsigned * (+1 if self.order_side==LONG else -1)
 
     def __str__(self):
         return "%s, %s, %s (%s, %s)" % (self.asset.asset_symbol, self.order_side, self.amount_unsigned, self.account.account_symbol, self.order_text)
