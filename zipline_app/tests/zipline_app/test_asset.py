@@ -1,8 +1,12 @@
 from django.test import TestCase
 from .test_zipline_app import create_asset, a1
 from django.urls import reverse
+from ...utils import myTestLogin
 
 class AssetViewsTests(TestCase):
+    def setUp(self):
+      myTestLogin(self.client)
+
     def test_list(self):
         url = reverse('zipline_app:assets-list')
         response = self.client.get(url)

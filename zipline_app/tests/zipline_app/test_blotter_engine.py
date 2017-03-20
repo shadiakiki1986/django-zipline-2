@@ -7,12 +7,14 @@ from ...models.zipline_app.side import LONG, SHORT
 from .test_fill import create_fill_from_order
 from io import BytesIO
 import pandas as pd
+from ...utils import myTestLogin
 
 class BlotterEngineViewsTests(TestCase):
   def setUp(self):
     ZlModel.clear()
     self.acc = create_account("test acc")
     self.ass = create_asset(a1["symbol"],a1["exchange"],a1["name"])
+    myTestLogin(self.client)
 
   def test_get(self):
     o1 = create_order(order_text="random order 1", days=-1,  asset=self.ass, order_side=LONG, amount_unsigned=10,   account=self.acc)

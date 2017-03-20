@@ -50,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'zipline_app.login_required_middleware.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'zipline_project.urls'
@@ -142,3 +143,6 @@ LOGGING = {
     },
 }
 
+LOGIN_URL = '/users/login/' # 'zipline_app:login' # 
+LOGIN_EXEMPT_URLS = ['^$']
+LOGIN_REDIRECT_URL = '/'

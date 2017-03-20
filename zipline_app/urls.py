@@ -3,6 +3,7 @@ from django.conf.urls import url
 from .views.zipline_app import zipline_app as views
 from .views.zipline_app import blotter
 from .views.zipline_app import order, asset, fill, account, autocomplete
+from django.contrib.auth import views as auth_views
 
 app_name='zipline_app'
 urlpatterns = [
@@ -72,4 +73,8 @@ urlpatterns = [
     url(r'^autocomplete/asset/$',   autocomplete.AutoCompleteAssetView.as_view(),   name='autocomplete-asset'),
     url(r'^autocomplete/account/$', autocomplete.AutoCompleteAccountView.as_view(), name='autocomplete-account'),
 
+    # user login
+    # https://docs.djangoproject.com/en/1.10/topics/auth/default/#the-login-required-decorator
+    url(r'^users/login/$', auth_views.login, name='login'),
+    url(r'^users/logout/$', auth_views.logout, name='logout'),
 ]

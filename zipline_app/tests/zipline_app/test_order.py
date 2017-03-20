@@ -7,6 +7,7 @@ from .test_zipline_app import create_asset, create_order, create_account, a1
 from ...models.zipline_app.fill import Fill
 from ...models.zipline_app.side import LONG, SHORT
 from .test_fill import create_fill_from_order
+from ...utils import myTestLogin
 
 class OrderModelTests(TestCase):
     def setUp(self):
@@ -39,7 +40,8 @@ class OrderGeneralViewsTests(TestCase):
       ZlModel.clear()
       self.acc1 = create_account(symbol="TEST01")
       self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
- 
+      myTestLogin(self.client)
+
     def test_list(self):
         url = reverse('zipline_app:orders-list')
         response = self.client.get(url)
@@ -94,6 +96,7 @@ class OrderDetailViewTests(TestCase):
     def setUp(self):
       self.acc1 = create_account(symbol="TEST01")
       self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
+      myTestLogin(self.client)
 
     def test_detail_view_with_a_future_order(self):
         """

@@ -5,6 +5,7 @@ from ...models.zipline_app.fill import Fill
 from ...models.zipline_app.side import LONG, SHORT
 from ...models.zipline_app.zipline_app import ZlModel
 from django.core.exceptions import ValidationError
+from ...utils import myTestLogin
 
 def create_fill_from_order(order, fill_text, fill_price, tt_order_key=""):
     return Fill.objects.create(
@@ -84,6 +85,7 @@ class FillModelTests(TestCase):
 class FillViewsTests(TestCase):
     def setUp(self):
         self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
+        myTestLogin(self.client)
 
     def test_list(self):
         url = reverse('zipline_app:fills-list')

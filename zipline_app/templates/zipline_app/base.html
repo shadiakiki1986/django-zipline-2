@@ -44,6 +44,19 @@
             <li><a href="{% url 'zipline_app:orders-list' %}">Orders</a></li>
             <li><a href="{% url 'zipline_app:fills-list' %}">Fills</a></li>
             <li><a href="{% url 'admin:index' %}">Admin</a></li>
+            {% if request.user.username %}
+            <li>Logged in as {{request.user.username}}</li>
+            <li>
+              <form action="{% url 'zipline_app:logout' %}" class='form'>
+                <input type="hidden" name="next" value="{% url 'zipline_app:index' %}">
+                <button type="submit" class='btn btn-default'>Log out</button>
+              </form>
+            </li>
+            {% endif %}
+            {% if request.user.is_authenticated == False %}
+            <li><a href="{% url 'zipline_app:login' %}">Login</a></li>
+            {% endif %}
+
           </ul>
 
           <!-- http://getbootstrap.com/components/#navbar-links -->

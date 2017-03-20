@@ -4,12 +4,14 @@ from django.urls import reverse
 from ...models.zipline_app.fill import Fill
 from ...models.zipline_app.zipline_app import ZlModel
 from ...models.zipline_app.side import LONG, SHORT
+from ...utils import myTestLogin
 
 class BlotterSideBySideViewsTests(TestCase):
   def setUp(self):
     ZlModel.clear()
     self.acc = create_account("test acc")
     self.ass = create_asset(a1["symbol"],a1["exchange"],a1["name"])
+    myTestLogin(self.client)
 
   def test_one_order(self):
     order = create_order(order_text="random order",days=-1, asset=self.ass, order_side=LONG, amount_unsigned=10, account=self.acc)

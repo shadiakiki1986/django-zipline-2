@@ -12,6 +12,7 @@ def redirect_index_or_local(myself,local):
 
 import datetime
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 def now_minute():
   ts=timezone.now()
@@ -22,4 +23,10 @@ def chopSeconds(ts:datetime):
   #ts -= datetime.timedelta(seconds=ts.second, microseconds=ts.microsecond)
   #return ts
   return ts.replace(second=0, microsecond=0)
+
+def myTestLogin(client):
+  password = 'glass onion'
+  user = User.objects.create_user(username='john', email='jlennon@beatles.com', password=password)
+  response = client.login(username=user.username, password=password, follow=True)
+  return response
 

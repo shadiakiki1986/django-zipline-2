@@ -1,8 +1,12 @@
 from django.test import TestCase
 from django.urls import reverse
 from .test_zipline_app import create_asset, create_account
+from ...utils import myTestLogin
 
 class AutoCompletAssetTests(TestCase):
+  def setUp(self):
+    myTestLogin(self.client)
+
   def test_get(self):
     asset1 = create_asset(symbol='asset1 symbol', exchange='asset1 exchange', name='asset1 name')
     asset2 = create_asset(symbol='asset2 symbol', exchange='asset2 exchange', name='asset2 name')
@@ -15,6 +19,9 @@ class AutoCompletAssetTests(TestCase):
     acc1 = create_account(symbol="TEST01")
 
 class AutoCompletAccountTests(TestCase):
+  def setUp(self):
+    myTestLogin(self.client)
+
   def test_get(self):
     acc1 = create_account(symbol="ACC01")
     acc2 = create_account(symbol="ACC02")

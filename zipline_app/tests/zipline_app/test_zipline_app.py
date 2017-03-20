@@ -7,6 +7,7 @@ import pandas as pd
 from unittest import skip
 from ...models.zipline_app.zipline_app import Order, ZlModel, Fill, Account, Asset
 from ...models.zipline_app.side import LONG
+from ...utils import myTestLogin
 
 a1 = {
   "exchange":'exchange name',
@@ -111,6 +112,7 @@ class OrderViewTests(TestCase):
       ZlModel.clear()
       self.acc1 = create_account(symbol="TEST01")
       self.asset = create_asset(a1["symbol"],a1["exchange"],a1["name"])
+      myTestLogin(self.client)
 
     def test_blotter_engine_view_with_no_orders(self):
         """
