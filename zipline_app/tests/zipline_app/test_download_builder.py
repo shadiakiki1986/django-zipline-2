@@ -25,7 +25,7 @@ class DownloadBuilderTests(TestCase):
     self.assertTrue(isinstance(df, DataFrame))
 
   def test_df2xlsx(self):
-    df = DataFrame({})
+    df = self.builder.empty_df()
     full_name = self.builder.df2xlsx(df)
     self.assertNotEqual(full_name, None)
     self.assertEqual(exists(full_name),1)

@@ -7,7 +7,7 @@ from os.path import join
 from django.http import FileResponse
 
 class DownloadBuilder:
-  def orders2df(self,orders):
+  def empty_df(self):
     df = DataFrame({
       'Ref': [],
       'Timestamp':[],
@@ -22,6 +22,10 @@ class DownloadBuilder:
       'Order nbr':[],
       'Status':[]
     })
+    return df
+
+  def orders2df(self,orders):
+    df = self.empty_df()
     for order in orders:
       df = df.append({
         'Ref': order.id,
