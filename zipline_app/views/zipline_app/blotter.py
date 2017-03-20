@@ -8,6 +8,7 @@ from numpy import concatenate
 
 from ...models.zipline_app.zipline_app import Order, Fill, ZlModel, Asset
 from ...forms import OrderForm, FillForm, AssetForm, AccountForm
+from ._download_builder import DownloadBuilder
 
 class BlotterBaseView(generic.ListView):
     def get_context_data(self, *args, **kwargs):
@@ -109,3 +110,11 @@ class BlotterEngineView(BlotterBaseView):
 
         return context
 
+class BlotterDownloadView(generic.View):
+  def get(self, *args, **kwargs):
+    orders = Order.objects.all().order_by('-pub_date')#[:5]
+    builder = DownloadBuilder()
+    df = builder.orders2df(orders)
+    full_name = builder.df2xlsx(df)
+    response = builder.fn2response(full_name)
+    return response

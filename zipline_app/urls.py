@@ -15,6 +15,8 @@ urlpatterns = [
     url(r'^blotter/engine/$', blotter.BlotterEngineView.as_view(), name='blotter-engine'),
     # ex: /<root>/blotter/concealed/
     url(r'^blotter/concealed/$', blotter.BlotterConcealedView.as_view(), name='blotter-concealed'),
+    # ex: /<root>/blotter/download/
+    url(r'^blotter/download/$', blotter.BlotterDownloadView.as_view(), name='blotter-download'),
 
     # ex: /<root>/5/results/
     url(r'^(?P<pk>[0-9]+)/results/$', views.ResultsView.as_view(), name='results'),
