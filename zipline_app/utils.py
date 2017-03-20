@@ -29,3 +29,9 @@ def myTestLogin(client):
   user = User.objects.create_user(username='john', email='jlennon@beatles.com', password=password)
   response = client.login(username=user.username, password=password, follow=True)
   return user
+
+def getenv_or_fail(envName: str):
+  value = getenv(envName)
+  if value is None:
+    raise Exception("Environment variable undefined: '%s'" % envName)
+  return value
