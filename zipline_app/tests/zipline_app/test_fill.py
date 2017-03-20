@@ -6,8 +6,9 @@ from ...models.zipline_app.side import LONG, SHORT
 from ...models.zipline_app.zipline_app import ZlModel
 from django.core.exceptions import ValidationError
 from ...utils import myTestLogin
+from django.contrib.auth.models import User
 
-def create_fill_from_order(order, fill_text, fill_price, tt_order_key=""):
+def create_fill_from_order(order, fill_text, fill_price, tt_order_key="", user=None):
     return Fill.objects.create(
       fill_text=fill_text,
       pub_date=order.pub_date,
@@ -16,7 +17,8 @@ def create_fill_from_order(order, fill_text, fill_price, tt_order_key=""):
       fill_qty_unsigned=order.amount_unsigned,
       fill_price=fill_price,
       tt_order_key=tt_order_key,
-      dedicated_to_order=order
+      dedicated_to_order=order,
+      user=user
     )
 
 class FillModelTests(TestCase):
@@ -81,6 +83,11 @@ class FillModelTests(TestCase):
     o1 = create_order(order_text="random order 1", days=-1,  asset=self.a1a, order_side=LONG, amount_unsigned=10,   account=self.acc)
     f1 = create_fill_from_order(order=o1, fill_price=1, fill_text="fill 1")
     f1.delete()
+
+  def test_fill_with_user(self):
+    password='bla'
+    user = User.objects.create_user(username='john', email='jlennon@beatles.com', password=password)
+    f1 = create_fill(days=-1, asset=self.a1a, fill_side=LONG, fill_qty_unsigned=1, fill_price=1, fill_text="fill 1", user=user)
 
 class FillViewsTests(TestCase):
     def setUp(self):
@@ -166,3 +173,16 @@ class FillViewsTests(TestCase):
         expected = reverse('zipline_app:orders-detail', args=(o1.id,))
         self.assertNotContains(response, "has-error")
         self.assertContains(response, expected)
+
+        # check that username is showing up
+        self.assertEqual(b''.join(list(response)).count(b"john"),2)
+
+    def test_new_fill_user_not_dedicated(self):
+        url = reverse('zipline_app:fills-new')
+        time = '2015-01-01 06:00:00'
+        f1={'pub_date':time, 'asset':self.a1a.id, 'fill_side': LONG, 'fill_qty_unsigned':1, 'fill_price':1, 'dedicated_to_order':'', 'fill_text':'random fill'}
+        response = self.client.post(url,f1,follow=True)
+        self.assertNotContains(response,'has-error')
+        # random fill shows up once in "successfully created..." and once in table body
+        self.assertEqual(b''.join(list(response)).count(b"random fill"),2)
+        self.assertEqual(b''.join(list(response)).count(b"john"),2)

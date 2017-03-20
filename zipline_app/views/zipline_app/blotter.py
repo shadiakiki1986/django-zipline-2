@@ -7,7 +7,10 @@ from pandas import Timedelta
 from numpy import concatenate
 
 from ...models.zipline_app.zipline_app import Order, Fill, ZlModel, Asset
-from ...forms import OrderForm, FillForm, AssetForm, AccountForm
+from .order import OrderCreate
+from .fill import FillCreate
+from .asset import AssetCreate
+from .account import AccountCreate
 from ._download_builder import DownloadBuilder
 
 class BlotterBaseView(generic.ListView):
@@ -24,10 +27,15 @@ class BlotterBaseView(generic.ListView):
         context['latest_fill_list'] = self.get_fills()
 
         # append forms
-        context["order_form"]=OrderForm()
-        context["fill_form"]=FillForm()
-        context["asset_form"]=AssetForm()
-        context["account_form"]=AccountForm()
+        # https://github.com/django/django/blob/feac4c30ce7635e17ce1adc4c2c7a1eb0721aeb3/django/views/generic/edit.py#L124
+        form = OrderCreate()
+        context["order_form"]=form.get_form_class()
+        form = FillCreate()
+        context["fill_form"]=form.get_form_class()
+        form = AssetCreate()
+        context["asset_form"]=form.get_form_class()
+        form = AccountCreate()
+        context["account_form"]=form.get_form_class()
 
         # append source for redirection
         context["source"]=self.source

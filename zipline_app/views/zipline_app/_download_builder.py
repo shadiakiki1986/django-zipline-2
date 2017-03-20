@@ -30,8 +30,12 @@ class DownloadBuilder:
       df = df.append({
         'Ref': order.id,
         'Timestamp':order.pub_date,
-        'placed by':'-',
-        'given by':'-',
+
+        #'placed by':'-',
+        #'given by':'-',
+        'placed by':'-' if order.dedicated_fill() is None else ('-' if order.dedicated_fill().user is None else order.dedicated_fill().user.username),
+        'given by': '-' if order.user is None else order.user.username,
+
         'Client Name':order.account.account_symbol,
         'Side':order.order_side,
         'Order Type':'-',

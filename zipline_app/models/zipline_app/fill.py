@@ -13,6 +13,7 @@ from .side import LONG, FILL_SIDE_CHOICES, validate_nonzero, PositiveFloatFieldF
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from ...utils import now_minute, chopSeconds
+from django.contrib.auth.models import User
 
 class PositiveFloatFieldModel(models.FloatField):
   def formfield(self, **kwargs):
@@ -24,7 +25,7 @@ class Fill(models.Model):
     # 2017-03-17: relink fill to order as a "dedicated to order" field
     # 2017-01-12: unlink orders from fills and use zipline engine to perform matching
     # order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    dedicated_to_order = models.OneToOneField(Order, null=True, default=None, verbose_name="Order", on_delete=models.SET_NULL)
+    dedicated_to_order = models.OneToOneField(Order, null=True, blank=True, verbose_name="Order", on_delete=models.SET_NULL)
 
     fill_text = models.CharField(max_length=200, blank=True)
     votes = models.IntegerField(default=0)
@@ -47,6 +48,7 @@ class Fill(models.Model):
       default=LONG,
       verbose_name="Side"
     )
+    user = models.ForeignKey(User, null=True, default=None)
 
     def fill_qty_signed(self):
       return self.fill_qty_unsigned * (+1 if self.fill_side==LONG else -1)

@@ -28,5 +28,4 @@ def myTestLogin(client):
   password = 'glass onion'
   user = User.objects.create_user(username='john', email='jlennon@beatles.com', password=password)
   response = client.login(username=user.username, password=password, follow=True)
-  return response
-
+  return user

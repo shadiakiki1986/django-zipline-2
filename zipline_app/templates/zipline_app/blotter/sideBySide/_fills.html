@@ -3,15 +3,15 @@
 
 {% for fill in duo.fills %}
 <div class="row {% if fill.has_unused %}text-danger{% endif %}">
-  <div class="col-xs-4 text-primary text-right">
+  <div class="col-xs-3 text-primary text-right">
     {{fill.fill_side}}
     {{fill.fill_qty_unsigned}}
   </div>
-  <div class="col-xs-4 text-primary text-right">{{fill.fill_price}}</div>
-  <div class="col-xs-4">
+  <div class="col-xs-3 text-primary text-right">{{fill.fill_price}}</div>
+  <div class="col-xs-6">
     <div class="row">
 
-      <div class="col-xs-6">
+      <div class="col-xs-4">
         {% if fill.has_unused %}
         <abbr title="Asset has unmatched fills">
           <span class="glyphicon glyphicon-alert"></span>
@@ -19,13 +19,13 @@
         {% endif %}
       </div>
 
-      <div class="col-xs-6 text-right">
+      <div class="col-xs-8 text-right">
         <abbr title="Fill">
           <a href="{% url 'zipline_app:fills-detail' fill.id %}">
             #{{fill.id}}
           </a>
         </abbr>
-
+        ({{fill.user.username}})
       </div>
 
     </div>

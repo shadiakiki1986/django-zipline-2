@@ -9,6 +9,12 @@ class OrderCreate(generic.CreateView):
   fields = ['pub_date', 'asset', 'order_side', 'amount_unsigned', 'account', 'order_text']
   template_name = 'zipline_app/order/order_form.html'
 
+  def form_valid(self, form):
+    order = form.save(commit=False)
+    if self.request.user.is_authenticated():
+      order.user = self.request.user
+    return super(OrderCreate, self).form_valid(form)
+
   def get_success_url(self):
     # django message levels
     # https://docs.djangoproject.com/en/1.10/ref/contrib/messages/#message-levels

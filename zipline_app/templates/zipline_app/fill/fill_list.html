@@ -23,7 +23,7 @@
         {% include 'zipline_app/fill/_fill_dedicated_to_order.html' %}
       </div>
       <div class="col-xs-2">{{ fill.fill_text }}</div>
-      <div class="col-xs-1">&nbsp;</div>
+      <div class="col-xs-1">{{ fill.user.username }}</div>
     </div>
 {% empty %}
     <div class="alert alert-warning">No fills yet.</div>

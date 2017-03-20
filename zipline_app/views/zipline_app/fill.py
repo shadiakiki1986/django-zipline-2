@@ -11,6 +11,13 @@ class FillCreate(generic.CreateView):
     'dedicated_to_order'
   ]
   template_name = 'zipline_app/fill/fill_form.html'
+
+  def form_valid(self, form):
+    fill = form.save(commit=False)
+    if self.request.user.is_authenticated():
+      fill.user = self.request.user
+    return super(FillCreate, self).form_valid(form)
+
   def get_success_url(self):
     messages.add_message(self.request, messages.INFO, "Successfully created fill: %s" % self.object)
     return redirect_index_or_local(self,'zipline_app:fills-list')

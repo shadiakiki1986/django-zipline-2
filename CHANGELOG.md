@@ -72,7 +72,6 @@ _Unticked are still TODO_
 - [ ] use order vote as order close
 - [ ] fill from index required fills per asset
 - [ ] bug: fill that gets its timestamp changed to the same as another fill, then changed back out of that timestamp, disappears from the combined view
-- [ ] combine OrderCreate and OrderForm classes? (same for FillCreate/FillForm and others)
 - [ ] order list, fills list: order by desc `pub_date`
 - [ ] if fill entered before/after order, make it easy to re-attach to order timestamp
 - [ ] add "order status" flag: working, closed, ...

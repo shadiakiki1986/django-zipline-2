@@ -13,6 +13,7 @@ from .side import LONG, FILL_SIDE_CHOICES, validate_nonzero
 from numpy import average
 from django.core.validators import MaxValueValidator, MinValueValidator
 from ...utils import now_minute, chopSeconds
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -32,6 +33,7 @@ class Order(models.Model):
       default=LONG,
       verbose_name="Side"
     )
+    user = models.ForeignKey(User, null=True, default=None)
 
     def amount_signed(self):
       return self.amount_unsigned * (+1 if self.order_side==LONG else -1)

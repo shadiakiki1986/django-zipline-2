@@ -32,7 +32,7 @@ def create_asset(symbol, exchange, name):
       asset_name=name
     )
 
-def create_order(order_text, days, asset, order_side, amount_unsigned, account):
+def create_order(order_text, days, asset, order_side, amount_unsigned, account, user=None):
     """
     Creates a order with the given `order_text` and published the
     given number of `days` offset to now (negative for orders published
@@ -45,18 +45,21 @@ def create_order(order_text, days, asset, order_side, amount_unsigned, account):
       asset=asset,
       order_side=order_side,
       amount_unsigned=amount_unsigned,
-      account=account
+      account=account,
+      user=user
     )
     order.clean()
     order.save()
     return order
 
-def create_fill(fill_text, days, asset, fill_side, fill_qty_unsigned, fill_price, tt_order_key="", dedicated_to_order=None):
+def create_fill(fill_text, days, asset, fill_side, fill_qty_unsigned, fill_price, tt_order_key="", dedicated_to_order=None, user=None):
     time = timezone.now() + datetime.timedelta(days=days)
     fill = Fill.objects.create(
       fill_text=fill_text, pub_date=time, asset=asset,
       fill_side=fill_side, fill_qty_unsigned=fill_qty_unsigned, fill_price=fill_price,
-      tt_order_key=tt_order_key, dedicated_to_order=dedicated_to_order
+      tt_order_key=tt_order_key,
+      dedicated_to_order=dedicated_to_order,
+      user=user
     )
     fill.clean()
     fill.save()

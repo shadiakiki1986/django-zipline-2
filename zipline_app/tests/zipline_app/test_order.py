@@ -8,6 +8,7 @@ from ...models.zipline_app.fill import Fill
 from ...models.zipline_app.side import LONG, SHORT
 from .test_fill import create_fill_from_order
 from ...utils import myTestLogin
+from django.contrib.auth.models import User
 
 class OrderModelTests(TestCase):
     def setUp(self):
@@ -35,12 +36,17 @@ class OrderModelTests(TestCase):
         # test that can now delete
         o1.delete()
 
+    def test_order_with_user(self):
+      password='bla'
+      user = User.objects.create_user(username='john', email='jlennon@beatles.com', password=password)
+      o1 = create_order(days=-1, asset=self.a1a, order_side=LONG, amount_unsigned=1, order_text="order 1", user=user, account=self.acc1)
+
 class OrderGeneralViewsTests(TestCase):
     def setUp(self):
       ZlModel.clear()
       self.acc1 = create_account(symbol="TEST01")
       self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-      myTestLogin(self.client)
+      self.user = myTestLogin(self.client)
 
     def test_list(self):
         url = reverse('zipline_app:orders-list')
@@ -91,6 +97,14 @@ class OrderGeneralViewsTests(TestCase):
         o1={'pub_date':time, 'asset':self.a1a.id, 'order_side': LONG, 'amount_unsigned':0, 'account':self.acc1.id}
         response = self.client.post(url,o1)
         self.assertContains(response,"Quantity 0 is not allowed")
+
+    def test_new_order_user(self):
+        url = reverse('zipline_app:orders-new')
+        time = '2015-01-01 06:00:00'
+        o1={'pub_date':time, 'asset':self.a1a.id, 'order_side': LONG, 'amount_unsigned':1, 'account':self.acc1.id}
+
+        response = self.client.post(url,o1,follow=True)
+        self.assertEqual(b''.join(list(response)).count(b"john"),2)
 
 class OrderDetailViewTests(TestCase):
     def setUp(self):
