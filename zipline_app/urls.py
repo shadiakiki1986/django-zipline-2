@@ -1,18 +1,20 @@
 from django.conf.urls import url
 
 from .views.zipline_app import zipline_app as views
+from .views.zipline_app import blotter
 from .views.zipline_app import order, asset, fill, account, autocomplete
 
 app_name='zipline_app'
 urlpatterns = [
     # ex: /<root>/
     url(r'^$', views.IndexView.as_view(), name='index'),
+
     # ex: /<root>/blotter/sideBySide
-    url(r'^blotter/sideBySide/$', views.BlotterSideBySideView.as_view(), name='blotter-sideBySide'),
+    url(r'^blotter/sideBySide/$', blotter.BlotterSideBySideView.as_view(), name='blotter-sideBySide'),
     # ex: /<root>/blotter/engine/
-    url(r'^blotter/engine/$', views.BlotterEngineView.as_view(), name='blotter-engine'),
+    url(r'^blotter/engine/$', blotter.BlotterEngineView.as_view(), name='blotter-engine'),
     # ex: /<root>/blotter/concealed/
-    url(r'^blotter/concealed/$', views.BlotterConcealedView.as_view(), name='blotter-concealed'),
+    url(r'^blotter/concealed/$', blotter.BlotterConcealedView.as_view(), name='blotter-concealed'),
 
     # ex: /<root>/5/results/
     url(r'^(?P<pk>[0-9]+)/results/$', views.ResultsView.as_view(), name='results'),
