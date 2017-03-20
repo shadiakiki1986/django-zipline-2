@@ -117,6 +117,11 @@ class ZlModel:
 
     @staticmethod
     def delete_fill(fill):
+      if fill.dedicated_to_order is not None:
+        # re-add the order since it was dropped with this fill
+        ZlModel.add_order(fill.dedicated_to_order)
+        return
+
       logger.debug("Delete fill %s" % fill)
       # How to remove a key from a python dictionary
       # http://stackoverflow.com/questions/11277432/ddg#11277439
@@ -126,6 +131,9 @@ class ZlModel:
 
     @staticmethod
     def delete_order(order):
+      if order.dedicated_fill() is not None:
+        return
+
       logger.debug("Delete order %s" % order)
       ZlModel.orders[order.asset.id].pop(order.id, None)
       if not any(ZlModel.orders[order.asset.id]):

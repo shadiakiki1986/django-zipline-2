@@ -72,6 +72,15 @@ class FillModelTests(TestCase):
     # check that o1 is not in the open orders of ZlModel
     self.assertTrue(o1.id not in ZlModel.zl_open_keyed)
 
+    # deleting the fill shoul make the order show up agin in ZlModel
+    f1.delete()
+    self.assertTrue(o1.id in ZlModel.zl_open_keyed)
+
+  def test_dedicated_fill_delete(self):
+    o1 = create_order(order_text="random order 1", days=-1,  asset=self.a1a, order_side=LONG, amount_unsigned=10,   account=self.acc)
+    f1 = create_fill_from_order(order=o1, fill_price=1, fill_text="fill 1")
+    f1.delete()
+
 class FillViewsTests(TestCase):
     def setUp(self):
         self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])

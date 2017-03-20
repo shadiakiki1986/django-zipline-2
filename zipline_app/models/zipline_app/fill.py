@@ -24,7 +24,7 @@ class Fill(models.Model):
     # 2017-03-17: relink fill to order as a "dedicated to order" field
     # 2017-01-12: unlink orders from fills and use zipline engine to perform matching
     # order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    dedicated_to_order = models.OneToOneField(Order, null=True, default=None, verbose_name="Order")
+    dedicated_to_order = models.OneToOneField(Order, null=True, default=None, verbose_name="Order", on_delete=models.SET_NULL)
 
     fill_text = models.CharField(max_length=200, blank=True)
     votes = models.IntegerField(default=0)

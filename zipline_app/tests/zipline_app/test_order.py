@@ -31,6 +31,9 @@ class OrderModelTests(TestCase):
         f1 = create_fill_from_order(order=o1, fill_text="fill text", fill_price=1)
         self.assertEqual(o1.dedicated_fill(), f1)
 
+        # test that can now delete
+        o1.delete()
+
 class OrderGeneralViewsTests(TestCase):
     def setUp(self):
       ZlModel.clear()
