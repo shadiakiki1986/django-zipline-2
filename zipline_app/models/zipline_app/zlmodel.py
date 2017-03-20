@@ -61,6 +61,14 @@ class ZlModel:
     # so this will become a cyclic dependency
     @staticmethod
     def add_fill(fill):
+      if fill.dedicated_to_order is not None:
+        logger.debug("Fill is dedicated. Not adding to zipline model (+ dropping its order that is already in zlmodel): %s",fill)
+        order = fill.dedicated_to_order
+        del ZlModel.orders[order.asset.id][order.id]
+        # no need to trigger update here, since already triggered in signalsProcessor
+        # ZlModel.update()
+        return
+
       logger.debug("Adding fill: %s" % fill)
       if fill.asset.id not in ZlModel.fills:
         ZlModel.fills[fill.asset.id]={}
@@ -137,10 +145,11 @@ class ZlModel:
         return
 
       logger.debug("Initializing. %s vs %s" % (fills, ZlModel.fills))
-      for fill in fills:
-        ZlModel.add_fill(fill)
       for order in orders:
         ZlModel.add_order(order)
+      # important to run add_fill after add_order for the dedicated fills
+      for fill in fills:
+        ZlModel.add_fill(fill)
       for asset in assets:
         ZlModel.add_asset(asset)
 

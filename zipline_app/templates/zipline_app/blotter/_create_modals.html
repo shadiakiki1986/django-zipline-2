@@ -72,14 +72,14 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
 
-      <!--
+      {% comment %}
         <form action="{% url 'zipline_app:orders-new' %}" method="post">
           {% csrf_token %}
           {{ order_form.as_p }}
           <input type="hidden" name="source" value="{{source}}">
           <input type="submit" value="Save" />
         </form>
-      -->
+      {% endcomment %}
 
       {# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
       <form action="{% url 'zipline_app:orders-new' %}" method="post" class="form">
@@ -153,14 +153,14 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
 
-      <!--
+      {% comment %}
         <form action="{% url 'zipline_app:fills-new' %}" method="post">
           {% csrf_token %}
           {{ fill_form.as_p }}
           <input type="hidden" name="source" value="{{source}}">
           <input type="submit" value="Save" />
         </form>
-      -->
+      {% endcomment %}
 
       {# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
       <form action="{% url 'zipline_app:fills-new' %}" method="post" class="form">
@@ -219,12 +219,6 @@
           <div class='row'>
             <div class='col-xs-8'>
               {% bootstrap_field field=fill_form.fill_text layout='horizontal' %}
-            </div>
-          </div>
-
-          <div class='row'>
-            <div class='col-xs-8'>
-              {% bootstrap_field field=fill_form.dedicated_to_order layout='horizontal' %}
             </div>
           </div>
 

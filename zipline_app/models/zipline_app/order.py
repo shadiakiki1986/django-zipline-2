@@ -44,6 +44,9 @@ class Order(models.Model):
         return now >= self.pub_date >= now - datetime.timedelta(days=1)
 
     def filled(self):
+      if self.dedicated_fill() is not None:
+        return self.dedicated_fill().fill_qty_signed()
+
       if self.id in ZlModel.zl_closed_keyed:
         return self.amount_signed()
       if self.id in ZlModel.zl_open_keyed:
@@ -51,6 +54,19 @@ class Order(models.Model):
       return 0
 
     def fills(self):
+      if self.dedicated_fill() is not None:
+        fill = self.dedicated_fill()
+        txn = {
+          'order_id':self.id,
+          'price': fill.fill_price,
+          'amount': fill.fill_qty_signed(),
+          'dt': fill.pub_date,
+          'sid': {
+            'symbol': fill.asset.asset_symbol,
+          },
+        }
+        return [txn]
+
       return [txn for txn in ZlModel.zl_txns if txn["order_id"]==self.id]
 
     def avgPrice(self):

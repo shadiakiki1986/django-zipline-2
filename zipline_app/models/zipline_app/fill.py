@@ -58,6 +58,8 @@ class Fill(models.Model):
         )
 
     def has_unused(self):
+      if self.dedicated_to_order is not None:
+        return False
       return self.asset.id in ZlModel.zl_unused
 
     # validating a model

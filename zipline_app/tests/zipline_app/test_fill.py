@@ -60,6 +60,18 @@ class FillModelTests(TestCase):
     f_l = create_fill_from_order(order=o_l, fill_text="test fill long", fill_price=2)
     f_s = create_fill_from_order(order=o_s, fill_text="test fill short", fill_price=2)
 
+  def test_dedicated_fill_with_earlier_open_fill(self):
+    o1 = create_order(order_text="random order 1", days=-1,  asset=self.a1a, order_side=LONG, amount_unsigned=10,   account=self.acc)
+    o2 = create_order(order_text="random order 2", days=-2,  asset=self.a1a, order_side=LONG, amount_unsigned=20,   account=self.acc)
+    o3 = create_order(order_text="random order 3", days=-3,  asset=self.a1a, order_side=LONG, amount_unsigned=30,   account=self.acc)
+    f1 = create_fill_from_order(order=o1, fill_price=1, fill_text="fill 1")
+
+    self.assertEqual(o1.amount_signed(), o1.filled())
+    self.assertEqual(o3.filled(),0)
+
+    # check that o1 is not in the open orders of ZlModel
+    self.assertTrue(o1.id not in ZlModel.zl_open_keyed)
+
 class FillViewsTests(TestCase):
     def setUp(self):
         self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])

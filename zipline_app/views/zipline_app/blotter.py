@@ -56,8 +56,15 @@ class BlotterSideBySideView(BlotterBaseView):
       return fills
 
     def get_combined(self):
+        all_min_zl  = ZlModel.all_minutes
+        all_min_ded = self.get_fills().exclude(dedicated_to_order=None)
+        all_min_ded = [x.pub_date for x in all_min_ded]
+        all_min_zl.extend(all_min_ded)
+        all_min_zl = list(set(all_min_zl))
+
         combined = []
-        for minute in sorted(ZlModel.all_minutes, reverse=True):
+
+        for minute in sorted(all_min_zl, reverse=True):
           minuteP1 = minute + Timedelta(minutes=1)
           orders = self.get_orders()
           orders = orders.filter(
@@ -121,6 +128,12 @@ class BlotterEngineView(BlotterBaseView):
         context["zl_txns"]=ZlModel.zl_txns
         context["zl_open_keyed"]=ZlModel.zl_open_keyed
         context["zl_unused"] = ZlModel.zl_unused.items()
+
+        # drop the dedicated fills/orders
+        drop_fill = context['latest_fill_list'].exclude(dedicated_to_order=None)
+        drop_order_id = drop_fill.values_list('dedicated_to_order__id',flat=True)
+        context['latest_fill_list'] = context['latest_fill_list'].filter(dedicated_to_order=None)
+        context['latest_order_list'] = context['latest_order_list'].exclude(id__in=drop_order_id)
 
         return context
 
