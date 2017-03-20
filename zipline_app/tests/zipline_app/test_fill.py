@@ -8,10 +8,14 @@ from django.core.exceptions import ValidationError
 
 def create_fill_from_order(order, fill_text, fill_price, tt_order_key=""):
     return Fill.objects.create(
-      fill_text="test fill", pub_date=order.pub_date, asset=order.asset,
-      fill_side=order.order_side, fill_qty_unsigned=order.amount_unsigned,
-      fill_price=22,
-      tt_order_key="test key", dedicated_to_order=order
+      fill_text=fill_text,
+      pub_date=order.pub_date,
+      asset=order.asset,
+      fill_side=order.order_side,
+      fill_qty_unsigned=order.amount_unsigned,
+      fill_price=fill_price,
+      tt_order_key=tt_order_key,
+      dedicated_to_order=order
     )
 
 class FillModelTests(TestCase):
