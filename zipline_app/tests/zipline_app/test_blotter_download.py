@@ -18,6 +18,7 @@ class BlotterDownloadViewsTests(TestCase):
     o1 = create_order(order_text="random order 1", days=-1,  asset=self.ass, order_side=LONG, amount_unsigned=10,   account=self.acc)
     o2 = create_order(order_text="random order 2", days=-2,  asset=self.ass, order_side=LONG, amount_unsigned=20,   account=self.acc)
     o3 = create_order(order_text="random order 3", days=-3,  asset=self.ass, order_side=LONG, amount_unsigned=30,   account=self.acc)
+    f3 = create_fill_from_order(order=o3, fill_price=3, fill_text="fill 3")
 
     # django test file download
     # http://stackoverflow.com/a/39655502/4126114
@@ -34,3 +35,11 @@ class BlotterDownloadViewsTests(TestCase):
     # my tests
     self.assertTrue('blotter' in dfs)
     self.assertEqual(len(dfs['blotter']),3)
+
+    self.assertEqual(dfs['blotter']['Status'].tolist(), ['working', 'working', 'filled'])
+
+    # check in order
+    df = dfs['blotter']
+    self.assertEqual(df[df['Ref']==1]['Status'].tolist()[0], 'working')
+    self.assertEqual(df[df['Ref']==2]['Status'].tolist()[0], 'working')
+    self.assertEqual(df[df['Ref']==3]['Status'].tolist()[0], 'filled')

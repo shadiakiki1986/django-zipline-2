@@ -39,7 +39,7 @@ class DownloadBuilder:
         'Security Name':order.asset.asset_symbol,
         'Quote':order.avgPrice(),
         'Order nbr':'-' if order.dedicated_fill() is None else order.dedicated_fill().tt_order_key,
-        'Status':'working' if order.filled()!=order.amount_signed else 'filled'
+        'Status':'working' if order.filled()!=order.amount_signed() else 'filled'
       },
       ignore_index=True)
     return df
