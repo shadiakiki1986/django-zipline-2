@@ -14,6 +14,9 @@ class Asset(models.Model):
     def __str__(self):
         return "%s, %s, %s" % (self.asset_symbol, self.asset_exchange, self.asset_name)
 
+    def str(self):
+      return self.__str__()
+
     def to_dict(self):
         return {
           "symbol": self.asset_symbol,

@@ -104,7 +104,14 @@
 
           <div class='row'>
             <div class='col-xs-8'>
-              {% bootstrap_field field=order_form.asset layout='horizontal' %}
+              {# {% bootstrap_field field=order_form.asset layout='horizontal' %} #}
+              <div class='row'>
+                <div class='col-xs-3'>Asset:</div>
+                <div class='col-xs-9'>
+                  <div class='ac-asset-display'></div>
+                  <input class='ac-asset-hidden' type='hidden' name='asset' value='' >
+                </div>
+              </div>
             </div>
             <div class='col-xs-4'>
               <input class="ac-asset-input" placeholder="Search" />
@@ -115,7 +122,14 @@
 
           <div class='row'>
             <div class='col-xs-8'>
-              {% bootstrap_field field=order_form.account layout='horizontal' %}
+              {#{% bootstrap_field field=order_form.account layout='horizontal' %}#}
+              <div class='row'>
+                <div class='col-xs-3'>Account:</div>
+                <div class='col-xs-9'>
+                  <div class='ac-account-display'></div>
+                  <input class='ac-account-hidden' type='hidden' name='account' value='' >
+                </div>
+              </div>
             </div>
             <div class='col-xs-4'>
               <input class="ac-account-input" placeholder="Search" />
@@ -183,7 +197,14 @@
 
           <div class='row'>
             <div class='col-xs-8'>
-              {% bootstrap_field field=fill_form.asset layout='horizontal' %}
+              {#{% bootstrap_field field=fill_form.asset layout='horizontal' %}#}
+              <div class='row'>
+                <div class='col-xs-3'>Asset:</div>
+                <div class='col-xs-9'>
+                  <div class='ac-asset-display'></div>
+                  <input class='ac-asset-hidden' type='hidden' name='asset' value='' >
+                </div>
+              </div>
             </div>
             <div class='col-xs-4'>
               <input class="ac-asset-input form-control" placeholder="Search" />
@@ -244,6 +265,9 @@ $(function() {
         $(this).find('input').prop('disabled',false);
         $(this).find('select').prop('disabled',false);
         $(this).find('hidden.extra-dyn').remove();
+        $('#fills-new .ac-asset-display').html('');
+        $('#fills-new .ac-asset-hidden').val('');
+        $('#fills-new .ac-asset-input').show();
   });
 
 
@@ -265,7 +289,8 @@ $(function() {
       },
       autoFocus: true,
       select: function( event, ui ) {
-        $(id+" form select[name='"+name+"']").val(ui.item.value);
+        $(id+" .ac-"+name+"-display").html(ui.item.label);
+        $(id+" .ac-"+name+"-hidden").val(ui.item.value);
         $(id+" .ac-"+name+"-input").val("");
         event.preventDefault();
       }
