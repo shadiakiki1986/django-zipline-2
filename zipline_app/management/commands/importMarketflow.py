@@ -30,20 +30,29 @@ class Command(BaseCommand):
       logger.debug("Django import assets: %s"%total)
       counter = 0
       progress = progressbar.ProgressBar(maxval=total).start()
-      for asset in mfMan.assetsList():
+      for assetMf in mfMan.assetsList():
         counter+=1
         if counter % 100 == 0:
           progress.update(counter)
   
         # get/create entity/row/case
         #logger.debug("get or create: %s"%asset['TIT_COD'])
-        asset, created = Asset.objects.get_or_create(
-          asset_symbol=asset['TIT_COD'],
-          asset_name=asset['TIT_NOM'],
-          asset_exchange='N/A'
-        )
-        if created:
-          logger.debug("Creating new asset: %s"%asset)
+        assetDj = Asset.objects.filter(
+          asset_symbol=assetMf['TIT_COD']
+        ).first()
+        if assetDj is None:
+          assetDj = Asset.objects.create(
+            asset_symbol=assetMf['TIT_COD'],
+            asset_name=assetMf['TIT_NOM'],
+            asset_exchange='N/A'
+          )
+          logger.debug("Created asset: %s"%assetDj)
+        else:
+          if assetDj.asset_name!=assetMf['TIT_NOM']:
+            assetDj.asset_name=assetMf['TIT_NOM']
+            assetDj.save()
+            logger.debug("Updated asset: %s"%assetDj)
+
       progress.finish()
   
   
@@ -51,16 +60,25 @@ class Command(BaseCommand):
       logger.debug("Django import accounts: %s"%total)
       counter = 0
       progress = progressbar.ProgressBar(maxval=total).start()
-      for account in mfMan.accountsList():
+      for accountMf in mfMan.accountsList():
         counter+=1
         if counter % 100 == 0:
           progress.update(counter)
   
         # get/create entity/row/case
-        account, created = Account.objects.get_or_create(
-          account_symbol=account['CLI_COD'],
-          #account_name=account['CLI_NOM_PRE'],
-        )
-        if created:
-          logger.debug("Creating new account: %s"%account)
+        accountDj = Account.objects.filter(
+          account_symbol=accountMf['CLI_COD']
+        ).first()
+        if accountDj is None:
+          accountDj = Account.objects.create(
+            account_symbol=accountMf['CLI_COD'],
+            #account_name=accountMf['CLI_NOM_PRE'],
+          )
+          logger.debug("Created account: %s"%accountDj)
+#        else:
+#          if accountDj.account_name!=accountMF['CLI_NOM_PRE']:
+#            accountDj.account_name=accountMf['CLI_NOM_PRE']
+#            accountDj.save()
+#            logger.debug("Updated account: %s"%accountDj)
+
       progress.finish()
