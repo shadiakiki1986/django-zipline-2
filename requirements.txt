@@ -30,6 +30,7 @@ pandas==0.18.1
 pandas-datareader==0.3.0.post0
 patsy==0.4.1
 pbr==1.10.0
+progressbar33==2.4
 
 # can't just use pymssql until https://github.com/pymssql/pymssql/issues/432#issuecomment-238257092
 git+https://github.com/pymssql/pymssql.git

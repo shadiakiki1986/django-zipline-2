@@ -11,7 +11,7 @@ class MfManager:
   # get MF names
   # http://pymssql.org/en/stable/pymssql_examples.html
   def _execute(self, query:str):
-    conn = pymssql.connect(self.server, self.user, self.password, "Marketflow", port=self.port, as_dict=True)
+    conn = pymssql.connect(self.server, self.user, self.password, "Marketflow", port=self.port, as_dict=True, charset="latin1")
     cursor = conn.cursor()
     cursor.execute(query)
     res = cursor.fetchall()
@@ -20,7 +20,7 @@ class MfManager:
 
   def assets(self):
     return self._execute("""
-      SELECT -- top 1000
+      SELECT -- 21566 had non-utf8 character
         TIT_COD, TIT_NOM
       FROM TITRE
     """)
