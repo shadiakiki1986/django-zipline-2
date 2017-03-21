@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'bootstrap3',
+    'pagination_bootstrap',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'zipline_app.login_required_middleware.LoginRequiredMiddleware',
+    'pagination_bootstrap.middleware.PaginationMiddleware',
 ]
 
 ROOT_URLCONF = 'zipline_project.urls'
@@ -66,6 +68,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # pagination configuration
+                # https://github.com/staticdev/django-pagination-bootstrap#configuration
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
             ],
         },
     },

@@ -1,5 +1,5 @@
 {% extends "zipline_app/base.html" %}
-
+{% load pagination_tags %}
 
 {% block content %}
 <h1>Accounts</h1>
@@ -10,6 +10,7 @@
 
 {% include "zipline_app/account/_account_form.html" %}
 
+{% autopaginate account_list %}
     {% for account in account_list %}
     <div class="row">
       <div class="col-xs-1 text-right">
@@ -20,5 +21,7 @@
 {% empty %}
     <div class="alert alert-info">No accounts yet.</div>
 {% endfor %}
+
+{% paginate %}
 
 {% endblock %}

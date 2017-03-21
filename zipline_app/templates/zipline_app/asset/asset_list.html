@@ -1,5 +1,5 @@
 {% extends "zipline_app/base.html" %}
-
+{% load pagination_tags %}
 
 {% block content %}
 <h1>Assets</h1>
@@ -10,6 +10,8 @@
 {# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
 {% include "zipline_app/asset/_asset_form_bootstrap_django.html" %}
 
+{% autopaginate asset_list %}
+
 {% for asset in asset_list %}
     <div class="row">
       <div class="col-xs-1 text-right">
@@ -18,11 +20,14 @@
         </a>
       </div>
       <div class="col-xs-2">{{ asset.asset_symbol }}</div>
-      <div class="col-xs-2">{{ asset.asset_name }}</div>
+      <div class="col-xs-5">{{ asset.asset_name }}</div>
       <div class="col-xs-3">{{ asset.asset_exchange }}</div>
+      <div class='col-xs-1'>&nbsp;</div>
     </div>
 {% empty %}
     <div class="alert alert-info">No assets yet.</div>
 {% endfor %}
+
+{% paginate %}
 
 {% endblock %}
