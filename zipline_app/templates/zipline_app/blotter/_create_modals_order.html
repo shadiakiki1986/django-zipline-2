@@ -3,8 +3,10 @@
 {# copied from https://github.com/applegrew/django-select2/blob/master/tests/testapp/templates/form.html#L5 #}
 {{ order_form.media.css }}
 
-<!-- Modal -->
-<div class="modal fade" id="orders-new" tabindex="-1" role="dialog" aria-labelledby="orders-new-label">
+<!-- Modal: do not use tabindex=-1
+    http://stackoverflow.com/a/18487440/4126114
+-->
+<div class="modal fade" id="orders-new" role="dialog" aria-labelledby="orders-new-label">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
 
