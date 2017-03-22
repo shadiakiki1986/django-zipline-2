@@ -72,13 +72,13 @@ class Command(BaseCommand):
         if accountDj is None:
           accountDj = Account.objects.create(
             account_symbol=accountMf['CLI_COD'],
-            #account_name=accountMf['CLI_NOM_PRE'],
+            account_name=accountMf['CLI_NOM_PRE'],
           )
           logger.debug("Created account: %s"%accountDj)
-#        else:
-#          if accountDj.account_name!=accountMF['CLI_NOM_PRE']:
-#            accountDj.account_name=accountMf['CLI_NOM_PRE']
-#            accountDj.save()
-#            logger.debug("Updated account: %s"%accountDj)
+        else:
+          if accountDj.account_name!=accountMF['CLI_NOM_PRE']:
+            accountDj.account_name=accountMf['CLI_NOM_PRE']
+            accountDj.save()
+            logger.debug("Updated account: %s"%accountDj)
 
       progress.finish()
