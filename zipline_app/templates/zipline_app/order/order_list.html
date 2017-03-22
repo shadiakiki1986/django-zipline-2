@@ -2,11 +2,20 @@
 
 
 {% block content %}
-<h1>Orders</h1>
+{% include 'zipline_app/blotter/_create_modals_order.html' %}
+{% include 'zipline_app/blotter/_create_modals_js.html' %}
 
-<a href="{% url 'zipline_app:orders-new' %}">New</a>
-
-{% include "zipline_app/order/_order_form.html" %}
+<div class='row'>
+  <div class='col-md-3'>
+    <h1>Orders</h1>
+  </div>
+  <div class='col-md-9 text-right'>
+    <button data-toggle="modal" data-target="#orders-new" class='btn btn-primary'>
+      Create
+      <span class="glyphicon glyphicon-plus"></span>
+    </button>
+  </div>
+</div>
 
     {% for order in order_list %}
     <div class="row">

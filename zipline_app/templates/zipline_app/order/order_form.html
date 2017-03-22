@@ -1,5 +1,6 @@
 {% extends "zipline_app/base.html" %}
 
 {% block content %}
+{# it is necessary to keep using _order_form (and not replace it with _create_modals_order) because it is the only form that displays errors properly #}
 {% include "zipline_app/order/_order_form.html" %}
 {% endblock %}

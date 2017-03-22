@@ -29,6 +29,8 @@ class OrderList(OrderCreate):
   def get_context_data(self, *args, **kwargs):
     context = super(OrderList, self).get_context_data(*args, **kwargs)
     context["order_list"] = Order.objects.all()
+    form = OrderCreate()
+    context["order_form"]=form.get_form_class()
     return context
 
 class OrderDelete(generic.DeleteView):
