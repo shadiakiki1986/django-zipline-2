@@ -24,6 +24,7 @@ Order Details
     {% endif %}
   </li>
   <li>Comment: {% if order.order_text %}{{ order.order_text }}{% else %}None{% endif %}</li>
+  <li>User: {{order.user.username}}</li>
 </ul>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}

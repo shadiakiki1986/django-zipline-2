@@ -64,10 +64,8 @@ class ZlModel:
       if fill.dedicated_to_order is not None:
         logger.debug("Fill is dedicated. Not adding to zipline model (+ dropping its order that is already in zlmodel): %s",fill)
         order = fill.dedicated_to_order
-        # the below 2 if's are required when a dedicated fill is edited and its order already removed
-        if order.asset.id in ZlModel.orders:
-          if order.id in ZlModel.orders[order.asset.id]:
-            del ZlModel.orders[order.asset.id][order.id]
+        ZlModel.delete_order(fill.dedicated_to_order, True)
+
         # no need to trigger update here, since already triggered in signalsProcessor
         # ZlModel.update()
         return
@@ -133,14 +131,15 @@ class ZlModel:
         ZlModel.fills.pop(fill.asset.id, None)
 
     @staticmethod
-    def delete_order(order):
-      if order.dedicated_fill() is not None:
+    def delete_order(order, force:bool=False):
+      if order.dedicated_fill() is not None and not force:
         return
 
       logger.debug("Delete order %s" % order)
-      ZlModel.orders[order.asset.id].pop(order.id, None)
-      if not any(ZlModel.orders[order.asset.id]):
-        ZlModel.orders.pop(order.asset.id, None)
+      if order.asset.id in ZlModel.orders:
+        ZlModel.orders[order.asset.id].pop(order.id, None)
+        if not any(ZlModel.orders[order.asset.id]):
+          ZlModel.orders.pop(order.asset.id, None)
 
     @staticmethod
     def db_ready():
