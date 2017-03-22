@@ -1,6 +1,28 @@
 {% extends "zipline_app/base.html" %}
 
+{# Load the tag library #}
+{% load bootstrap3 %}
+
 {% block content %}
-{# it is necessary to keep using _order_form (and not replace it with _create_modals_order) because it is the only form that displays errors properly #}
-{% include "zipline_app/order/_order_form.html" %}
+{# it is necessary to keep using order_form (and not replace it with _create_modals_order) because it is the only form that displays errors properly #}
+<div class='row'>
+<div class='col-md-6'>
+<form action="" method="post" class="form">
+  {% csrf_token %}
+  {% bootstrap_form form layout='horizontal' %}
+  {% comment %}
+  <div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.pub_date %}</div></div>
+    <div class="col-xs-1"><div class="row">{% bootstrap_field field=form.asset %}</div></div>
+    <div class="col-xs-1"><div class="row">{% bootstrap_field field=form.order_side %}</div></div>
+    <div class="col-xs-1"><div class="row">{% bootstrap_field field=form.amount_unsigned %}</div></div>
+    <div class="col-xs-2"><div class="row">{% bootstrap_field field=form.account %}</div></div>
+    <div class="col-xs-3"><div class="row">{% bootstrap_field field=form.order_text placeholder="some comments" %}</div></div>
+  </div>
+  {% endcomment %}
+    <div class="col-xs-1">{% bootstrap_button content="Save" icon="star" button_type="submit" button_class="btn-primary" %}</div>
+</form>
+</div>
+</div>
 {% endblock %}

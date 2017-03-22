@@ -1,0 +1,48 @@
+<script type="text/javascript">
+$(function() {
+  <!-- How to reset form body in bootstrap modal box
+       http://stackoverflow.com/questions/15827262/ddg#20918538
+       -->
+  $('.modal').on('hidden.bs.modal', function(){
+        $(this).find('form')[0].reset();
+        $(this).find('input').prop('disabled',false);
+        $(this).find('select').prop('disabled',false);
+        $(this).find('hidden.extra-dyn').remove();
+        $('#fills-new .ac-asset-display').html('');
+        $('#fills-new .ac-asset-hidden').val('');
+        $('#fills-new .ac-asset-input').show();
+  });
+
+
+
+  <!-- convert asset/account input to autocomplete from jquery ui -->
+  function createAutocomplete(id,name) {
+    $(id+" .ac-"+name+"-input").autocomplete({
+      source: "/autocomplete/"+name+"/",
+      appendTo: $(id+" .ac-"+name+"-response"),
+      response: function( event, ui ) {
+        if(ui.content.length==0) {
+          $(id+" .ac-"+name+"-status").text("No results");
+        } else {
+          $(id+" .ac-"+name+"-status").text("");
+        }
+      },
+      search: function( event, ui ) {
+        $(id+" .ac-"+name+"-status").text("Searching...");
+      },
+      autoFocus: true,
+      select: function( event, ui ) {
+        $(id+" .ac-"+name+"-display").html(ui.item.label);
+        $(id+" .ac-"+name+"-hidden").val(ui.item.value);
+        $(id+" .ac-"+name+"-input").val("");
+        event.preventDefault();
+      }
+    });
+  }
+
+  createAutocomplete("#orders-new","account");
+  createAutocomplete("#orders-new","asset");
+  createAutocomplete("#fills-new","asset");
+
+});
+</script>
