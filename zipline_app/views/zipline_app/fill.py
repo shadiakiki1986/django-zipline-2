@@ -1,8 +1,9 @@
 from django.views import generic
 from django.utils import timezone
 from django.contrib import messages
-from ...models.zipline_app.zipline_app import Fill
+from ...models.zipline_app.fill import Fill
 from ...utils import redirect_index_or_local
+from ...widgets import AssetModelSelect2Widget
 
 class FillCreate(generic.CreateView):
   model = Fill
@@ -11,6 +12,13 @@ class FillCreate(generic.CreateView):
     'dedicated_to_order'
   ]
   template_name = 'zipline_app/fill/fill_form.html'
+
+  # override widget in createview
+  # http://stackoverflow.com/a/21407374/4126114
+  def get_form(self):
+    form = super(FillCreate, self).get_form()
+    form.fields['asset'].widget = AssetModelSelect2Widget()
+    return form
 
   def form_valid(self, form):
     fill = form.save(commit=False)

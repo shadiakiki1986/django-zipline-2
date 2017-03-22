@@ -4,6 +4,8 @@
 {% load bootstrap3 %}
 
 {% block content %}
+{{ form.media.css }}
+
 {# it is necessary to keep using order_form (and not replace it with _create_modals_order) because it is the only form that displays errors properly #}
 <div class='row'>
 <div class='col-md-6'>
@@ -25,4 +27,6 @@
 </form>
 </div>
 </div>
+
+{{ form.media.js }}
 {% endblock %}

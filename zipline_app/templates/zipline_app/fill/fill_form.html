@@ -2,6 +2,8 @@
 {% load bootstrap3 %}
 
 {% block content %}
+{{ form.media.css }}
+
 <div class='row'>
 <div class='col-md-6'>
 <form action="" method="post" class="form">
@@ -23,4 +25,6 @@
 </form>
 </div>
 </div>
+
+{{ form.media.js }}
 {% endblock %}

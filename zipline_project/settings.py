@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'bootstrap3',
     'pagination_bootstrap',
+    'django_select2',
 ]
 
 MIDDLEWARE = [
