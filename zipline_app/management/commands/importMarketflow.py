@@ -76,7 +76,7 @@ class Command(BaseCommand):
           )
           logger.debug("Created account: %s"%accountDj)
         else:
-          if accountDj.account_name!=accountMF['CLI_NOM_PRE']:
+          if accountDj.account_name!=accountMf['CLI_NOM_PRE']:
             accountDj.account_name=accountMf['CLI_NOM_PRE']
             accountDj.save()
             logger.debug("Updated account: %s"%accountDj)
