@@ -84,7 +84,9 @@
               <div class="row">
                 <div class="col-xs-2" title="{{duo.asset}}">
                   {% if duo.orders|length > 0 %}
-                  {{duo.asset.asset_symbol}}
+                  <a href="{% url 'zipline_app:assets-detail' duo.asset.id %}">
+                    {{duo.asset.asset_symbol}}
+                  </a>
                   {% endif %}
                 </div>
 

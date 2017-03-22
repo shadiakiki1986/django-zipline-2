@@ -6,7 +6,9 @@
 
   <div class="col-xs-2">
     <attr title="{{order.account.account_name}}">
-      {{order.account.account_symbol}}
+      <a href="{% url 'zipline_app:accounts-detail' order.account.id %}">
+        {{order.account.account_symbol}}
+      </a>
     </attr>
   </div>
 

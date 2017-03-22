@@ -147,7 +147,7 @@ class ZlModel:
       if order.dedicated_fill() is not None and not force:
         return
 
-      logger.debug("Delete order %s" % order)
+      logger.debug("Delete order %s" % order.id)
       if order.asset.id in ZlModel.orders:
         ZlModel.orders[order.asset.id].pop(order.id, None)
         if not any(ZlModel.orders[order.asset.id]):

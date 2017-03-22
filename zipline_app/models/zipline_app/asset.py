@@ -24,6 +24,12 @@ class Asset(models.Model):
           "name": self.asset_name
         }
 
+    def delete(self):
+      if self.order_set.count()>0:
+        raise ValueError("Cannot delete asset because it is linked to orders")
+      if self.fill_set.count()>0:
+        raise ValueError("Cannot delete asset because it is linked to fills")
+
 # use get_success_url instead
 #    def get_absolute_url(self):
 #      return reverse('zipline_app:assets-list') # TODO rename to assets
