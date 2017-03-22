@@ -97,6 +97,7 @@
             <div class="col-xs-5">
             {# re-iterate over orders to show the dedicated fills #}
             {% for order in duo.orders %}
+              <div class='row'>
               {% if order.dedicated_fill is not None %}
               Filled by
               <a href="{% url 'zipline_app:fills-detail' order.dedicated_fill.id %}">
@@ -104,6 +105,7 @@
               </a>
               ({{order.dedicated_fill.user.username}})
               {% endif %}
+              </div>
             {% endfor %}
             </div>
 

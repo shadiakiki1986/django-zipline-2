@@ -37,12 +37,11 @@
       </div>
 
       <div class="col-xs-8">
-        <abbr title="Order">
+        <abbr title="{{order.user.username}}">
           <a href="{% url 'zipline_app:orders-detail' order.id %}">
             #{{order.id}}
           </a>
         </abbr>
-        ({{order.user.username}})
       </div>
     </div>
   </div>
