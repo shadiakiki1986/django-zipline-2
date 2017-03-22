@@ -10,5 +10,13 @@ $(function() {
         $(this).find('.extra-dyn').remove();
   });
 
+  $('.django-select2').css('width', '100%');
+  $('#orders-new .django-select2').djangoSelect2({
+    dropdownParent: $('#orders-new')
+  });
+  $('#fills-new .django-select2').djangoSelect2({
+    dropdownParent: $('#fills-new')
+  });
+
 });
 </script>
