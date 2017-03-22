@@ -2,11 +2,20 @@
 {% load humanize %}
 
 {% block content %}
-<h1>Fills</h1>
+{% include 'zipline_app/blotter/_create_modals_fill.html' %}
+{% include 'zipline_app/blotter/_create_modals_js.html' %}
 
-<a href="{% url 'zipline_app:fills-new' %}">New</a>
-
-{% include "zipline_app/fill/_fill_form.html" %}
+<div class='row'>
+  <div class='col-md-3'>
+    <h1>Fills</h1>
+  </div>
+  <div class='col-md-9 text-right'>
+    <button data-toggle="modal" data-target="#fills-new" class='btn btn-primary'>
+      Create
+      <span class="glyphicon glyphicon-plus"></span>
+    </button>
+  </div>
+</div>
 
     {% for fill in fill_list %}
     <div class="row">

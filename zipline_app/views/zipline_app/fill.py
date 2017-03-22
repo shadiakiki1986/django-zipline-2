@@ -30,6 +30,8 @@ class FillList(FillCreate):
   def get_context_data(self, *args, **kwargs):
     context = super(FillList, self).get_context_data(*args, **kwargs)
     context["fill_list"] = Fill.objects.all()
+    form = FillCreate()
+    context["fill_form"]=form.get_form_class()
     return context
 
 class FillDelete(generic.DeleteView):

@@ -1,0 +1,95 @@
+{# Load the tag library #}
+{% load bootstrap3 %}
+
+<!-- Modal -->
+<div class="modal fade" id="fills-new" tabindex="-1" role="dialog" aria-labelledby="fills-new-label">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      {% comment %}
+        <form action="{% url 'zipline_app:fills-new' %}" method="post">
+          {% csrf_token %}
+          {{ fill_form.as_p }}
+          <input type="hidden" name="source" value="{{source}}">
+          <input type="submit" value="Save" />
+        </form>
+      {% endcomment %}
+
+      {# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
+      <form action="{% url 'zipline_app:fills-new' %}" method="post" class="form">
+        {% csrf_token %}
+
+        <!-- hidden form field -->
+        <input type="hidden" name="source" value="{{source}}">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="fills-new-label">New fill</h4>
+        </div>
+
+        <div class="modal-body">
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=fill_form.pub_date layout='horizontal' %}
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-xs-8'>
+              {#{% bootstrap_field field=fill_form.asset layout='horizontal' %}#}
+              <div class='row'>
+                <div class='col-xs-3'>Asset:</div>
+                <div class='col-xs-9'>
+                  <div class='ac-asset-display'></div>
+                  <input class='ac-asset-hidden' type='hidden' name='asset' value='' >
+                </div>
+              </div>
+            </div>
+            <div class='col-xs-4'>
+              <input class="ac-asset-input form-control" placeholder="Search" />
+              <div class="ac-asset-response"></div>
+              <div class="ac-asset-status"></div>
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=fill_form.fill_side layout='horizontal' %}
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=fill_form.fill_qty_unsigned layout='horizontal' %}
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=fill_form.fill_price layout='horizontal' %}
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=fill_form.tt_order_key layout='horizontal' %}
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-xs-8'>
+              {% bootstrap_field field=fill_form.fill_text layout='horizontal' %}
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          {% bootstrap_button content="Save" button_type="submit" button_class="btn-primary" %}
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
