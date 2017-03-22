@@ -70,6 +70,8 @@ class ZlModel:
         # ZlModel.update()
         return
 
+      ZlModel.add_asset(fill.asset)
+
       logger.debug("Adding fill: %s" % fill)
       if fill.asset.id not in ZlModel.fills:
         ZlModel.fills[fill.asset.id]={}
@@ -100,6 +102,8 @@ class ZlModel:
 
     @staticmethod
     def add_order(order):
+      ZlModel.add_asset(order.asset)
+
       logger.debug("Add order %s" % order)
       if order.asset.id not in ZlModel.orders:
         ZlModel.orders[order.asset.id]={}
@@ -113,8 +117,15 @@ class ZlModel:
 
     @staticmethod
     def delete_asset(asset):
+      c_ord = asset.id in ZlModel.orders and any(ZlModel.orders[asset.id])
+      c_fil = asset.id in ZlModel.fills and any(ZlModel.fills[asset.id])
+      if c_ord or c_fil:
+        logger.debug("Will not delete asset (used in order/fill): %s"%asset)
+        return
       logger.debug("Delete asset %s" % asset)
       ZlModel.assets.pop(asset.id, None)
+      ZlModel.fills.pop(asset.id, None)
+      ZlModel.orders.pop(asset.id, None)
 
     @staticmethod
     def delete_fill(fill):
@@ -129,6 +140,7 @@ class ZlModel:
       ZlModel.fills[fill.asset.id].pop(fill.id, None)
       if not any(ZlModel.fills[fill.asset.id]):
         ZlModel.fills.pop(fill.asset.id, None)
+        ZlModel.delete_asset(fill.asset)
 
     @staticmethod
     def delete_order(order, force:bool=False):
@@ -140,6 +152,7 @@ class ZlModel:
         ZlModel.orders[order.asset.id].pop(order.id, None)
         if not any(ZlModel.orders[order.asset.id]):
           ZlModel.orders.pop(order.asset.id, None)
+          ZlModel.delete_asset(order.asset)
 
     @staticmethod
     def db_ready():
@@ -150,7 +163,7 @@ class ZlModel:
       return isready
 
     @staticmethod
-    def init(fills, orders, assets):
+    def init(fills, orders):
       if not ZlModel.db_ready():
         return
 
@@ -160,8 +173,6 @@ class ZlModel:
       # important to run add_fill after add_order for the dedicated fills
       for fill in fills:
         ZlModel.add_fill(fill)
-      for asset in assets:
-        ZlModel.add_asset(asset)
 
     @staticmethod
     def calculate_md5():
