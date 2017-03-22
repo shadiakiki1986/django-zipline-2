@@ -1,6 +1,9 @@
 {# Load the tag library #}
 {% load bootstrap3 %}
 
+{# copied from https://github.com/applegrew/django-select2/blob/master/tests/testapp/templates/form.html#L5 #}
+{{ fill_form.media.css }}
+
 <!-- Modal -->
 <div class="modal fade" id="fills-new" tabindex="-1" role="dialog" aria-labelledby="fills-new-label">
   <div class="modal-dialog" role="document">
@@ -16,7 +19,7 @@
       {% endcomment %}
 
       {# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
-      <form action="{% url 'zipline_app:fills-new' %}" method="post" class="form">
+      <form action="{% url 'zipline_app:fills-new' %}" method="post" class="form-horizontal">
         {% csrf_token %}
 
         <!-- hidden form field -->
@@ -27,61 +30,15 @@
           <h4 class="modal-title" id="fills-new-label">New fill</h4>
         </div>
 
+
         <div class="modal-body">
-          <div class='row'>
-            <div class='col-xs-8'>
               {% bootstrap_field field=fill_form.pub_date layout='horizontal' %}
-            </div>
-          </div>
-
-          <div class='row'>
-            <div class='col-xs-8'>
-              {#{% bootstrap_field field=fill_form.asset layout='horizontal' %}#}
-              <div class='row'>
-                <div class='col-xs-3'>Asset:</div>
-                <div class='col-xs-9'>
-                  <div class='ac-asset-display'></div>
-                  <input class='ac-asset-hidden' type='hidden' name='asset' value='' >
-                </div>
-              </div>
-            </div>
-            <div class='col-xs-4'>
-              <input class="ac-asset-input form-control" placeholder="Search" />
-              <div class="ac-asset-response"></div>
-              <div class="ac-asset-status"></div>
-            </div>
-          </div>
-
-          <div class='row'>
-            <div class='col-xs-8'>
+              {% bootstrap_field field=fill_form.asset layout='horizontal' field_class='my-select2' %}
               {% bootstrap_field field=fill_form.fill_side layout='horizontal' %}
-            </div>
-          </div>
-
-          <div class='row'>
-            <div class='col-xs-8'>
               {% bootstrap_field field=fill_form.fill_qty_unsigned layout='horizontal' %}
-            </div>
-          </div>
-
-          <div class='row'>
-            <div class='col-xs-8'>
               {% bootstrap_field field=fill_form.fill_price layout='horizontal' %}
-            </div>
-          </div>
-
-          <div class='row'>
-            <div class='col-xs-8'>
               {% bootstrap_field field=fill_form.tt_order_key layout='horizontal' %}
-            </div>
-          </div>
-
-          <div class='row'>
-            <div class='col-xs-8'>
               {% bootstrap_field field=fill_form.fill_text layout='horizontal' %}
-            </div>
-          </div>
-
         </div>
 
         <div class="modal-footer">
@@ -93,3 +50,6 @@
     </div>
   </div>
 </div>
+
+{# copied from https://github.com/applegrew/django-select2/blob/master/tests/testapp/templates/form.html#L24 #}
+{{ fill_form.media.js }}

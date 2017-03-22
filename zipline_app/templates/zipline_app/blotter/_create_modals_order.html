@@ -1,5 +1,8 @@
 {% load bootstrap3 %}
 
+{# copied from https://github.com/applegrew/django-select2/blob/master/tests/testapp/templates/form.html#L5 #}
+{{ order_form.media.css }}
+
 <!-- Modal -->
 <div class="modal fade" id="orders-new" tabindex="-1" role="dialog" aria-labelledby="orders-new-label">
   <div class="modal-dialog" role="document">
@@ -29,60 +32,11 @@
         </div>
 
         <div class="modal-body">
-          <div class='row'>
-            <div class='col-xs-8'>
               {% bootstrap_field field=order_form.pub_date layout='horizontal' %}
-            </div>
-          </div>
-
-          <div class='row'>
-            <div class='col-xs-8'>
-              {# {% bootstrap_field field=order_form.asset layout='horizontal' %} #}
-              <div class='row'>
-                <div class='col-xs-3'>Asset:</div>
-                <div class='col-xs-9'>
-                  <div class='ac-asset-display'></div>
-                  <input class='ac-asset-hidden' type='hidden' name='asset' value='' >
-                </div>
-              </div>
-            </div>
-            <div class='col-xs-4'>
-              <input class="ac-asset-input" placeholder="Search" />
-              <div class="ac-asset-response"></div>
-              <div class="ac-asset-status"></div>
-            </div>
-          </div>
-
-          <div class='row'>
-            <div class='col-xs-8'>
-              {#{% bootstrap_field field=order_form.account layout='horizontal' %}#}
-              <div class='row'>
-                <div class='col-xs-3'>Account:</div>
-                <div class='col-xs-9'>
-                  <div class='ac-account-display'></div>
-                  <input class='ac-account-hidden' type='hidden' name='account' value='' >
-                </div>
-              </div>
-            </div>
-            <div class='col-xs-4'>
-              <input class="ac-account-input" placeholder="Search" />
-              <div class="ac-account-response"></div>
-              <div class="ac-account-status"></div>
-            </div>
-          </div>
-
-          <div class='row'>
-            <div class='col-xs-8'>
+              {% bootstrap_field field=order_form.asset layout='horizontal' %}
+              {% bootstrap_field field=order_form.account layout='horizontal' %}
               {% bootstrap_field field=order_form.order_side layout='horizontal' %}
-            </div>
-          </div>
-
-          <div class='row'>
-            <div class='col-xs-8'>
               {% bootstrap_field field=order_form.amount_unsigned layout='horizontal' %}
-            </div>
-          </div>
-
         </div>
 
         <div class="modal-footer">
@@ -94,3 +48,6 @@
     </div>
   </div>
 </div>
+
+{# copied from https://github.com/applegrew/django-select2/blob/master/tests/testapp/templates/form.html#L24 #}
+{{ order_form.media.js }}
