@@ -3,22 +3,12 @@ from django.utils import timezone
 from django.contrib import messages
 from ...models.zipline_app.fill import Fill
 from ...utils import redirect_index_or_local
-from ...widgets import AssetModelSelect2Widget
+from ...forms import FillForm
 
 class FillCreate(generic.CreateView):
   model = Fill
-  fields = [
-    'pub_date', 'asset', 'fill_side', 'fill_qty_unsigned', 'fill_price', 'fill_text', 'tt_order_key',
-    'dedicated_to_order'
-  ]
+  form_class=FillForm
   template_name = 'zipline_app/fill/fill_form.html'
-
-  # override widget in createview
-  # http://stackoverflow.com/a/21407374/4126114
-  def get_form(self):
-    form = super(FillCreate, self).get_form()
-    form.fields['asset'].widget = AssetModelSelect2Widget()
-    return form
 
   def form_valid(self, form):
     fill = form.save(commit=False)

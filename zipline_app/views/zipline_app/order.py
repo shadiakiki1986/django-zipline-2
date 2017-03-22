@@ -3,20 +3,12 @@ from django.utils import timezone
 from django.contrib import messages
 from ...models.zipline_app.order import Order
 from ...utils import redirect_index_or_local
-from ...widgets import AssetModelSelect2Widget, AccountModelSelect2Widget
+from ...forms import OrderForm
 
 class OrderCreate(generic.CreateView):
   model = Order
-  fields = ['pub_date', 'asset', 'order_side', 'amount_unsigned', 'account', 'order_text']
   template_name = 'zipline_app/order/order_form.html'
-
-  # override widget in createview
-  # http://stackoverflow.com/a/21407374/4126114
-  def get_form(self):
-    form = super(OrderCreate, self).get_form()
-    form.fields['asset'].widget = AssetModelSelect2Widget()
-    form.fields['account'].widget = AccountModelSelect2Widget()
-    return form
+  form_class = OrderForm
 
   def form_valid(self, form):
     order = form.save(commit=False)
