@@ -72,7 +72,7 @@ $(function() {
       $('#fills-new select[name="fill_side"]').val(data['order_side']);
       $('#fills-new input[name="fill_qty_unsigned"]').val(data['amount_unsigned']);
 
-      $newOption = $("<option></option>").val(data['asset-id']).text(data['asset-str']);
+      $newOption = $("<option class='extra-dyn'></option>").val(data['asset-id']).text(data['asset-str']);
       $('#fills-new select[name="asset"]').append($newOption).trigger('change');
 
       // set to disabled to disallow user from changing
