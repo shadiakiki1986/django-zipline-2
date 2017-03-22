@@ -1,31 +1,23 @@
 {# Load the tag library #}
 {% load bootstrap3 %}
 
-<!--
-     Button trigger modal from
-     http://getbootstrap.com/javascript/#live-demo
--->
-
-{% include 'zipline_app/blotter/_create_modals_account.html' %}
-
 <!-- Modal -->
-<div class="modal fade" id="assets-new" tabindex="-1" role="dialog" aria-labelledby="assets-new-label">
+<div class="modal fade" id="accounts-new" tabindex="-1" role="dialog" aria-labelledby="accounts-new-label">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
 
-      {# {% include "zipline_app/asset/_asset_form_bootstrap_vanilla.html" %} #}
-      <form action="{% url 'zipline_app:assets-new' %}" method="post" class="form">
+      <form action="{% url 'zipline_app:accounts-new' %}" method="post" class="form">
         {% csrf_token %}
         <!-- hidden form field -->
         <input type="hidden" name="source" value="{{source}}">
 
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="assets-new-label">New asset</h4>
+          <h4 class="modal-title" id="accounts-new-label">New account</h4>
         </div>
 
         <div class="modal-body">
-          {% bootstrap_form asset_form layout='horizontal' %}
+          {% bootstrap_form account_form layout='horizontal' %}
         </div>
 
         <div class="modal-footer">
@@ -37,9 +29,3 @@
     </div>
   </div>
 </div>
-
-{% include 'zipline_app/blotter/_create_modals_order.html' %}
-
-{% include 'zipline_app/blotter/_create_modals_fill.html' %}
-
-{% include 'zipline_app/blotter/_create_modals_js.html' %}

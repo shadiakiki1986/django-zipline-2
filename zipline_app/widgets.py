@@ -17,7 +17,7 @@ class AssetModelSelect2Widget(ModelSelect2Widget):
 class AccountModelSelect2Widget(ModelSelect2Widget):
     model = Account
     search_fields = [
-        #'account_name__icontains',
+        'account_name__icontains',
         'account_symbol__startswith'
     ]
     def label_from_instance(self, obj):

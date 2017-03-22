@@ -4,7 +4,7 @@
 
 Account Details
 <ul>
-  <li>{{account.account_symbol}}</li>
+  <li>{{account.account_symbol}}: {{account.account_name}}</li>
 </ul>
 
 <a href="{% url 'zipline_app:accounts-update' account.id %}">Edit</a>

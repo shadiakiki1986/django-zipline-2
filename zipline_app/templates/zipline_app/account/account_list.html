@@ -2,13 +2,20 @@
 {% load pagination_tags %}
 
 {% block content %}
-<h1>Accounts</h1>
+{% include 'zipline_app/blotter/_create_modals_account.html' %}
+{% include 'zipline_app/blotter/_create_modals_js.html' %}
 
-<!-- link to create new account
-<a href="{% url 'zipline_app:accounts-new' %}">New</a>
--->
-
-{% include "zipline_app/account/_account_form.html" %}
+<div class='row'>
+  <div class='col-md-3'>
+    <h1>Accounts</h1>
+  </div>
+  <div class='col-md-9 text-right'>
+    <button data-toggle="modal" data-target="#accounts-new" class='btn btn-primary'>
+      Create
+      <span class="glyphicon glyphicon-plus"></span>
+    </button>
+  </div>
+</div>
 
 {% autopaginate account_list %}
     {% for account in account_list %}
@@ -17,6 +24,7 @@
         <a href="{% url 'zipline_app:accounts-detail' account.id %}">#{{ account.id }}</a>
       </div>
       <div class="col-xs-3">{{ account.account_symbol }}</div>
+      <div class="col-xs-3">{{ account.account_name }}</div>
     </div>
 {% empty %}
     <div class="alert alert-info">No accounts yet.</div>

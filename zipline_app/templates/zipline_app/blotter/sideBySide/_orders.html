@@ -4,7 +4,11 @@
 {% for order in duo.orders %}
 <div class="row {% if order.filled != order.amount_signed %}text-warning{% endif %}">
 
-  <div class="col-xs-2">{{order.account.account_symbol}}</div>
+  <div class="col-xs-2">
+    <attr title="{{order.account.account_name}}">
+      {{order.account.account_symbol}}
+    </attr>
+  </div>
 
   <div class="col-xs-2 text-right">
     {{order.order_side}}

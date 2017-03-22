@@ -6,7 +6,7 @@ from ...utils import redirect_index_or_local
 
 class AccountCreate(generic.CreateView):
   model = Account
-  fields = ['account_symbol']
+  fields = ['account_symbol', 'account_name']
   template_name = 'zipline_app/account/account_form.html'
 
   def get_success_url(self):
@@ -16,11 +16,18 @@ class AccountCreate(generic.CreateView):
 # inheriting from create+get_context with account_list instead of inheriting from listview
 # so that I can have the inline in create
 # http://stackoverflow.com/a/12883683/4126114
-class AccountList(AccountCreate):
+class AccountList(generic.ListView):
   template_name = 'zipline_app/account/account_list.html'
+  context_object_name='account_list'
+
+  def get_queryset(self):
+    return Account.objects.all()
+
   def get_context_data(self, *args, **kwargs):
     context = super(AccountList, self).get_context_data(*args, **kwargs)
-    context["account_list"] = Account.objects.all()
+    view = AccountCreate()
+    form = view.get_form_class()
+    context["account_form"]=form
     return context
 
 class AccountDelete(generic.DeleteView):
@@ -34,7 +41,7 @@ class AccountDetailView(generic.DetailView):
 
 class AccountUpdateView(generic.UpdateView):
   model = Account
-  fields = ['account_symbol']
+  fields = ['account_symbol', 'account_name']
   template_name = 'zipline_app/account/account_form.html'
 
   def get_success_url(self):
