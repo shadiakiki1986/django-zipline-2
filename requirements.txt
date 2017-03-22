@@ -12,6 +12,7 @@ DateTime==4.1.1
 decorator==4.0.11
 Django==1.10.5
 django-bootstrap3==8.1.0
+django-pagination-bootstrap==1.2
 empyrical==0.2.2
 et-xmlfile==1.0.1
 intervaltree==2.1.0
