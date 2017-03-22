@@ -21,16 +21,17 @@ class OrderCreate(generic.CreateView):
     messages.add_message(self.request, messages.INFO, "Successfully created order: %s" % self.object)
     return redirect_index_or_local(self,'zipline_app:orders-list')
 
-# inheriting from create+get_context with order_list instead of inheriting from listview
-# so that I can have the inline in create
-# http://stackoverflow.com/a/12883683/4126114
-class OrderList(OrderCreate):
+class OrderList(generic.ListView):
   template_name = 'zipline_app/order/order_list.html'
+  context_object_name='order_list'
+  def get_queryset(self):
+    return Order.objects.all()
+
   def get_context_data(self, *args, **kwargs):
     context = super(OrderList, self).get_context_data(*args, **kwargs)
-    context["order_list"] = Order.objects.all()
-    form = OrderCreate()
-    context["order_form"]=form.get_form_class()
+    view = OrderCreate()
+    form = view.get_form_class()
+    context["order_form"]=form
     return context
 
 class OrderDelete(generic.DeleteView):

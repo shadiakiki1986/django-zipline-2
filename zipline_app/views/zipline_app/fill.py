@@ -22,14 +22,14 @@ class FillCreate(generic.CreateView):
     messages.add_message(self.request, messages.INFO, "Successfully created fill: %s" % self.object)
     return redirect_index_or_local(self,'zipline_app:fills-list')
 
-# inheriting from create+get_context with fill_list instead of inheriting from listview
-# so that I can have the inline in create
-# http://stackoverflow.com/a/12883683/4126114
-class FillList(FillCreate):
+class FillList(generic.ListView):
   template_name = 'zipline_app/fill/fill_list.html'
+  context_object_name='fill_list'
+  def get_queryset(self):
+    return Fill.objects.all()
+
   def get_context_data(self, *args, **kwargs):
     context = super(FillList, self).get_context_data(*args, **kwargs)
-    context["fill_list"] = Fill.objects.all()
     form = FillCreate()
     context["fill_form"]=form.get_form_class()
     return context
