@@ -2,6 +2,7 @@ import tempfile
 from pandas import DataFrame
 from django.http import HttpResponse
 from os.path import join
+from django.utils import timezone
 
 # fileresponse from django.views.static import serve
 from django.http import FileResponse
@@ -84,10 +85,15 @@ class DownloadBuilder:
   #
   # django.test.Client and response.content vs. streaming_content
   # http://stackoverflow.com/a/26819693/4126114
+  #
+  # What is correct content-type for excel files
+  # http://stackoverflow.com/questions/2937465/ddg#2938188
   def fn2response(self,full_name):
     response = FileResponse(
       open(full_name, 'rb'),
-      content_type='application/vnd.ms-excel'
+      content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
-    response['Content-Disposition'] = 'attachment; filename="%s"'%"blotter.xlsx"
+    suffix = timezone.now().astimezone(timezone.get_default_timezone()).strftime("%Y%m%d_%H%M%S")
+    filename = "botter-%s.xlsx"%suffix
+    response['Content-Disposition'] = 'attachment; filename="%s"'%filename
     return response
