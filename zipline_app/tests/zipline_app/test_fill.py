@@ -128,14 +128,14 @@ class FillViewsTests(TestCase):
     def test_update_post_wo_tt_order_key(self):
         f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=LONG, fill_qty_unsigned=20, fill_price=2)
         url = reverse('zipline_app:fills-update', args=(f1.id,))
-        f2={'pub_date':f1.pub_date, 'asset':f1.asset, 'fill_side': f1.fill_side, 'fill_qty_unsigned':4444, 'fill_price':f1.fill_price}
+        f2={'pub_date':f1.pub_date, 'asset':f1.asset.id, 'fill_side': f1.fill_side, 'fill_qty_unsigned':4444, 'fill_price':f1.fill_price}
         response = self.client.post(url,f2)
         self.assertContains(response,"4444")
 
     def test_update_post_wi_tt_order_key(self):
         f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=LONG, fill_qty_unsigned=20, fill_price=2, tt_order_key='bla key')
         url = reverse('zipline_app:fills-update', args=(f1.id,))
-        f1={'pub_date':f1.pub_date, 'asset':f1.asset, 'fill_side': f1.fill_side, 'fill_qty_unsigned':f1.fill_qty_unsigned, 'fill_price':f1.fill_price, 'tt_order_key':'foo key'}
+        f1={'pub_date':f1.pub_date, 'asset':f1.asset.id, 'fill_side': f1.fill_side, 'fill_qty_unsigned':f1.fill_qty_unsigned, 'fill_price':f1.fill_price, 'tt_order_key':'foo key'}
         response = self.client.post(url,f1)
         self.assertContains(response,"foo key")
 
