@@ -53,7 +53,7 @@ class OrderDetailView(generic.DetailView):
 
 class OrderUpdateView(generic.UpdateView):
   model = Order
-  fields = ['pub_date', 'asset', 'order_side', 'amount_unsigned', 'account', 'order_text']
+  form_class = OrderForm
   template_name = 'zipline_app/order/order_form.html'
 
   def get_success_url(self):
