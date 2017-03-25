@@ -39,6 +39,11 @@ class BlotterBaseView(generic.ListView):
 
         # append source for redirection
         context["source"]=self.source
+
+        # alerts
+        context["zl_unused"] = ZlModel.zl_unused.items()
+        context["fills_required_per_asset"]=self.fills_required_per_asset()
+
         return context
 
     def get_orders(self):
@@ -51,10 +56,6 @@ class BlotterBaseView(generic.ListView):
           pub_date__lte=timezone.now()
       ).order_by('-pub_date')#[:5]
 
-class BlotterSideBySideView(BlotterBaseView):
-    template_name = 'zipline_app/blotter/sideBySide/index.html'
-    source="sideBySide"
-
     def fills_required_per_asset(self):
       fills = {}
       for order in self.get_orders():
@@ -62,6 +63,10 @@ class BlotterSideBySideView(BlotterBaseView):
           if order.asset not in fills: fills[order.asset]=0
           fills[order.asset]+=order.amount_signed() - order.filled()
       return fills
+
+class BlotterSideBySideView(BlotterBaseView):
+    template_name = 'zipline_app/blotter/sideBySide/index.html'
+    source="sideBySide"
 
     def get_combined(self):
         all_min_zl  = ZlModel.all_minutes
@@ -109,11 +114,9 @@ class BlotterSideBySideView(BlotterBaseView):
     def get_context_data(self, *args, **kwargs):
         context = super(BlotterSideBySideView, self).get_context_data(*args, **kwargs)
         context["combined"] = self.get_combined()
-        context["zl_unused"] = ZlModel.zl_unused.items()
-        context["fills_required_per_asset"]=self.fills_required_per_asset()
         return context
 
-class BlotterConcealedView(BlotterSideBySideView):
+class BlotterConcealedView(BlotterBaseView):
     template_name = 'zipline_app/blotter/concealed/index.html'
     source="concealed"
 
@@ -135,7 +138,6 @@ class BlotterEngineView(BlotterBaseView):
         context["zl_closed"]=ZlModel.zl_closed
         context["zl_txns"]=ZlModel.zl_txns
         context["zl_open_keyed"]=ZlModel.zl_open_keyed
-        context["zl_unused"] = ZlModel.zl_unused.items()
 
         # drop the dedicated fills/orders
         drop_fill = context['latest_fill_list'].exclude(dedicated_to_order=None)

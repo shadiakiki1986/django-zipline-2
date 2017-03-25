@@ -15,77 +15,52 @@
   <div>
 
     <em>
-      <div class="row">
-        <div class="col-xs-1"><!-- timestamp --></div>
-        <div class="col-xs-10">
-          <div class="row">
-                <div class="col-xs-2"><b>Asset</b></div>
-                <div class="col-xs-10">
-                  <div class="row">
-                    <div class="col-xs-2">Account</div>
-                    <div class="col-xs-2 text-right"><abbr title="Quantity">Q</abbr></div>
-                    <div class="col-xs-2 text-right"><abbr title="Filled">F</abbr></div>
-                    <div class="col-xs-2 text-right"><abbr title="Average Price">P</abbr></div>
-                    <div class="col-xs-4"></div>
-                  </div>
-                </div>
-
+      <div class="row text-center">
+        <div class="col-xs-1"><!-- id & timestamp --></div>
+        <div class="col-xs-1">Placed by</div>
+        <div class="col-xs-1">Given by</div>
+        <div class="col-xs-2">Client</div>
+        <div class="col-xs-1">Qty</div>
+        <div class="col-xs-3">Security</div>
+        <div class="col-xs-1">Price</div>
+        <div class="col-xs-2">
+          <div class='row'>
+            <div class='col-xs-4'>Order key</div>
+            <div class="col-xs-6">Status</div>
           </div>
         </div>
-        <div class="col-xs-1"><!-- timestamp --></div>
       </div>
     </em>
 
-    {% for minute in combined %}
-    <hr style="margin-top:5px;margin-bottom:5px">
+    {% for order in latest_order_list %}
 
-    {# https://docs.djangoproject.com/en/1.10/ref/templates/builtins/#ifchanged #}
-    {% ifchanged minute.minute.date %}
-      <div class="row text-center text-info">
-        <br>&nbsp;
-        {# {{ minute.minute.date }} #}
-        {{minute.minute|date:"Y-m-d"}}
-        <br>&nbsp;
+      {# https://docs.djangoproject.com/en/1.10/ref/templates/builtins/#ifchanged #}
+      {% ifchanged order.pub_date.date %}
+        <hr style="margin-top:5px;margin-bottom:5px">
+        <div class="row text-center text-info">
+          <br>&nbsp;
+          {# {{ minute.minute.date }} #}
+          {{order.pub_date|date:"Y-m-d"}}
+          <br>&nbsp;
+        </div>
+      {% endifchanged %}
+
+      <div class="row {% if order.filled == order.amount_signed %}text-muted{% endif %}">
+
+        {% include 'zipline_app/blotter/concealed/_orders.html' %}
+      </div><!-- end row -->
+
+      {% if order.order_text %}
+      <div class="row">
+        <div class="col-xs-12 text-muted text-left">{{ order.order_text }}</div>
       </div>
-    {% endifchanged %}
+      {% endif %}
 
-    <div class="row">
-        <div class="col-xs-1 text-right">
-          <em>
-            <div class="row"><b>{{minute.minute|date:"H:i"}}</b></div>
-            {#<div class="row small text-muted">{{minute.minute|date:"Y-m-d"}}</div>#}
-          </em>
-        </div>
-
-        <div class="col-xs-10">
-          {% for duo in minute.duos %}
-              <div class="row">
-                <div class="col-xs-2" title="{{duo.asset}}">
-                  <a href="{% url 'zipline_app:assets-detail' duo.asset.id %}">
-                    {{duo.asset.asset_symbol}}
-                  </a>
-                </div>
-
-                <div class="col-xs-10">
-                  {% include 'zipline_app/blotter/concealed/_orders.html' %}
-                  {% include 'zipline_app/blotter/concealed/_fills.html' %}
-                </div>
-
-          </div>
-          {% endfor %}
-        </div>
-
-        <div class="col-xs-1 text-left">
-          <em>
-            <div class="row"><b>{{minute.minute|date:"H:i"}}</b></div>
-            {#<div class="row small text-muted">{{minute.minute|date:"Y-m-d"}}</div>#}
-          </em>
-        </div>
-
-    </div>
     {% empty %}
       No orders are available.
     {% endfor %}
+
+    {% include 'zipline_app/blotter/concealed/_orders_js.html' %}
 
   </div>
 

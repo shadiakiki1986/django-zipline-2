@@ -1,8 +1,6 @@
 {% load humanize %}
 {% load bootstrap3 %}
 
-{% for fill in duo.fills %}
-{% if fill.dedicated_to_order is None %}
 <div class="row {% if fill.has_unused %}text-danger{% endif %}">
   <div class='col-xs-2'>&nbsp;</div>
   <div class='col-xs-2'>&nbsp;</div>
@@ -32,11 +30,10 @@
     </div>
   </div>
 </div>
+
 {%if fill.fill_text or fill.tt_order_key %}
 <div class="row text-muted">
   <div class="col-xs-4 text-left">{{ fill.tt_order_key }}</div>
   <div class="col-xs-8 text-right">{{ fill.fill_text }}</div>
 </div>
 {% endif %}
-{% endif %}
-{% endfor %}

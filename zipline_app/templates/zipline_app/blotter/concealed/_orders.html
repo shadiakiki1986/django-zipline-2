@@ -1,117 +1,116 @@
 {% load humanize %}
 {% load bootstrap3 %}
 
-{% for order in duo.orders %}
-<div class="row {% if order.filled != order.amount_signed %}text-warning{% endif %}">
+  <div class="col-xs-1 text-right">
+    <div class='row'>
+      <div class='col-xs-6'>
+        <a href="{% url 'zipline_app:orders-detail' order.id %}">
+          #{{order.id}}
+        </a>
+      </div>
+
+      <div class='col-xs-6'>
+        {% ifchanged order.pub_date %}
+        <em><b>{{order.pub_date|date:"H:i"}}</b></em>
+        {% else %}
+        &nbsp;
+        {% endifchanged %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xs-1">
+      {% ifchanged order.pub_date.date %}
+      {{order.user.username}}
+      {% endifchanged %}
+  </div>
+
+  <div class="col-xs-1">
+    -
+  </div>
 
   <div class="col-xs-2">
-    <attr title="{{order.account.account_name}}">
+    {% ifchanged order.account %}
       <a href="{% url 'zipline_app:accounts-detail' order.account.id %}">
         {{order.account.account_symbol}}
       </a>
-    </attr>
+      :{{order.account.account_name}}
+    {% endifchanged %}
   </div>
 
-  <div class="col-xs-2 text-right">
-    {{order.order_side}}
-    {{order.amount_unsigned|intcomma}}
-  </div>
-  <div class="col-xs-2 text-right text-primary">
-    {% if order.dedicated_fill is not None %}
+  <div class="col-xs-1 text-right">
     <div class='row'>
-      <a href="{% url 'zipline_app:fills-detail' order.dedicated_fill.id %}">
-        Fill #{{order.dedicated_fill.id}}
-      </a>
-      ({{order.dedicated_fill.user.username}})
+      <div class='col-xs-3'>
+        {{order.order_side}}
+      </div>
+      <div class='col-xs-9'>
+        {{order.amount_unsigned|intcomma}}
+      </div>
     </div>
-    {% endif %}
+  </div>
 
-    {% if order.filled == order.amount_signed and order.dedicated_fill is None %}
+  <div class="col-xs-3">
+    <a href="{% url 'zipline_app:assets-detail' order.asset.id %}">
+      {{order.asset.asset_symbol}}
+    </a>: {{order.asset.asset_name}}
+  </div>
+
+  <div class="col-xs-1 text-right">{{order.avgPrice|floatformat:"2"|intcomma}}</div>
+
+  <div class="col-xs-1">
+  </div>
+
+  <div class="col-xs-2">
     <div class='row'>
-      Filled
+      <div class='col-xs-4'>
+        {% if order.dedicated_fill is not None %}
+        {{order.dedicated_fill.tt_order_key}}
+        {% else %}
+        -
+        {% endif %}
+      </div>
+
+      <div class='col-xs-6 text-right'>
+        {% if order.dedicated_fill is not None %}
+        <div class='row'>
+          <a href="{% url 'zipline_app:fills-detail' order.dedicated_fill.id %}">
+            Fill #{{order.dedicated_fill.id}}
+          </a>
+          ({{order.dedicated_fill.user.username}})
+        </div>
+        {% endif %}
+
+        {% if order.filled == order.amount_signed and order.dedicated_fill is None %}
+        <div class='row'>
+          Filled
+        </div>
+        {% endif %}
+
+        {% if order.filled != order.amount_signed %}
+        <div class='row'>
+          Filled {{order.filled|intcomma}} / {{order.amount_signed}}
+
+          <abbr title="Close order #{{order.id}}">
+            <button
+              type="button"
+              class="btn btn-xs fill-from-order"
+              data-toggle="modal"
+              data-target="#fills-new"
+              data-order-id="{{order.id}}"
+              data-order-pub_date="{{order.pub_date|date:"Y-m-d H:i:s"}}"
+              data-order-order_side="{{order.order_side}}"
+              data-order-amount_unsigned="{{order.amount_unsigned}}"
+              data-order-asset-id="{{order.asset.id}}"
+              data-order-asset-str="{{order.asset.str}}"
+            >
+              <span class="glyphicon glyphicon-copy"></span>
+            </button>
+          </abbr>
+        </div>
+        {% endif %}
+      </div>
+      <div class='col-xs-2'>&nbsp;</div>
     </div>
-    {% endif %}
-
-    {% if order.filled != order.amount_signed %}
-    <div class='row'>
-      {{order.filled|intcomma}}
-
-      <abbr title="Close order #{{order.id}}">
-        <button
-          type="button"
-          class="btn btn-xs fill-from-order"
-          data-toggle="modal"
-          data-target="#fills-new"
-          data-order-id="{{order.id}}"
-          data-order-pub_date="{{order.pub_date|date:"Y-m-d H:i:s"}}"
-          data-order-order_side="{{order.order_side}}"
-          data-order-amount_unsigned="{{order.amount_unsigned}}"
-          data-order-asset-id="{{order.asset.id}}"
-          data-order-asset-str="{{order.asset.str}}"
-        >
-          <span class="glyphicon glyphicon-copy"></span>
-        </button>
-      </abbr>
-    </div>
-    {% endif %}
   </div>
-  <div class="col-xs-2 text-right text-primary">{{order.avgPrice|floatformat:"2"|intcomma}}</div>
 
-  <div class="col-xs-4 text-right">
-        <a href="{% url 'zipline_app:orders-detail' order.id %}">
-          Order #{{order.id}}
-        </a>
-        ({{order.user.username}})
-  </div>
-</div>
-
-{% if order.order_text %}
-  <div class="row">
-    <div class="col-xs-12 text-muted text-left">{{ order.order_text }}</div>
-  </div>
-{% endif %}
-
-{% endfor %}
-
-<script type="text/javascript">
-$(function() {
-  $('.fill-from-order').unbind().click(function(){
-      // get all data-... attributes
-      var data = {
-        'order-id': $(this).attr('data-order-id'),
-        'pub_date': $(this).attr('data-order-pub_date'),
-        'order_side': $(this).attr('data-order-order_side'),
-        'amount_unsigned': $(this).attr('data-order-amount_unsigned'),
-        'asset-id': $(this).attr('data-order-asset-id'),
-        'asset-str': $(this).attr('data-order-asset-str'),
-      };
-
-      // set the default values to the data-... attributes above
-      $('#fills-new input[name="pub_date"]').val(data['pub_date']);
-      $('#fills-new select[name="fill_side"]').val(data['order_side']);
-      $('#fills-new input[name="fill_qty_unsigned"]').val(data['amount_unsigned']);
-
-      $newOption = $("<option class='extra-dyn'></option>").val(data['asset-id']).text(data['asset-str']);
-      $('#fills-new select[name="asset"]').append($newOption).trigger('change');
-
-      // set to disabled to disallow user from changing
-      // note that 'readonly' does not work for select
-      $('#fills-new input[name="pub_date"]').prop('disabled', true);
-      $('#fills-new select[name="fill_side"]').prop('disabled', true);
-      $('#fills-new input[name="fill_qty_unsigned"]').prop('disabled', true);
-      $('#fills-new select[name="asset"]').prop('disabled', true);
-
-      // since disabled fields do not get posted, add hidden fields
-      // http://stackoverflow.com/a/2834115/4126114
-      form=$('#fills-new').find('form');
-      $('<input/>', {type:'hidden', class:'extra-dyn', name:'pub_date',          value:data['pub_date']       }).appendTo(form);
-      $('<input/>', {type:'hidden', class:'extra-dyn', name:'fill_side',         value:data['order_side']     }).appendTo(form);
-      $('<input/>', {type:'hidden', class:'extra-dyn', name:'fill_qty_unsigned', value:data['amount_unsigned']}).appendTo(form);
-      $('<input/>', {type:'hidden', class:'extra-dyn', name:'asset',             value:data['asset-id']       }).appendTo(form);
-
-      // dedicated to order is a hidden field
-      $('<input/>', {type:'hidden', class:'extra-dyn', name:'dedicated_to_order',value:data['order-id']       }).appendTo(form);
-  });
-});
-</script>
 
