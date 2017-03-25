@@ -1,0 +1,42 @@
+{% load humanize %}
+{% load bootstrap3 %}
+
+{% for fill in duo.fills %}
+{% if fill.dedicated_to_order is None %}
+<div class="row {% if fill.has_unused %}text-danger{% endif %}">
+  <div class='col-xs-2'>&nbsp;</div>
+  <div class='col-xs-2'>&nbsp;</div>
+  <div class="col-xs-2 text-primary text-right">
+    {{fill.fill_side}}
+    {{fill.fill_qty_unsigned}}
+  </div>
+  <div class="col-xs-2 text-primary text-right">{{fill.fill_price}}</div>
+  <div class="col-xs-4">
+    <div class="row">
+
+      <div class="col-xs-4">
+        {% if fill.has_unused %}
+        <abbr title="Asset has unmatched fills">
+          <span class="glyphicon glyphicon-alert"></span>
+        </abbr>
+        {% endif %}
+      </div>
+
+      <div class="col-xs-8 text-right">
+        <a href="{% url 'zipline_app:fills-detail' fill.id %}">
+          Fill #{{fill.id}}
+        </a>
+        ({{fill.user.username}})
+      </div>
+
+    </div>
+  </div>
+</div>
+{%if fill.fill_text or fill.tt_order_key %}
+<div class="row text-muted">
+  <div class="col-xs-4 text-left">{{ fill.tt_order_key }}</div>
+  <div class="col-xs-8 text-right">{{ fill.fill_text }}</div>
+</div>
+{% endif %}
+{% endif %}
+{% endfor %}

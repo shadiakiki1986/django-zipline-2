@@ -114,7 +114,7 @@ class BlotterSideBySideView(BlotterBaseView):
         return context
 
 class BlotterConcealedView(BlotterSideBySideView):
-    template_name = 'zipline_app/blotter/concealed.html'
+    template_name = 'zipline_app/blotter/concealed/index.html'
     source="concealed"
 
 class BlotterEngineView(BlotterBaseView):

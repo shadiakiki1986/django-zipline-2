@@ -1,0 +1,26 @@
+<div class="row">
+  <div class="col-xs-6">
+    {% if fills_required_per_asset|length > 0 %}
+    <div class="alert alert-danger">
+      Assets with required fills:
+      <ul>
+      {% for asset,qty in fills_required_per_asset.items %}
+        <li>{{asset.asset_symbol}}: {{qty}}</li>
+      {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+  <div class="col-xs-6">
+    {% if zl_unused|length > 0 %}
+    <div class="alert alert-danger">
+      Assets with extra fills:
+      <ul>
+      {% for asset,qty in zl_unused %}
+        <li>{{asset.symbol}}: {{qty}}</li>
+      {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+</div>
