@@ -52,8 +52,11 @@ class BlotterBaseView(generic.ListView):
     def order_by(self, queryset):
       return queryset.order_by(self.get_sort())
 
+    def get_filter_account(self):
+      return self.request.GET.get("account", None)
+
     def filter_account(self, queryset):
-      account = self.request.GET.get("account", None)
+      account = self.get_filter_account()
       if account is not None:
         queryset = queryset.filter(account__id=account)
       return queryset
@@ -138,6 +141,7 @@ class BlotterConcealedView(BlotterBaseView):
     def get_context_data(self, *args, **kwargs):
         context = super(BlotterConcealedView, self).get_context_data(*args, **kwargs)
         context["sort"] = self.get_sort()
+        context["filter_account"] = Account.objects.get(id=self.get_filter_account())
         return context
 
 class BlotterEngineView(BlotterBaseView):

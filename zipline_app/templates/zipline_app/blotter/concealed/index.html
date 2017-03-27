@@ -12,6 +12,14 @@
 
   {% include 'zipline_app/blotter/concealed/_extras.html' %}
 
+  {% if filter_account is not None %}
+  <div class='alert alert-info'>
+    Filtered for account
+    {{filter_account.account_symbol}}:
+    {{filter_account.account_name}}
+  </div>
+  {% endif %}
+
   <div>
 
       <div class="row text-center">
