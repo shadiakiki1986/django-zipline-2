@@ -8,7 +8,7 @@ from django.urls import reverse
 from .asset import Asset
 from .account import Account
 from .zlmodel import ZlModel
-from .side import LONG, FILL_SIDE_CHOICES, validate_nonzero, LIMIT, ORDER_TYPE_CHOICES, PositiveFloatFieldModel
+from .side import LONG, FILL_SIDE_CHOICES, validate_nonzero, MARKET, ORDER_TYPE_CHOICES, PositiveFloatFieldModel
 
 from numpy import average
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -37,7 +37,7 @@ class Order(models.Model):
     order_type = models.CharField(
       max_length=1,
       choices=ORDER_TYPE_CHOICES,
-      default=LIMIT,
+      default=MARKET,
       verbose_name="Type"
     )
     limit_price = PositiveFloatFieldModel(

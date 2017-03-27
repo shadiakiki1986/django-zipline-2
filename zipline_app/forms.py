@@ -21,7 +21,10 @@ class FillForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
   class Meta:
     model=Order
-    fields = ['pub_date', 'asset', 'order_side', 'amount_unsigned', 'account', 'order_text']
+    fields = [
+      'pub_date', 'asset', 'order_side', 'amount_unsigned', 'account', 'order_text',
+      'order_type', 'limit_price',
+    ]
     widgets = {
       'asset': AssetModelSelect2Widget(),
       'account': AccountModelSelect2Widget(),

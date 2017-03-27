@@ -55,7 +55,7 @@
   </div>
 
   <div class="col-xs-1 text-right">
-    {% if order.order_type=="M" %}
+    {% if order.order_type == "M" %}
     <span title="Average price">{{order.avgPrice|floatformat:"2"|intcomma}}</span>
     {% else %}
     <span title="Limit price">{{order.limit_price|floatformat:"2"|intcomma}}</span>

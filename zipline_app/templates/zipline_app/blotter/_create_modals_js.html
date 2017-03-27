@@ -26,5 +26,8 @@ $(function() {
     }
   });
 
+  // since default order_type = market, disable the limit price
+  $("#orders-new input[name='limit_price']").prop("disabled", "disabled");
+
 });
 </script>

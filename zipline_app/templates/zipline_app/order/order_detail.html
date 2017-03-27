@@ -9,7 +9,7 @@ Order Details
 <ul>
   <li>Asset: {{order.asset.asset_symbol}}</li>
   <li>Type: {{order.order_type}}</li>
-  {% if order.order_type=='L' %}
+  {% if order.order_type == 'L' %}
   <li>Limit price: {{order.limit_price}}</li>
   {% endif %}
   <li>Side: {{order.order_side}}</li>

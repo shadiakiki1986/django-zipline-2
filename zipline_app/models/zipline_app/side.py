@@ -10,6 +10,7 @@ FILL_SIDE_CHOICES = (
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.forms import fields
+from django.db import models
 
 def validate_nonzero(value):
     if value == 0:

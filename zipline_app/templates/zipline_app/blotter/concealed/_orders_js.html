@@ -40,9 +40,11 @@ $(function() {
       $('<input/>', {type:'hidden', class:'extra-dyn', name:'dedicated_to_order',value:data['order-id']       }).appendTo(form);
 
       // if order was a limit order, fixate the price
-      $('#fills-new select[name="fill_price"]').val(data['limit_price']);
-      $('#fills-new select[name="fill_price"]').prop('disabled', true);
-      $('<input/>', {type:'hidden', class:'extra-dyn', name:'fill_price',             value:data['order_type']       }).appendTo(form);
+      if(data['order_type']=='L') {
+        $('#fills-new input[name="fill_price"]').val(data['limit_price']);
+        $('#fills-new input[name="fill_price"]').prop('disabled', true);
+        $('<input/>', {type:'hidden', class:'extra-dyn', name:'fill_price',             value:data['limit_price']       }).appendTo(form);
+      }
 
   });
 });
