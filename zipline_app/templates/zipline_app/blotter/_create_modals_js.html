@@ -1,8 +1,7 @@
 <script type="text/javascript">
 $(function() {
-  <!-- How to reset form body in bootstrap modal box
-       http://stackoverflow.com/questions/15827262/ddg#20918538
-       -->
+  // How to reset form body in bootstrap modal box
+  // http://stackoverflow.com/questions/15827262/ddg#20918538
   $('.modal').on('hidden.bs.modal', function(){
         $(this).find('form')[0].reset();
         $(this).find('input').prop('disabled',false);
@@ -16,6 +15,15 @@ $(function() {
   });
   $('#fills-new .django-select2').djangoSelect2({
     dropdownParent: $('#fills-new')
+  });
+
+  // order limit price disabled when order type = market
+  $("#orders-new select[name='order_type']").change(function() {
+    if($(this).val()=="M") {
+      $("#orders-new input[name='limit_price']").prop("disabled", "disabled");
+    } else {
+      $("#orders-new input[name='limit_price']").prop("disabled", false);
+    }
   });
 
 });

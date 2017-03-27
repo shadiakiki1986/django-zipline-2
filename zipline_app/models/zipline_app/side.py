@@ -33,3 +33,19 @@ class PositiveFloatFieldForm(fields.FloatField):
     attrs = super(PositiveFloatFieldForm, self).widget_attrs(widget)
     attrs['min']=0
     return attrs
+
+# order type
+MARKET = 'M'
+LIMIT = 'L'
+ORDER_TYPE_CHOICES = (
+  (MARKET, 'Market'),
+  (LIMIT, 'Limit')
+)
+
+class PositiveFloatFieldModel(models.FloatField):
+  def formfield(self, **kwargs):
+    defaults = {'form_class': PositiveFloatFieldForm}
+    defaults.update(kwargs)
+    return super(PositiveFloatFieldModel, self).formfield(**defaults)
+
+

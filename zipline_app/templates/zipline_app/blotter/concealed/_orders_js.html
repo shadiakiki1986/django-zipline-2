@@ -6,6 +6,8 @@ $(function() {
         'order-id': $(this).attr('data-order-id'),
         'pub_date': $(this).attr('data-order-pub_date'),
         'order_side': $(this).attr('data-order-order_side'),
+        'order_type': $(this).attr('data-order-order_type'),
+        'limit_price': $(this).attr('data-order-limit_price'),
         'amount_unsigned': $(this).attr('data-order-amount_unsigned'),
         'asset-id': $(this).attr('data-order-asset-id'),
         'asset-str': $(this).attr('data-order-asset-str'),
@@ -36,6 +38,12 @@ $(function() {
 
       // dedicated to order is a hidden field
       $('<input/>', {type:'hidden', class:'extra-dyn', name:'dedicated_to_order',value:data['order-id']       }).appendTo(form);
+
+      // if order was a limit order, fixate the price
+      $('#fills-new select[name="fill_price"]').val(data['limit_price']);
+      $('#fills-new select[name="fill_price"]').prop('disabled', true);
+      $('<input/>', {type:'hidden', class:'extra-dyn', name:'fill_price',             value:data['order_type']       }).appendTo(form);
+
   });
 });
 </script>

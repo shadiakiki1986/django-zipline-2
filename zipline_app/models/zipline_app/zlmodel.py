@@ -19,6 +19,7 @@ from functools import reduce
 
 from numpy import concatenate
 import pandas as pd
+from .side import LIMIT
 
 # This is an adapter connecting the django model datastructures to the zipline datastructures
 class ZlModel:
@@ -102,6 +103,10 @@ class ZlModel:
 
     @staticmethod
     def add_order(order):
+      if order.order_type == LIMIT:
+        logger.debug("Limit orders not yet supported in engine. Skipping: %s",order)
+        return
+
       ZlModel.add_asset(order.asset)
 
       logger.debug("Add order %s" % order)

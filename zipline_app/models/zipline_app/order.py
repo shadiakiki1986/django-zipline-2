@@ -8,7 +8,7 @@ from django.urls import reverse
 from .asset import Asset
 from .account import Account
 from .zlmodel import ZlModel
-from .side import LONG, FILL_SIDE_CHOICES, validate_nonzero
+from .side import LONG, FILL_SIDE_CHOICES, validate_nonzero, LIMIT, ORDER_TYPE_CHOICES, PositiveFloatFieldModel
 
 from numpy import average
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -34,6 +34,16 @@ class Order(models.Model):
       verbose_name="Side"
     )
     user = models.ForeignKey(User, null=True, default=None)
+    order_type = models.CharField(
+      max_length=1,
+      choices=ORDER_TYPE_CHOICES,
+      default=LIMIT,
+      verbose_name="Type"
+    )
+    limit_price = PositiveFloatFieldModel(
+      default=0,
+      validators=[MaxValueValidator(1000000), MinValueValidator(0), validate_nonzero],
+    )
 
     def amount_signed(self):
       return self.amount_unsigned * (+1 if self.order_side==LONG else -1)

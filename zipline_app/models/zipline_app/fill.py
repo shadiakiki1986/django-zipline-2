@@ -9,17 +9,11 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from .asset import Asset
 from .zlmodel import ZlModel
 from .order import Order
-from .side import LONG, FILL_SIDE_CHOICES, validate_nonzero, PositiveFloatFieldForm
+from .side import LONG, FILL_SIDE_CHOICES, validate_nonzero, PositiveFloatFieldForm, PositiveFloatFieldModel
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from ...utils import now_minute, chopSeconds
 from django.contrib.auth.models import User
-
-class PositiveFloatFieldModel(models.FloatField):
-  def formfield(self, **kwargs):
-    defaults = {'form_class': PositiveFloatFieldForm}
-    defaults.update(kwargs)
-    return super(PositiveFloatFieldModel, self).formfield(**defaults)
 
 class Fill(models.Model):
     # 2017-03-17: relink fill to order as a "dedicated to order" field

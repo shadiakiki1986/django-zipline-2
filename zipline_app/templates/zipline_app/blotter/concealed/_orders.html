@@ -54,7 +54,13 @@
     {% endifchanged %}
   </div>
 
-  <div class="col-xs-1 text-right">{{order.avgPrice|floatformat:"2"|intcomma}}</div>
+  <div class="col-xs-1 text-right">
+    {% if order.order_type=="M" %}
+    <span title="Average price">{{order.avgPrice|floatformat:"2"|intcomma}}</span>
+    {% else %}
+    <span title="Limit price">{{order.limit_price|floatformat:"2"|intcomma}}</span>
+    {% endif %}
+  </div>
 
   <div class="col-xs-1">
   </div>
@@ -98,6 +104,8 @@
               data-order-id="{{order.id}}"
               data-order-pub_date="{{order.pub_date|date:"Y-m-d H:i:s"}}"
               data-order-order_side="{{order.order_side}}"
+              data-order-order_type="{{order.order_type}}"
+              data-order-limit_price="{{order.limit_price}}"
               data-order-amount_unsigned="{{order.amount_unsigned}}"
               data-order-asset-id="{{order.asset.id}}"
               data-order-asset-str="{{order.asset.str}}"
