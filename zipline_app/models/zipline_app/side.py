@@ -26,6 +26,8 @@ class PositiveFloatFieldForm(fields.FloatField):
   }
   def validate(self, value):
     super(PositiveFloatFieldForm, self).validate(value)
+    if value is None:
+      return value
     if value<0:
       raise ValidationError(self.error_messages['invalid'], code='invalid')
     return value

@@ -5,7 +5,7 @@ from django.utils import timezone
 from ...models.zipline_app.zipline_app import ZlModel
 from .test_zipline_app import create_asset, create_order, create_account, a1
 from ...models.zipline_app.fill import Fill
-from ...models.zipline_app.side import LONG, SHORT
+from ...models.zipline_app.side import LONG, SHORT, MARKET
 from .test_fill import create_fill_from_order
 from ...utils import myTestLogin
 from django.contrib.auth.models import User
@@ -41,6 +41,13 @@ class OrderModelTests(TestCase):
       user = User.objects.create_user(username='john', email='jlennon@beatles.com', password=password)
       o1 = create_order(days=-1, asset=self.a1a, order_side=LONG, amount_unsigned=1, order_text="order 1", user=user, account=self.acc1)
 
+    def test_history(self):
+      o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=LONG, amount_unsigned=10, account=self.acc1)
+      self.assertEqual(o1.history().count(), 0)
+      o1.order_side=SHORT
+      o1.save()
+      self.assertEqual(o1.history().count(), 1)
+
 class OrderGeneralViewsTests(TestCase):
     def setUp(self):
       ZlModel.clear()
@@ -69,8 +76,10 @@ class OrderGeneralViewsTests(TestCase):
         # http://stackoverflow.com/questions/40005411/django-django-test-client-post-request
         time = '2015-01-01 00:00:00' #timezone.now() + datetime.timedelta(days=-0.5)
         url = reverse('zipline_app:orders-new')
-        response = self.client.post(url, {'pub_date':time, 'asset':self.a1a.id, 'order_side': LONG, 'amount_unsigned':10, 'account':self.acc1.id})
+        response = self.client.post(url, {'pub_date':time, 'asset':self.a1a.id, 'order_side': LONG, 'amount_unsigned':10, 'account':self.acc1.id, 'order_type': MARKET})
+        # check that the post was successful by being a redirect
         self.assertEqual(response.status_code, 302)
+
 #        print(response.context)
 #        self.assertFormError(response, 'form', 'pub_date', 'Enter a valid date/time.')
         #self.assertFormError(response, 'form', 'asset', 'Enter a valid date/time.')
@@ -101,9 +110,10 @@ class OrderGeneralViewsTests(TestCase):
     def test_new_order_user(self):
         url = reverse('zipline_app:orders-new')
         time = '2015-01-01 06:00:00'
-        o1={'pub_date':time, 'asset':self.a1a.id, 'order_side': LONG, 'amount_unsigned':1, 'account':self.acc1.id}
+        o1={'pub_date':time, 'asset':self.a1a.id, 'order_side': LONG, 'amount_unsigned':1, 'account':self.acc1.id, 'order_type': MARKET}
 
         response = self.client.post(url,o1,follow=True)
+        # check that "john" shows up twice, once for the "logged in as john", and once for the order author
         self.assertEqual(b''.join(list(response)).count(b"john"),2)
 
 class OrderDetailViewTests(TestCase):
@@ -138,3 +148,13 @@ class OrderDetailViewTests(TestCase):
         url = reverse('zipline_app:orders-update', args=(self.a1a.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+    def test_detail_view_history(self):
+      order = create_order(order_text='original order.', days=-5, asset=self.a1a, order_side=LONG, amount_unsigned=10, account=self.acc1)
+      url = reverse('zipline_app:orders-detail', args=(order.id,))
+      response = self.client.get(url, follow=True)
+      self.assertContains(response, "No history")
+      order.order_side=SHORT
+      order.save()
+      response = self.client.get(url, follow=True)
+      self.assertContains(response, "Changed order_side from")

@@ -41,9 +41,29 @@ class AbstractOrder(models.Model):
       verbose_name="Type"
     )
     limit_price = PositiveFloatFieldModel(
-      default=0,
+      default=None,
       validators=[MaxValueValidator(1000000), MinValueValidator(0), validate_nonzero],
+      null=True,
+      blank=True
     )
+
+    def diff(self, other):
+      if other is None:
+        return []
+      messages = []
+      attrs = ['order_text', 'pub_date', 'asset', 'amount_unsigned', 'account', 'order_side', 'order_type', 'limit_price']
+      for attr in attrs:
+        if getattr(self, attr) != getattr(other, attr):
+          messages.append(
+            "Changed %s from '%s' to '%s'" %
+            (
+              attr,
+              getattr(other, attr),
+              getattr(self, attr)
+            )
+          )
+      return messages
+
     class Meta:
       abstract=True
 
@@ -108,34 +128,43 @@ class Order(AbstractOrder):
     was_published_recently.boolean = True
     was_published_recently.short_description = 'Published recently?'
 
-    def save(self):
-      order = super(Order, self).save()
-      latest_id = OrderHistory.objects.filter(order=order).latest('id')
-      previous = OrderHistory.objects.get(latest_id)
+    def append_history(self):
+      history = OrderHistory.objects.filter(order=self)
+      previous = None
+      if history.count()>0:
+        previous = history.latest('id')
+        diff = self.diff(previous)
+        if len(diff)==0:
+          return
+
       OrderHistory.objects.create(
-        order=order,
+        order=self,
         previous = previous,
-        order_text = order.order_text,
-        pub_date = order.pub_date,
-        asset = order.asset,
-        amount_unsigned = order.amount_unsigned,
-        account = order.account,
-        order_side = order.order_side,
-        user = order.user,
-        order_type = order.order_type,
-        limit_price = order.limit_price,
+        order_text = self.order_text,
+        pub_date = self.pub_date,
+        asset = self.asset,
+        amount_unsigned = self.amount_unsigned,
+        account = self.account,
+        order_side = self.order_side,
+        user = self.user,
+        order_type = self.order_type,
+        limit_price = self.limit_price,
       )
+
+    # excluding the first entry with previous=None since this is available regardless of edits made
+    def history(self):
+      return self.orderhistory_set.exclude(previous=None).order_by('-ed_date')
 
 #####################
 # Model History in Django
 # http://stackoverflow.com/a/14282776/4126114
 class OrderHistory(AbstractOrder):
   order = models.ForeignKey(Order)
-  previous = models.ForeignKey(OrderHistory)
-  def diff(self):
-    messages = []
-    attrs = ['order_text', 'pub_date', 'asset', 'amount_unsigned', 'account', 'order_side', 'order_type', 'limit_price']
-    for attr in attrs:
-      if getattr(self, attr) != getattr(self.previous, attr):
-        messages.push("Changed %s from '%s' to '%s'" % (attr, getattr(self, attr), getattr(self.previous, attr)))
-    return messages
+  previous = models.ForeignKey('self', null=True)
+  ed_date = models.DateTimeField('date edited',default=timezone.now)
+
+  def __str__(self):
+    return ', '.join(self.diffPrevious())
+
+  def diffPrevious(self):
+    return self.diff(self.previous)

@@ -83,10 +83,12 @@ Fill
 {##########################################}
 <h2>History</h2>
 <ul>
-  {% for diff in order.diff %}
-  <li>{{diff}}</li>
+  {% for history in order.history %}
+  <li>
+    {{history.ed_date}}: {{history}}
+  </li>
   {% empty %}
-  <li>None</li>
+  <li>No history</li>
   {% endfor %}
 </ul>
 {% endblock %}

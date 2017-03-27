@@ -23,7 +23,9 @@ class SignalProcessor:
   def post_save(sender, instance, **kwargs):
     logger.debug("Signal: %s, %s" % ("post_save", sender))
     if sender.__name__=="Fill": ZlModel.add_fill(instance)
-    if sender.__name__=="Order": ZlModel.add_order(instance)
+    if sender.__name__=="Order":
+      ZlModel.add_order(instance)
+      instance.append_history()
     ZlModel.update()
 
   def post_delete(sender, instance, **kwargs):

@@ -7,7 +7,7 @@ import pandas as pd
 from unittest import skip
 from ...models.zipline_app.zipline_app import Order, ZlModel, Fill, Account, Asset
 from ...models.zipline_app.side import LONG
-from ...utils import myTestLogin
+from ...utils import myTestLogin, chopSeconds
 
 a1 = {
   "exchange":'exchange name',
@@ -39,6 +39,7 @@ def create_order(order_text, days, asset, order_side, amount_unsigned, account, 
     in the past, positive for orders that have yet to be published).
     """
     time = timezone.now() + datetime.timedelta(days=days)
+    time = chopSeconds(time)
     order = Order.objects.create(
       order_text=order_text,
       pub_date=time,
