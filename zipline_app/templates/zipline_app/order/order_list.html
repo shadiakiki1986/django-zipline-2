@@ -24,9 +24,8 @@
       </div>
       <div class="col-xs-2">{{ order.pub_date|date:"Y-m-d H:i:s" }}</div>
       <div class="col-xs-1">
-        <a href="{% url 'zipline_app:assets-list' %}">{{ order.asset.asset_symbol }}</a>
+        <a href="{% url 'zipline_app:assets-detail' order.asset.id %}">{{ order.asset.asset_symbol }}</a>
       </div>
-{#      <a href="{% url 'zipline_app:accounts-list' %}">{{ order.account.account_symbol }}</a>,#}
       <div class="col-xs-1">
         {% if order.order_type == "L" %}
         {{ order.limit_price }}
@@ -36,7 +35,9 @@
       </div>
       <div class="col-xs-1">{{ order.order_side }}</div>
       <div class="col-xs-1 text-right">{{ order.amount_unsigned }}</div>
-      <div class="col-xs-2">{{order.account.account_symbol}}</div>
+      <div class="col-xs-2">
+        <a href="{% url 'zipline_app:accounts-detail' order.account.id %}">{{ order.account.account_symbol }}</a>
+      </div>
       <div class="col-xs-2">{{ order.order_text }}</div>
       <div class="col-xs-1">{{ order.user.username }}</div>
     </div>
