@@ -101,7 +101,7 @@ class BlotterBaseView(generic.ListView):
 
 class BlotterSideBySideView(BlotterBaseView):
     template_name = 'zipline_app/blotter/sideBySide/index.html'
-    source="sideBySide"
+    source="blotter-sideBySide"
 
     def get_combined(self):
         all_min_zl  = ZlModel.all_minutes
@@ -153,7 +153,7 @@ class BlotterSideBySideView(BlotterBaseView):
 
 class BlotterConcealedView(BlotterBaseView):
     template_name = 'zipline_app/blotter/concealed/index.html'
-    source="concealed"
+    source="blotter-concealed"
     def get_context_data(self, *args, **kwargs):
         context = super(BlotterConcealedView, self).get_context_data(*args, **kwargs)
         context["sort"] = self.get_sort()
@@ -170,7 +170,7 @@ class BlotterConcealedView(BlotterBaseView):
 
 class BlotterEngineView(BlotterBaseView):
     template_name = 'zipline_app/blotter/engine.html'
-    source="engine"
+    source="blotter-engine"
 
     # Can I have multiple lists in a Django generic.ListView?
     # http://stackoverflow.com/a/18813102/4126114

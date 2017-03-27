@@ -4,6 +4,7 @@ from django.contrib import messages
 from ...models.zipline_app.order import Order
 from ...utils import redirect_index_or_local
 from ...forms import OrderForm
+from django.urls import  reverse_lazy
 
 class OrderCreate(generic.CreateView):
   model = Order
@@ -25,6 +26,7 @@ class OrderCreate(generic.CreateView):
 class OrderList(generic.ListView):
   template_name = 'zipline_app/order/order_list.html'
   context_object_name='order_list'
+  source="orders-list"
   def get_queryset(self):
     return Order.objects.all()
 
@@ -60,4 +62,5 @@ class OrderUpdateView(generic.UpdateView):
     # django message levels
     # https://docs.djangoproject.com/en/1.10/ref/contrib/messages/#message-levels
     messages.add_message(self.request, messages.INFO, "Successfully updated order: %s" % self.object)
-    return redirect_index_or_local(self,'zipline_app:orders-list')
+    local = reverse_lazy('zipline_app:orders-detail', args=(self.object.id,))
+    return redirect_index_or_local(self, local)

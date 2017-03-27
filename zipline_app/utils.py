@@ -8,8 +8,10 @@ def md5_wrap(string):
 def redirect_index_or_local(myself,local):
   source = myself.request.POST.get('source')
   if source is not None and source!='':
-    return reverse_lazy('zipline_app:blotter-%s'%source)
-  return reverse_lazy(local)
+    return reverse_lazy('zipline_app:%s'%source)
+  if type(local) is str:
+    return reverse_lazy(local)
+  return local
 
 import datetime
 from django.utils import timezone
