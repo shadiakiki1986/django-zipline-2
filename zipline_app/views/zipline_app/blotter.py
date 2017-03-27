@@ -6,7 +6,12 @@ from django.contrib import messages
 from pandas import Timedelta
 from numpy import concatenate
 
-from ...models.zipline_app.zipline_app import Order, Fill, ZlModel, Asset
+from ...models.zipline_app.order import Order
+from ...models.zipline_app.fill import Fill
+from ...models.zipline_app.asset import Asset
+from ...models.zipline_app.zipline_app import ZlModel
+from ...models.zipline_app.account import Account
+
 from .order import OrderCreate
 from .fill import FillCreate
 from .asset import AssetCreate
@@ -141,7 +146,9 @@ class BlotterConcealedView(BlotterBaseView):
     def get_context_data(self, *args, **kwargs):
         context = super(BlotterConcealedView, self).get_context_data(*args, **kwargs)
         context["sort"] = self.get_sort()
-        context["filter_account"] = Account.objects.get(id=self.get_filter_account())
+        filter_account = self.get_filter_account()
+        if filter_account is not None:
+          context["filter_account"] = Account.objects.get(id=self.get_filter_account())
         return context
 
 class BlotterEngineView(BlotterBaseView):

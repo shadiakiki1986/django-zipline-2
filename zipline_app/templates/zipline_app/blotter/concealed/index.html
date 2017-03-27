@@ -13,10 +13,18 @@
   {% include 'zipline_app/blotter/concealed/_extras.html' %}
 
   {% if filter_account is not None %}
-  <div class='alert alert-info'>
+  <div class='alert alert-default'>
+    <b>
     Filtered for account
-    {{filter_account.account_symbol}}:
+    <a href="{% url 'zipline_app:accounts-detail' filter_account.id %}">
+      {{filter_account.account_symbol}}
+    </a>:
     {{filter_account.account_name}}
+    &nbsp;
+    <a href='{% url "zipline_app:blotter-concealed" %}{% if sort %}?sort={{sort}}{% endif %}'>
+      <span class='glyphicon glyphicon-remove'></span>
+    </a>
+    </b>
   </div>
   {% endif %}
 
