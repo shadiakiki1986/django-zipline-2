@@ -55,29 +55,31 @@
       <div class="col-xs-1"><em>Given by</em></div>
       <div class="col-xs-2">
         {% include 'zipline_app/blotter/concealed/_sortable.html' with field_name='Client' field_sort='account__account_name' field_direction='down' %}
+        <a href="#" id="search-account-btn"><span class="glyphicon glyphicon-search"></span></a>
+        <div id="search-account-div">{% bootstrap_field field=order_form.account layout='inline' %}</div>
       </div>
       <div class="col-xs-1"><em>Qty</em></div>
       <div class="col-xs-3">
         {% include 'zipline_app/blotter/concealed/_sortable.html' with field_name='Security' field_sort='asset__asset_name' field_direction='down' %}
-        <a href="#" id="search-asset-btn">
-          <span class="glyphicon glyphicon-search"></span>
-        </a>
-        <div id="search-asset-div">
-          {% bootstrap_field field=order_form.asset layout='inline' %}
-        </div>
+        <a href="#" id="search-asset-btn"><span class="glyphicon glyphicon-search"></span></a>
+        <div id="search-asset-div">{% bootstrap_field field=order_form.asset layout='inline' %}</div>
         <script type="text/javascript">
-          $("#search-asset-div").hide();
-          $("#search-asset-btn").click(function() {
-            $("#search-asset-div").toggle();
-            return false;
-          });
-          $("#search-asset-div select").on("select2:select", function() {
-            // Change URL parameters
-            // http://stackoverflow.com/a/41662783/4126114
-            const searchParams = new URLSearchParams(window.location.search);
-            searchParams.set('asset', $(this).val());
-            window.location.search = searchParams.toString();
-          });
+          function setSearchEvents(type) {
+            $("#search-"+type+"-div").hide();
+            $("#search-"+type+"-btn").click(function() {
+              $("#search-"+type+"-div").toggle();
+              return false;
+            });
+            $("#search-"+type+"-div select").on("select2:select", function() {
+              // Change URL parameters
+              // http://stackoverflow.com/a/41662783/4126114
+              const searchParams = new URLSearchParams(window.location.search);
+              searchParams.set(type, $(this).val());
+              window.location.search = searchParams.toString();
+            });
+          }
+          setSearchEvents("asset");
+          setSearchEvents("account");
         </script>
       </div>
       <div class="col-xs-1"><em>Price</em></div>
