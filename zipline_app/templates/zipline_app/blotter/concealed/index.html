@@ -21,7 +21,23 @@
     </a>:
     {{filter_account.account_name}}
     &nbsp;
-    <a href='{% url "zipline_app:blotter-concealed" %}{% if sort %}?sort={{sort}}{% endif %}'>
+    <a href='{% url "zipline_app:blotter-concealed" %}{% if sort %}?sort={{sort}}{% endif %}{% if filter_asset %}&filter_asset={{filter_asset}}{% endif %}'>
+      <span class='glyphicon glyphicon-remove'></span>
+    </a>
+    </b>
+  </div>
+  {% endif %}
+
+  {% if filter_asset is not None %}
+  <div class='alert alert-default'>
+    <b>
+    Filtered for asset
+    <a href="{% url 'zipline_app:assets-detail' filter_asset.id %}">
+      {{filter_asset.asset_symbol}}
+    </a>:
+    {{filter_asset.asset_name}}
+    &nbsp;
+    <a href='{% url "zipline_app:blotter-concealed" %}{% if sort %}?sort={{sort}}{% endif %}{% if filter_account %}&filter_account={{filter_account}}{% endif %}'>
       <span class='glyphicon glyphicon-remove'></span>
     </a>
     </b>

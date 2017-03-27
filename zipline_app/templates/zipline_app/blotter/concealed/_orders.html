@@ -31,7 +31,7 @@
 
   <div class="col-xs-2">
     {% ifchanged order.account order.pub_date.date %}
-      <a href="{% url 'zipline_app:blotter-concealed' %}?account={{order.account.id}}{% if sort %}&sort={{sort}}{% endif %}">
+      <a href="{% url 'zipline_app:blotter-concealed' %}?account={{order.account.id}}{% if sort %}&sort={{sort}}{% endif %}{% if filter_asset %}&filter_asset={{filter_asset}}{% endif %}">
         {{order.account.account_symbol}}
       </a>
       :{{order.account.account_name}}
@@ -51,7 +51,8 @@
 
   <div class="col-xs-3">
     {% ifchanged order.asset order.pub_date.date %}
-    <a href="{% url 'zipline_app:assets-detail' order.asset.id %}">
+    <a href="{% url 'zipline_app:blotter-concealed' %}?asset={{order.asset.id}}{% if sort %}&sort={{sort}}{% endif %}{% if filter_account %}&filter_account={{filter_account}}{% endif %}">
+
       {{order.asset.asset_symbol}}
     </a>: {{order.asset.asset_name}}
     {% endifchanged %}

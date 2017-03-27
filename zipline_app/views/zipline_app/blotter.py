@@ -60,25 +60,36 @@ class BlotterBaseView(generic.ListView):
     def get_filter_account(self):
       return self.request.GET.get("account", None)
 
+    def get_filter_asset(self):
+      return self.request.GET.get("asset", None)
+
     def filter_account(self, queryset):
       account = self.get_filter_account()
       if account is not None:
         queryset = queryset.filter(account__id=account)
       return queryset
 
+    def filter_asset(self, queryset):
+      asset = self.get_filter_asset()
+      if asset is not None:
+        queryset = queryset.filter(asset__id=asset)
+      return queryset
+
     def get_orders(self):
-      return self.filter_account(
-               self.order_by(
-                 Order.objects.filter(
-                   pub_date__lte=timezone.now()
+      return self.filter_asset(
+               self.filter_account(
+                 self.order_by(
+                   Order.objects.filter(
+                     pub_date__lte=timezone.now()
+                   )
                  )
                )
              )
 
     def get_fills(self):
-      return self.order_by(Fill.objects.filter(
+      return Fill.objects.filter(
           pub_date__lte=timezone.now()
-      ))#[:5]
+      )#[:5]
 
     def fills_required_per_asset(self):
       fills = {}
@@ -146,9 +157,15 @@ class BlotterConcealedView(BlotterBaseView):
     def get_context_data(self, *args, **kwargs):
         context = super(BlotterConcealedView, self).get_context_data(*args, **kwargs)
         context["sort"] = self.get_sort()
+
         filter_account = self.get_filter_account()
         if filter_account is not None:
           context["filter_account"] = Account.objects.get(id=self.get_filter_account())
+
+        filter_asset = self.get_filter_asset()
+        if filter_asset is not None:
+          context["filter_asset"] = Asset.objects.get(id=self.get_filter_asset())
+
         return context
 
 class BlotterEngineView(BlotterBaseView):
