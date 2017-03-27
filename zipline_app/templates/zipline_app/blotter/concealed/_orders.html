@@ -38,14 +38,10 @@
     {% endifchanged %}
   </div>
 
-  <div class="col-xs-1 text-right">
+  <div class="col-xs-1">
     <div class='row'>
-      <div class='col-xs-3'>
-        {{order.order_side}}
-      </div>
-      <div class='col-xs-9'>
-        {{order.amount_unsigned|intcomma}}
-      </div>
+      {{order.order_side}}
+      <span class='pull-right'>{{order.amount_unsigned|intcomma}}</span>
     </div>
   </div>
 
@@ -90,8 +86,8 @@
         {% endif %}
 
         {% if order.filled != order.amount_signed %}
-        <div class='row'>
-          Filled {{order.filled|intcomma}} / {{order.amount_signed}}
+        <div class='row text-right'>
+          {{order.filled|intcomma}} / {{order.amount_signed}}
 
           <abbr title="Close order #{{order.id}}">
             <button
