@@ -61,4 +61,3 @@ class OrderUpdateView(generic.UpdateView):
     # https://docs.djangoproject.com/en/1.10/ref/contrib/messages/#message-levels
     messages.add_message(self.request, messages.INFO, "Successfully updated order: %s" % self.object)
     return redirect_index_or_local(self,'zipline_app:orders-list')
-

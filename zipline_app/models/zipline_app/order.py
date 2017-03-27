@@ -17,7 +17,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-class Order(models.Model):
+class AbstractOrder(models.Model):
     order_text = models.CharField(max_length=200, blank=True)
     pub_date = models.DateTimeField('date published',default=now_minute)
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
@@ -44,7 +44,11 @@ class Order(models.Model):
       default=0,
       validators=[MaxValueValidator(1000000), MinValueValidator(0), validate_nonzero],
     )
+    class Meta:
+      abstract=True
 
+
+class Order(AbstractOrder):
     def amount_signed(self):
       return self.amount_unsigned * (+1 if self.order_side==LONG else -1)
 
@@ -104,8 +108,34 @@ class Order(models.Model):
     was_published_recently.boolean = True
     was_published_recently.short_description = 'Published recently?'
 
-# using get_success_url in OrderCreate instead of this
-#
-#    def get_absolute_url(self):
-#      return reverse('zipline_app:orders-list') # TODO rename to orders
-#      return reverse('zipline_app:orders-list', kwargs={'pk': self.pk})
+    def save(self):
+      order = super(Order, self).save()
+      latest_id = OrderHistory.objects.filter(order=order).latest('id')
+      previous = OrderHistory.objects.get(latest_id)
+      OrderHistory.objects.create(
+        order=order,
+        previous = previous,
+        order_text = order.order_text,
+        pub_date = order.pub_date,
+        asset = order.asset,
+        amount_unsigned = order.amount_unsigned,
+        account = order.account,
+        order_side = order.order_side,
+        user = order.user,
+        order_type = order.order_type,
+        limit_price = order.limit_price,
+      )
+
+#####################
+# Model History in Django
+# http://stackoverflow.com/a/14282776/4126114
+class OrderHistory(AbstractOrder):
+  order = models.ForeignKey(Order)
+  previous = models.ForeignKey(OrderHistory)
+  def diff(self):
+    messages = []
+    attrs = ['order_text', 'pub_date', 'asset', 'amount_unsigned', 'account', 'order_side', 'order_type', 'limit_price']
+    for attr in attrs:
+      if getattr(self, attr) != getattr(self.previous, attr):
+        messages.push("Changed %s from '%s' to '%s'" % (attr, getattr(self, attr), getattr(self.previous, attr)))
+    return messages

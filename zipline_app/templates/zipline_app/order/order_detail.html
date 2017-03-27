@@ -80,4 +80,13 @@ Fill
 
         <a href="{% url 'zipline_app:orders-update' order.id %}">Edit</a>
 
+{##########################################}
+<h2>History</h2>
+<ul>
+  {% for diff in order.diff %}
+  <li>{{diff}}</li>
+  {% empty %}
+  <li>None</li>
+  {% endfor %}
+</ul>
 {% endblock %}
