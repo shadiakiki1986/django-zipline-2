@@ -46,18 +46,30 @@ class BlotterBaseView(generic.ListView):
 
         return context
 
-    def get_sort(self):
-      return self.request.GET.get("sort", "-pub_date")
+    def order_by(self, queryset):
+      sort = self.request.GET.get("sort", "-pub_date")
+      queryset = queryset.order_by(sort)
+      return queryset
+
+    def filter_account(self, queryset):
+      account = self.request.GET.get("account", None)
+      if account is not None:
+        queryset = queryset.filter(account__id=account)
+      return queryset
 
     def get_orders(self):
-      return Order.objects.filter(
-            pub_date__lte=timezone.now()
-        ).order_by(self.get_sort())#[:5]
+      return self.filter_account(
+               self.order_by(
+                 Order.objects.filter(
+                   pub_date__lte=timezone.now()
+                 )
+               )
+             )
 
     def get_fills(self):
-      return Fill.objects.filter(
+      return self.order_by(Fill.objects.filter(
           pub_date__lte=timezone.now()
-      ).order_by(self.get_sort())#[:5]
+      ))#[:5]
 
     def fills_required_per_asset(self):
       fills = {}
