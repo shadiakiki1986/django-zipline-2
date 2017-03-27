@@ -59,6 +59,28 @@
       <div class="col-xs-1"><em>Qty</em></div>
       <div class="col-xs-3">
         {% include 'zipline_app/blotter/concealed/_sortable.html' with field_name='Security' field_sort='asset__asset_name' field_direction='down' %}
+        <a href="#" id="search-asset-btn">
+          <span class="glyphicon glyphicon-search"></span>
+        </a>
+        <div id="search-asset-div">
+          {% bootstrap_field field=order_form.asset layout='horizontal' %}
+        </div>
+        <script type="text/javascript">
+          $("#search-asset-btn").click(function() {
+            $("#search-asset-div").toggle();
+          });
+          $("#search-asset-div select2").change(function() {
+            // Change URL parameters
+            // http://stackoverflow.com/a/41662783/4126114
+            const searchParams = new URLSearchParams(window.location.search);
+            searchParams.set('asset', $(this).val());
+//            gotourl = window.location.href+"?asset="+$(this).val()
+//                      {% if sort %}+"&sort={{sort}}"{% endif %}
+//                      {% if filter_account %}+"&account={{filter_account.id}}"{% endif %}
+//            ;
+//            window.location.href = gotourl;
+          });
+        </script>
       </div>
       <div class="col-xs-1"><em>Price</em></div>
       <div class="col-xs-2">
