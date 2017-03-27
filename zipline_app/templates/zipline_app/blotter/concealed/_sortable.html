@@ -1,6 +1,8 @@
 {% if sort == field_sort %}<b>{% endif %}
 <em>{{field_name}}</em>
 {% if sort == field_sort %}</b>{% endif %}
-{% if sort != field_sort %}<a href="{% url 'zipline_app:blotter-concealed' %}?sort={{field_sort}}">{% endif %}
+{% if sort != field_sort %}
+<a href="{% url 'zipline_app:blotter-concealed' %}?sort={{field_sort}}{% if filter_account %}&account={{filter_account.id}}{% endif %}">
+{% endif %}
 <span class='glyphicon glyphicon-arrow-{{field_direction}}'></span>
 {% if sort != 'field_sort' %}</a>{% endif %}
