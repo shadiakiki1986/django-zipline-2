@@ -12,62 +12,62 @@
 
   {% include 'zipline_app/blotter/concealed/_extras.html' %}
 
-  {% if filter_account is not None %}
-  <div class='alert alert-default'>
+  {% if filter_account is not None or filter_asset is not None %}
+  <div class='row alert'>
     <b>
-    Filtered for account
-    <a href="{% url 'zipline_app:accounts-detail' filter_account.id %}">
-      {{filter_account.account_symbol}}
-    </a>:
-    {{filter_account.account_name}}
-    &nbsp;
-    <a href='{% url "zipline_app:blotter-concealed" %}{% if sort %}?sort={{sort}}{% endif %}{% if filter_asset %}&filter_asset={{filter_asset}}{% endif %}'>
-      <span class='glyphicon glyphicon-remove'></span>
-    </a>
+    Filtered for:
+    {% if filter_account is not None %}
+    <span class='btn btn-default'>
+      account
+      <a href="{% url 'zipline_app:accounts-detail' filter_account.id %}" title="Account details">
+        {{filter_account.account_symbol}}
+      </a>:
+      {{filter_account.account_name}}
+      &nbsp;
+      <a href='{% url "zipline_app:blotter-concealed" %}{% if sort %}?sort={{sort}}{% endif %}{% if filter_asset %}&asset={{filter_asset.id}}{% endif %}' title="Remove filter">
+        <span class='glyphicon glyphicon-remove'></span>
+      </a>
+    </span>
+    {% endif %}
+
+    {% if filter_asset is not None %}
+    <span class='btn btn-default'>
+      asset
+      <a href="{% url 'zipline_app:assets-detail' filter_asset.id %}" title="Asset details">
+        {{filter_asset.asset_symbol}}
+      </a>:
+      {{filter_asset.asset_name}}
+      &nbsp;
+      <a href='{% url "zipline_app:blotter-concealed" %}{% if sort %}?sort={{sort}}{% endif %}{% if filter_account %}&account={{filter_account.id}}{% endif %}' title="Remove filter">
+        <span class='glyphicon glyphicon-remove'></span>
+      </a>
+    </span>
+    {% endif %}
     </b>
   </div>
   {% endif %}
 
-  {% if filter_asset is not None %}
-  <div class='alert alert-default'>
-    <b>
-    Filtered for asset
-    <a href="{% url 'zipline_app:assets-detail' filter_asset.id %}">
-      {{filter_asset.asset_symbol}}
-    </a>:
-    {{filter_asset.asset_name}}
-    &nbsp;
-    <a href='{% url "zipline_app:blotter-concealed" %}{% if sort %}?sort={{sort}}{% endif %}{% if filter_account %}&filter_account={{filter_account}}{% endif %}'>
-      <span class='glyphicon glyphicon-remove'></span>
-    </a>
-    </b>
-  </div>
-  {% endif %}
-
-  <div>
-
-      <div class="row text-center">
-        <div class="col-xs-1 text-right">
-          {% include 'zipline_app/blotter/concealed/_sortable.html' with field_name='Time' field_sort='-pub_date' field_direction='up' %}
-        </div>
-        <div class="col-xs-1"><em>Placed by</em></div>
-        <div class="col-xs-1"><em>Given by</em></div>
-        <div class="col-xs-2">
-          {% include 'zipline_app/blotter/concealed/_sortable.html' with field_name='Client' field_sort='account__account_name' field_direction='down' %}
-        </div>
-        <div class="col-xs-1"><em>Qty</em></div>
-        <div class="col-xs-3">
-          {% include 'zipline_app/blotter/concealed/_sortable.html' with field_name='Security' field_sort='asset__asset_name' field_direction='down' %}
-        </div>
-        <div class="col-xs-1"><em>Price</em></div>
-        <div class="col-xs-2">
-          <div class='row'>
-            <div class='col-xs-4'><em>Order key</em></div>
-            <div class="col-xs-6"><em>Status</em></div>
-          </div>
+    <div class="row text-center">
+      <div class="col-xs-1 text-right">
+        {% include 'zipline_app/blotter/concealed/_sortable.html' with field_name='Time' field_sort='-pub_date' field_direction='up' %}
+      </div>
+      <div class="col-xs-1"><em>Placed by</em></div>
+      <div class="col-xs-1"><em>Given by</em></div>
+      <div class="col-xs-2">
+        {% include 'zipline_app/blotter/concealed/_sortable.html' with field_name='Client' field_sort='account__account_name' field_direction='down' %}
+      </div>
+      <div class="col-xs-1"><em>Qty</em></div>
+      <div class="col-xs-3">
+        {% include 'zipline_app/blotter/concealed/_sortable.html' with field_name='Security' field_sort='asset__asset_name' field_direction='down' %}
+      </div>
+      <div class="col-xs-1"><em>Price</em></div>
+      <div class="col-xs-2">
+        <div class='row'>
+          <div class='col-xs-4'><em>Order key</em></div>
+          <div class="col-xs-6"><em>Status</em></div>
         </div>
       </div>
-    </em>
+    </div>
 
     {% for order in latest_order_list %}
 
