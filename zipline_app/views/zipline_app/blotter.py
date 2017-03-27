@@ -46,15 +46,18 @@ class BlotterBaseView(generic.ListView):
 
         return context
 
+    def get_sort(self):
+      return self.request.GET.get("sort", "-pub_date")
+
     def get_orders(self):
       return Order.objects.filter(
             pub_date__lte=timezone.now()
-        ).order_by('-pub_date')#[:5]
+        ).order_by(self.get_sort())#[:5]
 
     def get_fills(self):
       return Fill.objects.filter(
           pub_date__lte=timezone.now()
-      ).order_by('-pub_date')#[:5]
+      ).order_by(self.get_sort())#[:5]
 
     def fills_required_per_asset(self):
       fills = {}
@@ -119,6 +122,10 @@ class BlotterSideBySideView(BlotterBaseView):
 class BlotterConcealedView(BlotterBaseView):
     template_name = 'zipline_app/blotter/concealed/index.html'
     source="concealed"
+    def get_context_data(self, *args, **kwargs):
+        context = super(BlotterConcealedView, self).get_context_data(*args, **kwargs)
+        context["sort"] = self.get_sort()
+        return context
 
 class BlotterEngineView(BlotterBaseView):
     template_name = 'zipline_app/blotter/engine.html'

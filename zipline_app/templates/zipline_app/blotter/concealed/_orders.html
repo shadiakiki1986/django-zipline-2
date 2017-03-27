@@ -20,7 +20,7 @@
   </div>
 
   <div class="col-xs-1">
-      {% ifchanged order.pub_date.date %}
+      {% ifchanged  order.user.username order.pub_date.date %}
       {{order.user.username}}
       {% endifchanged %}
   </div>
@@ -30,7 +30,7 @@
   </div>
 
   <div class="col-xs-2">
-    {% ifchanged order.account %}
+    {% ifchanged order.account order.pub_date.date %}
       <a href="{% url 'zipline_app:accounts-detail' order.account.id %}">
         {{order.account.account_symbol}}
       </a>
@@ -50,9 +50,11 @@
   </div>
 
   <div class="col-xs-3">
+    {% ifchanged order.asset order.pub_date.date %}
     <a href="{% url 'zipline_app:assets-detail' order.asset.id %}">
       {{order.asset.asset_symbol}}
     </a>: {{order.asset.asset_name}}
+    {% endifchanged %}
   </div>
 
   <div class="col-xs-1 text-right">{{order.avgPrice|floatformat:"2"|intcomma}}</div>
