@@ -63,22 +63,20 @@
           <span class="glyphicon glyphicon-search"></span>
         </a>
         <div id="search-asset-div">
-          {% bootstrap_field field=order_form.asset layout='horizontal' %}
+          {% bootstrap_field field=order_form.asset layout='inline' %}
         </div>
         <script type="text/javascript">
+          $("#search-asset-div").hide();
           $("#search-asset-btn").click(function() {
             $("#search-asset-div").toggle();
+            return false;
           });
-          $("#search-asset-div select2").change(function() {
+          $("#search-asset-div select").on("select2:select", function() {
             // Change URL parameters
             // http://stackoverflow.com/a/41662783/4126114
             const searchParams = new URLSearchParams(window.location.search);
             searchParams.set('asset', $(this).val());
-//            gotourl = window.location.href+"?asset="+$(this).val()
-//                      {% if sort %}+"&sort={{sort}}"{% endif %}
-//                      {% if filter_account %}+"&account={{filter_account.id}}"{% endif %}
-//            ;
-//            window.location.href = gotourl;
+            window.location.search = searchParams.toString();
           });
         </script>
       </div>
