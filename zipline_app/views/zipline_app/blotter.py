@@ -46,10 +46,11 @@ class BlotterBaseView(generic.ListView):
 
         return context
 
+    def get_sort(self):
+      return self.request.GET.get("sort", "-pub_date")
+
     def order_by(self, queryset):
-      sort = self.request.GET.get("sort", "-pub_date")
-      queryset = queryset.order_by(sort)
-      return queryset
+      return queryset.order_by(self.get_sort())
 
     def filter_account(self, queryset):
       account = self.request.GET.get("account", None)
