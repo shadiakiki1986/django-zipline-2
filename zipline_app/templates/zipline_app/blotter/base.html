@@ -2,17 +2,18 @@
 
 {% block content %}
  {% include 'zipline_app/blotter/_create_modals.html' %}
-
   <div class='row'>
     <div class='pull-right btn-group'>
       <button class='btn btn-default' data-toggle="modal" data-target="#orders-new">
         Order
         <span class="glyphicon glyphicon-plus"></span>
       </button>
+      {% if source != 'blotter-concealed' %}
       <button class='btn btn-default' href="#" data-toggle="modal" data-target="#fills-new">
         Fill
         <span class="glyphicon glyphicon-plus"></span>
       </button>
+      {% endif %}
       <div class="btn-group" role="group" aria-label="view">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           View

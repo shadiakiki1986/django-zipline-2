@@ -37,3 +37,8 @@ class BlotterConcealedViewsTests(TestCase):
     self.assertContains(response, "short order")
     self.assertNotContains(response, "test fill long")
     self.assertNotContains(response, "test fill short")
+
+  def test_no_fill_create_button(self):
+    url = reverse('zipline_app:blotter-concealed')
+    response = self.client.get(url, follow=True)
+    self.assertNotContains(response, 'data-target="#fills-new"')

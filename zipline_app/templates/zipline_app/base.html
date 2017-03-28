@@ -45,11 +45,10 @@
             <li><a href="{% url 'zipline_app:fills-list' %}">Fills</a></li>
             <li><a href="{% url 'admin:index' %}">Admin</a></li>
             {% if request.user.username %}
-            <li>Logged in as {{request.user.username}}</li>
             <li>
               <form action="{% url 'zipline_app:logout' %}" class='form'>
                 <input type="hidden" name="next" value="{% url 'zipline_app:index' %}">
-                <button type="submit" class='btn btn-default'>Log out</button>
+                <button type="submit" class='btn btn-default'>Log out from {{request.user.username}}</button>
               </form>
             </li>
             {% endif %}

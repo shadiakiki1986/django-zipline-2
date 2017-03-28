@@ -56,7 +56,13 @@
 
   <div class="col-xs-1 text-right">
     {% if order.order_type == "M" %}
-    <span title="Average price">{{order.avgPrice|floatformat:"2"|intcomma}}</span>
+      {% if order.filled == 0 %}
+        <span>Market order</span>
+      {% else %}
+        <span title="{% if order.dedicated_fill is None %}Average price{% else %}Market price{% endif %}">
+          {{order.avgPrice|floatformat:"2"|intcomma}}
+        </span>
+      {% endif %}
     {% else %}
     <span title="Limit price">{{order.limit_price|floatformat:"2"|intcomma}}</span>
     {% endif %}
@@ -95,7 +101,7 @@
         <div class='row text-right'>
           {{order.filled|intcomma}} / {{order.amount_signed}}
 
-          <abbr title="Close order #{{order.id}}">
+          <abbr title="Fill order #{{order.id}}">
             <button
               type="button"
               class="btn btn-xs fill-from-order"
