@@ -19,6 +19,7 @@ class FillForm(forms.ModelForm):
     }
 
 class OrderForm(forms.ModelForm):
+  source=forms.CharField(required=False)
   class Meta:
     model=Order
     fields = [
