@@ -12,39 +12,74 @@
 
   {% include 'zipline_app/blotter/concealed/_extras.html' %}
 
-  {% if filter_account is not None or filter_asset is not None %}
+  {% if sort is not None or filter_account is not None or filter_asset is not None %}
   <div class='row alert'>
     <b>
-    Filtered for:
-    {% if filter_account is not None %}
-    <span class='btn btn-default'>
-      account
-      <a href="{% url 'zipline_app:accounts-detail' filter_account.id %}" title="Account details">
-        {{filter_account.account_symbol}}
-      </a>:
-      {{filter_account.account_name}}
+
+    {% if sort is not None and sort != '-pub_date' %}
+      Sorted by:
+      <span class='btn btn-default'>
+        {% if sort == 'account__account_name' %}
+        account
+        {% else %}
+          {% if sort == 'asset__asset_name' %}
+          asset
+          {% else %}
+          {{sort}}
+          {% endif %}
+        {% endif %}
+        &nbsp;
+        <a href='#' name='delete-param' data-param="sort" title="Remove sort">
+          <span class='glyphicon glyphicon-remove'></span>
+        </a>
+      </span>
       &nbsp;
-      <a href='{% url "zipline_app:blotter-concealed" %}{% if sort %}?sort={{sort}}{% endif %}{% if filter_asset %}&asset={{filter_asset.id}}{% endif %}' title="Remove filter">
-        <span class='glyphicon glyphicon-remove'></span>
-      </a>
-    </span>
     {% endif %}
 
-    {% if filter_asset is not None %}
-    <span class='btn btn-default'>
-      asset
-      <a href="{% url 'zipline_app:assets-detail' filter_asset.id %}" title="Asset details">
-        {{filter_asset.asset_symbol}}
-      </a>:
-      {{filter_asset.asset_name}}
-      &nbsp;
-      <a href='{% url "zipline_app:blotter-concealed" %}{% if sort %}?sort={{sort}}{% endif %}{% if filter_account %}&account={{filter_account.id}}{% endif %}' title="Remove filter">
-        <span class='glyphicon glyphicon-remove'></span>
-      </a>
-    </span>
+    {% if filter_account is not None or filter_asset is not None %}
+      Filtered for:
+      {% if filter_account is not None %}
+      <span class='btn btn-default'>
+        account
+        <a href="{% url 'zipline_app:accounts-detail' filter_account.id %}" title="Account details">
+          {{filter_account.account_symbol}}
+        </a>:
+        {{filter_account.account_name}}
+        &nbsp;
+        <a href='#' name="delete-param" data-param="account" title="Remove filter">
+          <span class='glyphicon glyphicon-remove'></span>
+        </a>
+      </span>
+      {% endif %}
+
+      {% if filter_asset is not None %}
+      <span class='btn btn-default'>
+        asset
+        <a href="{% url 'zipline_app:assets-detail' filter_asset.id %}" title="Asset details">
+          {{filter_asset.asset_symbol}}
+        </a>:
+        {{filter_asset.asset_name}}
+        &nbsp;
+        <a href='#' name='delete-param' data-param="asset" title="Remove sort">
+          <span class='glyphicon glyphicon-remove'></span>
+        </a>
+      </span>
+      {% endif %}
     {% endif %}
+
     </b>
   </div>
+
+  <script type="text/javascript">
+    $("a[name='delete-param']").click(function() {
+      // Mozilla URLSearchParams
+      // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
+      const searchParams = new URLSearchParams(window.location.search);
+      searchParams.delete($(this).data("param"));
+      window.location.search = searchParams.toString();
+      return false;
+    });
+  </script>
   {% endif %}
 
     <div class="row text-center">
@@ -73,6 +108,8 @@
             $("#search-"+type+"-div select").on("select2:select", function() {
               // Change URL parameters
               // http://stackoverflow.com/a/41662783/4126114
+              // Mozilla URLSearchParams
+              // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
               const searchParams = new URLSearchParams(window.location.search);
               searchParams.set(type, $(this).val());
               window.location.search = searchParams.toString();
@@ -122,5 +159,6 @@
     {% include 'zipline_app/blotter/concealed/_orders_js.html' %}
 
   </div>
+  <br/>
 
 {% endblock %}
