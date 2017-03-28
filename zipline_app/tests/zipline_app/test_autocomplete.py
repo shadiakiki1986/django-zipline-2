@@ -13,8 +13,8 @@ class AutoCompletAssetTests(TestCase):
 
     url = reverse('zipline_app:autocomplete-asset')
     response = self.client.get(url, {'term':'asset1'}, follow=True)
-    self.assertContains(response, "asset1 exchange")
-    self.assertNotContains(response, "asset2 exchange")
+    self.assertContains(response, "asset1 name")
+    self.assertNotContains(response, "asset2 name")
 
     acc1 = create_account(symbol="TEST01")
 

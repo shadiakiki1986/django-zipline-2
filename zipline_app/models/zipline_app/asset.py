@@ -12,7 +12,7 @@ class Asset(models.Model):
     asset_name = models.CharField(max_length=200)
 
     def __str__(self):
-        return "%s, %s, %s" % (self.asset_symbol, self.asset_exchange, self.asset_name)
+        return "%s: %s" % (self.asset_symbol, self.asset_name)
 
     def str(self):
       return self.__str__()
