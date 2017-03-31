@@ -2,7 +2,7 @@ from django.test import TestCase
 from .test_zipline_app import create_asset, a1, create_account, create_fill, create_order
 from django.urls import reverse
 from ...utils import myTestLogin
-from ...models.zipline_app.side import LONG
+from ...models.zipline_app.side import BUY
 
 class AssetViewsTests(TestCase):
     def setUp(self):
@@ -35,7 +35,7 @@ class AssetModelTests(TestCase):
   def test_delete_fail(self):
     acc1 = create_account("test acc")
     a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-    o1 = create_order(order_text="test?",days=-1, asset=a1a, order_side=LONG, amount_unsigned=10, account=acc1)
+    o1 = create_order(order_text="test?",days=-1, asset=a1a, order_side=BUY, amount_unsigned=10, account=acc1)
 
     with self.assertRaises(ValueError):
       a1a.delete()

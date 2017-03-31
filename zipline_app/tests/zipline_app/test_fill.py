@@ -2,7 +2,7 @@ from django.test import TestCase
 from .test_zipline_app import create_fill, create_asset, a1, create_order, create_account, a2
 from django.urls import reverse
 from ...models.zipline_app.fill import Fill
-from ...models.zipline_app.side import LONG, SHORT
+from ...models.zipline_app.side import BUY, SHORT
 from ...models.zipline_app.zipline_app import ZlModel
 from django.core.exceptions import ValidationError
 from ...utils import myTestLogin
@@ -28,28 +28,28 @@ class FillModelTests(TestCase):
     self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
 
   def test_clean_invalid_dedicated_order_qty(self):
-    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=LONG, amount_unsigned=10,   account=self.acc                          )
+    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, amount_unsigned=10,   account=self.acc                          )
     with self.assertRaises(ValidationError):
-      f1 = create_fill(    fill_text="test fill",     days=-1, asset=self.a1a, fill_side=LONG,  fill_qty_unsigned=20, fill_price=2,     dedicated_to_order=order)
+      f1 = create_fill(    fill_text="test fill",     days=-1, asset=self.a1a, fill_side=BUY,  fill_qty_unsigned=20, fill_price=2,     dedicated_to_order=order)
 
   def test_clean_invalid_dedicated_order_side(self):
-    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=LONG, amount_unsigned=10,   account=self.acc                          )
+    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, amount_unsigned=10,   account=self.acc                          )
     with self.assertRaises(ValidationError):
       f1 = create_fill(    fill_text="test fill",     days=-1, asset=self.a1a, fill_side=SHORT,  fill_qty_unsigned=10, fill_price=2,     dedicated_to_order=order)
 
   def test_clean_invalid_dedicated_order_asset(self):
-    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=LONG, amount_unsigned=10,   account=self.acc                          )
+    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, amount_unsigned=10,   account=self.acc                          )
     a2a = create_asset(a2["symbol"],a2["exchange"],a2["name"])
     with self.assertRaises(ValidationError):
-      f1 = create_fill(    fill_text="test fill",     days=-1, asset=a2a, fill_side=LONG,  fill_qty_unsigned=10, fill_price=2,     dedicated_to_order=order)
+      f1 = create_fill(    fill_text="test fill",     days=-1, asset=a2a, fill_side=BUY,  fill_qty_unsigned=10, fill_price=2,     dedicated_to_order=order)
 
   def test_clean_invalid_dedicated_order_pub_date(self):
-    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=LONG, amount_unsigned=10,   account=self.acc                          )
+    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, amount_unsigned=10,   account=self.acc                          )
     with self.assertRaises(ValidationError):
-      f1 = create_fill(    fill_text="test fill",     days=-30, asset=self.a1a, fill_side=LONG,  fill_qty_unsigned=10, fill_price=2,     dedicated_to_order=order)
+      f1 = create_fill(    fill_text="test fill",     days=-30, asset=self.a1a, fill_side=BUY,  fill_qty_unsigned=10, fill_price=2,     dedicated_to_order=order)
 
   def test_clean_valid_dedicated_order(self):
-    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=LONG, amount_unsigned=10,   account=self.acc                          )
+    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, amount_unsigned=10,   account=self.acc                          )
     f1 = create_fill_from_order( order=order, fill_text="test fill", fill_price=22, tt_order_key="test key")
 
   # two opposite fills  within the same minute with the same quantities
@@ -58,15 +58,15 @@ class FillModelTests(TestCase):
   # grouped_close = grouped.apply(lambda g: numpy.average(g['close'],weights=g['volume']))
   def test_two_opposite_fills_same_minute(self):
     qty = 10
-    o_l = create_order(order_text="long order",  days=-1,  asset=self.a1a, order_side=LONG,  amount_unsigned=qty,   account=self.acc)
+    o_l = create_order(order_text="buy order",  days=-1,  asset=self.a1a, order_side=BUY,  amount_unsigned=qty,   account=self.acc)
     o_s = create_order(order_text="short order", days=-1,  asset=self.a1a, order_side=SHORT, amount_unsigned=qty,   account=self.acc)
-    f_l = create_fill_from_order(order=o_l, fill_text="test fill long", fill_price=2)
+    f_l = create_fill_from_order(order=o_l, fill_text="test fill buy", fill_price=2)
     f_s = create_fill_from_order(order=o_s, fill_text="test fill short", fill_price=2)
 
   def test_dedicated_fill_with_earlier_open_fill(self):
-    o1 = create_order(order_text="random order 1", days=-1,  asset=self.a1a, order_side=LONG, amount_unsigned=10,   account=self.acc)
-    o2 = create_order(order_text="random order 2", days=-2,  asset=self.a1a, order_side=LONG, amount_unsigned=20,   account=self.acc)
-    o3 = create_order(order_text="random order 3", days=-3,  asset=self.a1a, order_side=LONG, amount_unsigned=30,   account=self.acc)
+    o1 = create_order(order_text="random order 1", days=-1,  asset=self.a1a, order_side=BUY, amount_unsigned=10,   account=self.acc)
+    o2 = create_order(order_text="random order 2", days=-2,  asset=self.a1a, order_side=BUY, amount_unsigned=20,   account=self.acc)
+    o3 = create_order(order_text="random order 3", days=-3,  asset=self.a1a, order_side=BUY, amount_unsigned=30,   account=self.acc)
     f1 = create_fill_from_order(order=o1, fill_price=1, fill_text="fill 1")
 
     self.assertEqual(o1.amount_signed(), o1.filled())
@@ -80,14 +80,14 @@ class FillModelTests(TestCase):
     self.assertTrue(o1.id in ZlModel.zl_open_keyed)
 
   def test_dedicated_fill_delete(self):
-    o1 = create_order(order_text="random order 1", days=-1,  asset=self.a1a, order_side=LONG, amount_unsigned=10,   account=self.acc)
+    o1 = create_order(order_text="random order 1", days=-1,  asset=self.a1a, order_side=BUY, amount_unsigned=10,   account=self.acc)
     f1 = create_fill_from_order(order=o1, fill_price=1, fill_text="fill 1")
     f1.delete()
 
   def test_fill_with_user(self):
     password='bla'
     user = User.objects.create_user(username='john', email='jlennon@beatles.com', password=password)
-    f1 = create_fill(days=-1, asset=self.a1a, fill_side=LONG, fill_qty_unsigned=1, fill_price=1, fill_text="fill 1", user=user)
+    f1 = create_fill(days=-1, asset=self.a1a, fill_side=BUY, fill_qty_unsigned=1, fill_price=1, fill_text="fill 1", user=user)
 
 class FillViewsTests(TestCase):
     def setUp(self):
@@ -105,7 +105,7 @@ class FillViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_delete(self):
-        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=LONG, fill_qty_unsigned=20, fill_price=2)
+        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=BUY, fill_qty_unsigned=20, fill_price=2)
         url = reverse('zipline_app:fills-delete', args=(f1.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -114,26 +114,26 @@ class FillViewsTests(TestCase):
         time = '2015-01-01 00:00:00' #timezone.now() + datetime.timedelta(days=-0.5)
         url = reverse('zipline_app:fills-new')
         largeqty=100000000000000000000000000000
-        response = self.client.post(url, {'pub_date':time, 'asset':self.a1a.id, 'fill_side': LONG, 'fill_qty_unsigned':largeqty, 'fill_price':1})
+        response = self.client.post(url, {'pub_date':time, 'asset':self.a1a.id, 'fill_side': BUY, 'fill_qty_unsigned':largeqty, 'fill_price':1})
         self.assertContains(response,"Ensure this value is less than or equal to")
-        response = self.client.post(url, {'pub_date':time, 'asset':self.a1a.id, 'fill_side': LONG, 'fill_qty_unsigned':1, 'fill_price':largeqty})
+        response = self.client.post(url, {'pub_date':time, 'asset':self.a1a.id, 'fill_side': BUY, 'fill_qty_unsigned':1, 'fill_price':largeqty})
         self.assertContains(response,"Ensure this value is less than or equal to")
 
     def test_update_get(self):
-        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=LONG, fill_qty_unsigned=20, fill_price=2)
+        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=BUY, fill_qty_unsigned=20, fill_price=2)
         url = reverse('zipline_app:fills-update', args=(f1.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_post_wo_tt_order_key(self):
-        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=LONG, fill_qty_unsigned=20, fill_price=2)
+        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=BUY, fill_qty_unsigned=20, fill_price=2)
         url = reverse('zipline_app:fills-update', args=(f1.id,))
         f2={'pub_date':f1.pub_date, 'asset':f1.asset.id, 'fill_side': f1.fill_side, 'fill_qty_unsigned':4444, 'fill_price':f1.fill_price}
         response = self.client.post(url,f2)
         self.assertContains(response,"4444")
 
     def test_update_post_wi_tt_order_key(self):
-        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=LONG, fill_qty_unsigned=20, fill_price=2, tt_order_key='bla key')
+        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=BUY, fill_qty_unsigned=20, fill_price=2, tt_order_key='bla key')
         url = reverse('zipline_app:fills-update', args=(f1.id,))
         f1={'pub_date':f1.pub_date, 'asset':f1.asset.id, 'fill_side': f1.fill_side, 'fill_qty_unsigned':f1.fill_qty_unsigned, 'fill_price':f1.fill_price, 'tt_order_key':'foo key'}
         response = self.client.post(url,f1)
@@ -142,20 +142,20 @@ class FillViewsTests(TestCase):
     def test_new_fill_zero_qty(self):
         url = reverse('zipline_app:fills-new')
         time = '2015-01-01 06:00:00'
-        f1={'pub_date':time, 'asset':self.a1a.id, 'fill_side': LONG, 'fill_qty_unsigned':0, 'fill_price':1}
+        f1={'pub_date':time, 'asset':self.a1a.id, 'fill_side': BUY, 'fill_qty_unsigned':0, 'fill_price':1}
         response = self.client.post(url,f1)
         self.assertContains(response,"Quantity 0 is not allowed")
 
     def test_new_fill_negative_price(self):
         url = reverse('zipline_app:fills-new')
         time = '2015-01-01 06:00:00'
-        f1={'pub_date':time, 'asset':self.a1a.id, 'fill_side': LONG, 'fill_qty_unsigned':1, 'fill_price':-1}
+        f1={'pub_date':time, 'asset':self.a1a.id, 'fill_side': BUY, 'fill_qty_unsigned':1, 'fill_price':-1}
         response = self.client.post(url,f1)
         self.assertContains(response,"Enter a positive number.")
 
     def test_new_fill_dedicated_to_order(self):
         acc = create_account("test acc")
-        o1 = create_order(order_text="test", days=-10, asset=self.a1a, order_side=LONG, amount_unsigned=10, account=acc)
+        o1 = create_order(order_text="test", days=-10, asset=self.a1a, order_side=BUY, amount_unsigned=10, account=acc)
         o1.clean()
         o1.save()
 
@@ -180,7 +180,7 @@ class FillViewsTests(TestCase):
     def test_new_fill_user_not_dedicated(self):
         url = reverse('zipline_app:fills-new')
         time = '2015-01-01 06:00:00'
-        f1={'pub_date':time, 'asset':self.a1a.id, 'fill_side': LONG, 'fill_qty_unsigned':1, 'fill_price':1, 'dedicated_to_order':'', 'fill_text':'random fill'}
+        f1={'pub_date':time, 'asset':self.a1a.id, 'fill_side': BUY, 'fill_qty_unsigned':1, 'fill_price':1, 'dedicated_to_order':'', 'fill_text':'random fill'}
         response = self.client.post(url,f1,follow=True)
         self.assertNotContains(response,'has-error')
         # random fill shows up once in "successfully created..." and once in table body

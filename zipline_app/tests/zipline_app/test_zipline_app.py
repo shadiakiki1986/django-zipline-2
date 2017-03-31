@@ -6,7 +6,7 @@ from time import sleep
 import pandas as pd
 from unittest import skip
 from ...models.zipline_app.zipline_app import Order, ZlModel, Fill, Account, Asset
-from ...models.zipline_app.side import LONG
+from ...models.zipline_app.side import BUY
 from ...utils import myTestLogin, chopSeconds
 
 a1 = {
@@ -78,7 +78,7 @@ class OrderMethodTests(TestCase):
         was_published_recently() should return False for orders whose
         pub_date is in the future.
         """
-        future_order = create_order(order_text="test?",days=30, asset=self.a1a, order_side=LONG, amount_unsigned=10, account=self.acc1)
+        future_order = create_order(order_text="test?",days=30, asset=self.a1a, order_side=BUY, amount_unsigned=10, account=self.acc1)
         self.assertIs(future_order.was_published_recently(), False)
 
     def test_was_published_recently_with_old_order(self):
@@ -86,7 +86,7 @@ class OrderMethodTests(TestCase):
         was_published_recently() should return False for orders whose
         pub_date is older than 1 day.
         """
-        old_order = create_order(order_text="test?",days=-30, asset=self.a1a, order_side=LONG, amount_unsigned=10, account=self.acc1)
+        old_order = create_order(order_text="test?",days=-30, asset=self.a1a, order_side=BUY, amount_unsigned=10, account=self.acc1)
         self.assertIs(old_order.was_published_recently(), False)
 
     def test_was_published_recently_with_recent_order(self):
@@ -94,11 +94,11 @@ class OrderMethodTests(TestCase):
         was_published_recently() should return True for orders whose
         pub_date is within the last day.
         """
-        recent_order = create_order(order_text="test?",days=-0.5, asset=self.a1a, order_side=LONG, amount_unsigned=10, account=self.acc1)
+        recent_order = create_order(order_text="test?",days=-0.5, asset=self.a1a, order_side=BUY, amount_unsigned=10, account=self.acc1)
         self.assertIs(recent_order.was_published_recently(), True)
 
     def test_avg_price(self):
-        o = create_order(order_text="test?",days=-0.5, asset=self.a1a, order_side=LONG, amount_unsigned=10, account=self.acc1)
+        o = create_order(order_text="test?",days=-0.5, asset=self.a1a, order_side=BUY, amount_unsigned=10, account=self.acc1)
         ZlModel.zl_closed_keyed={o.id: {}}
         ZlModel.zl_txns=[
           {"order_id":o.id, "price":1, "amount":1},
@@ -107,7 +107,7 @@ class OrderMethodTests(TestCase):
         self.assertEqual(o.avgPrice(), 1)
 
     def test_asset_to_dict(self):
-        o = create_order(order_text="test?",days=-0.5, asset=self.a1a, order_side=LONG, amount_unsigned=10, account=self.acc1)
+        o = create_order(order_text="test?",days=-0.5, asset=self.a1a, order_side=BUY, amount_unsigned=10, account=self.acc1)
         self.assertEqual(o.asset.to_dict(), a1)
 
 class OrderViewTests(TestCase):
@@ -133,11 +133,11 @@ class OrderViewTests(TestCase):
         Orders with a pub_date in the past should be displayed on the
         blotter_engine page.
         """
-        create_order(order_text="Past order.", days=-30, asset=self.asset, order_side=LONG, amount_unsigned=10, account=self.acc1)
+        create_order(order_text="Past order.", days=-30, asset=self.asset, order_side=BUY, amount_unsigned=10, account=self.acc1)
         response = self.client.get(reverse('zipline_app:blotter-engine'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
-            ['<Order: A1, L, 10 (TEST01, Past order.)>']
+            ['<Order: A1, B, 10 (TEST01, Past order.)>']
         )
 
     def test_blotter_engine_view_with_a_future_order(self):
@@ -145,7 +145,7 @@ class OrderViewTests(TestCase):
         Orders with a pub_date in the future should not be displayed on
         the blotter_engine page.
         """
-        create_order(order_text="Future order.", days=30, asset=self.asset, order_side=LONG, amount_unsigned=10, account=self.acc1)
+        create_order(order_text="Future order.", days=30, asset=self.asset, order_side=BUY, amount_unsigned=10, account=self.acc1)
         response = self.client.get(reverse('zipline_app:blotter-engine'))
         self.assertContains(response, "No orders are available.")
         self.assertQuerysetEqual(response.context['latest_order_list'], [])
@@ -155,24 +155,24 @@ class OrderViewTests(TestCase):
         Even if both past and future orders exist, only past orders
         should be displayed.
         """
-        create_order(order_text="Past order.", days=-30, asset=self.asset, order_side=LONG, amount_unsigned=10, account=self.acc1)
-        create_order(order_text="Future order.", days=30, asset=self.asset, order_side=LONG, amount_unsigned=10, account=self.acc1)
+        create_order(order_text="Past order.", days=-30, asset=self.asset, order_side=BUY, amount_unsigned=10, account=self.acc1)
+        create_order(order_text="Future order.", days=30, asset=self.asset, order_side=BUY, amount_unsigned=10, account=self.acc1)
         response = self.client.get(reverse('zipline_app:blotter-engine'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
-            ['<Order: A1, L, 10 (TEST01, Past order.)>']
+            ['<Order: A1, B, 10 (TEST01, Past order.)>']
         )
 
     def test_blotter_engine_view_with_two_past_orders(self):
         """
         The orders blotter_engine page may display multiple orders.
         """
-        create_order(order_text="Past order 1.", days=-30, asset=self.asset, order_side=LONG, amount_unsigned=10, account=self.acc1)
-        create_order(order_text="Past order 2.", days=-5, asset=self.asset, order_side=LONG, amount_unsigned=10, account=self.acc1)
+        create_order(order_text="Past order 1.", days=-30, asset=self.asset, order_side=BUY, amount_unsigned=10, account=self.acc1)
+        create_order(order_text="Past order 2.", days=-5, asset=self.asset, order_side=BUY, amount_unsigned=10, account=self.acc1)
         response = self.client.get(reverse('zipline_app:blotter-engine'))
         self.assertQuerysetEqual(
             response.context['latest_order_list'],
-            ['<Order: A1, L, 10 (TEST01, Past order 2.)>', '<Order: A1, L, 10 (TEST01, Past order 1.)>']
+            ['<Order: A1, B, 10 (TEST01, Past order 2.)>', '<Order: A1, B, 10 (TEST01, Past order 1.)>']
         )
 
     def test_index_view_combined_general(self):
@@ -181,10 +181,10 @@ class OrderViewTests(TestCase):
         .. not sure why yet
         .. seems to be solved by sleep 50 ms
         """
-        o1 = create_order(order_text="Past order 1.", days=-30, asset=self.asset, order_side=LONG, amount_unsigned=10, account=self.acc1)
-        o2 = create_order(order_text="Past order 2.", days=-5, asset=self.asset, order_side=LONG, amount_unsigned=10, account=self.acc1)
-        f1 = create_fill(fill_text="test?",days=-30, asset=self.asset, fill_side=LONG, fill_qty_unsigned=20, fill_price=2)
-        f2 = create_fill(fill_text="test?",days=-0.5, asset=self.asset, fill_side=LONG, fill_qty_unsigned=20, fill_price=2)
+        o1 = create_order(order_text="Past order 1.", days=-30, asset=self.asset, order_side=BUY, amount_unsigned=10, account=self.acc1)
+        o2 = create_order(order_text="Past order 2.", days=-5, asset=self.asset, order_side=BUY, amount_unsigned=10, account=self.acc1)
+        f1 = create_fill(fill_text="test?",days=-30, asset=self.asset, fill_side=BUY, fill_qty_unsigned=20, fill_price=2)
+        f2 = create_fill(fill_text="test?",days=-0.5, asset=self.asset, fill_side=BUY, fill_qty_unsigned=20, fill_price=2)
         sleep(0.05)
         response = self.client.get(reverse('zipline_app:blotter-sideBySide'))
 
@@ -203,18 +203,18 @@ class OrderViewTests(TestCase):
         self.assertQuerysetEqual(
             pointer['orders'],
             [
-              '<Order: A1, L, 10 (TEST01, Past order 1.)>',
+              '<Order: A1, B, 10 (TEST01, Past order 1.)>',
             ]
         )
         self.assertQuerysetEqual(
             pointer['fills'],
             [
-              '<Fill: A1, L 20, 2.0 (, test?)>',
+              '<Fill: A1, B 20, 2.0 (, test?)>',
             ]
         )
 
     def test_index_unused_fills(self):
-        f1 = create_fill(fill_text="test?",days=-30, asset=self.asset, fill_side=LONG, fill_qty_unsigned=20, fill_price=2)
+        f1 = create_fill(fill_text="test?",days=-30, asset=self.asset, fill_side=BUY, fill_qty_unsigned=20, fill_price=2)
         sleep(0.05)
         response = self.client.get(reverse('zipline_app:blotter-sideBySide'))
         self.assertEqual(len(ZlModel.zl_unused),1)
@@ -224,9 +224,9 @@ class OrderViewTests(TestCase):
         # be careful that with days=0 this test will fail
         # but not because the minute is showing up
         # but because the default field for order pub_date is also timezone.now()
-        o1a = create_order(order_text="test", days=-10, asset=self.asset, order_side=LONG, amount_unsigned=10, account=self.acc1)
-        f1 = create_fill(fill_text="test?",days=-10, asset=self.asset, fill_side=LONG, fill_qty_unsigned=20, fill_price=2)
-        o1b = create_order(order_text="test", days=-9, asset=self.asset, order_side=LONG, amount_unsigned=10, account=self.acc1)
+        o1a = create_order(order_text="test", days=-10, asset=self.asset, order_side=BUY, amount_unsigned=10, account=self.acc1)
+        f1 = create_fill(fill_text="test?",days=-10, asset=self.asset, fill_side=BUY, fill_qty_unsigned=20, fill_price=2)
+        o1b = create_order(order_text="test", days=-9, asset=self.asset, order_side=BUY, amount_unsigned=10, account=self.acc1)
 
         time = o1b.pub_date
         sleep(0.05)
@@ -242,7 +242,7 @@ class OrderViewTests(TestCase):
     def test_index_view_create_delete_order_toggle_django_message(self):
         time = timezone.now()
         url = reverse('zipline_app:orders-new')
-        o1 = {'pub_date':time, 'asset':self.asset.id, 'order_side': LONG, 'amount_unsigned':10, 'account':self.acc1.id}
+        o1 = {'pub_date':time, 'asset':self.asset.id, 'order_side': BUY, 'amount_unsigned':10, 'account':self.acc1.id}
         response = self.client.post(url,o1,follow=True)
 
         messages = list(response.context['messages'])
@@ -250,7 +250,7 @@ class OrderViewTests(TestCase):
 #        o1.delete()
 #        get_assert_contains(self,"Successfully deleted order")
 #
-#        f1 = create_fill(fill_text="test?",days=-30, asset=self.asset, fill_side=LONG, fill_qty_unsigned=20, fill_price=2)
+#        f1 = create_fill(fill_text="test?",days=-30, asset=self.asset, fill_side=BUY, fill_qty_unsigned=20, fill_price=2)
 #        get_assert_contains(self,"Successfully created fill")
 #        f1.delete()
 #        get_assert_contains(self,"Successfully deleted fill")
@@ -262,18 +262,18 @@ class OrderViewTests(TestCase):
 #        get_assert_contains(self,"Successfully created account")
 
     def test_fills_required_per_asset(self):
-        o1 = create_order(order_text="test", days=-10, asset=self.asset, order_side=LONG, amount_unsigned=10, account=self.acc1)
+        o1 = create_order(order_text="test", days=-10, asset=self.asset, order_side=BUY, amount_unsigned=10, account=self.acc1)
         sleep(0.05)
         response = self.client.get(reverse('zipline_app:blotter-sideBySide'))
         self.assertEqual(response.context['fills_required_per_asset'], {self.asset:10})
         self.assertContains(response, "Assets with required fills")
         self.assertContains(response, self.asset.asset_symbol+": 10")
 
-        f1 = create_fill(fill_text="test?",days=-10, asset=self.asset, fill_side=LONG, fill_qty_unsigned=5, fill_price=2)
+        f1 = create_fill(fill_text="test?",days=-10, asset=self.asset, fill_side=BUY, fill_qty_unsigned=5, fill_price=2)
         response = self.client.get(reverse('zipline_app:blotter-sideBySide'))
         self.assertEqual(response.context['fills_required_per_asset'], {self.asset:5})
 
-        f2 = create_fill(fill_text="test?",days=-10, asset=self.asset, fill_side=LONG, fill_qty_unsigned=5, fill_price=2)
+        f2 = create_fill(fill_text="test?",days=-10, asset=self.asset, fill_side=BUY, fill_qty_unsigned=5, fill_price=2)
         response = self.client.get(reverse('zipline_app:blotter-sideBySide'))
         self.assertEqual(response.context['fills_required_per_asset'], {})
         self.assertNotContains(response, "Assets with required fills")

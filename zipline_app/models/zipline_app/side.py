@@ -1,7 +1,7 @@
-LONG = 'L'
+BUY = 'B'
 SHORT = 'S'
 FILL_SIDE_CHOICES = (
-  (LONG, 'Long'),
+  (BUY, 'Buy'),
   (SHORT, 'Short')
 )
 
