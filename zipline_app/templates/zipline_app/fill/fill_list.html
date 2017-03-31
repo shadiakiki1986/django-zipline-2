@@ -24,7 +24,7 @@
       </div>
       <div class="col-xs-2">{{ fill.pub_date|date:"Y-m-d H:i:s" }}</div>
       <div class="col-xs-1"><a href="{% url 'zipline_app:assets-detail' fill.asset.id %}">{{ fill.asset.asset_symbol }}</a></div>
-      <div class="col-xs-1">{{ fill.fill_side}}</div>
+      <div class="col-xs-1">{{ fill.get_fill_side_display}}</div>
       <div class="col-xs-1 text-right">{{ fill.fill_qty_unsigned|intcomma}}</div>
       <div class="col-xs-1 text-right">{{ fill.fill_price }}</div>
       <div class="col-xs-1">{{ fill.tt_order_key}}</div>
