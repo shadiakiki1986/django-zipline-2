@@ -68,8 +68,10 @@ Fill
 </form>
 -->
 
+        {% if request.user.is_authenticated and order.user == request.user %}
+
         <!-- delete with confirmation -->
-        <a href="{% url 'zipline_app:orders-delete' order.id %}">Delete</a>
+        <a href="{% url 'zipline_app:orders-delete' order.id %}" class='btn btn-danger'>Delete</a>
 
         <!-- delete without confirmation
         <form action="{% url 'zipline_app:orders-delete' order.id %}" method="post" class="form">
@@ -78,7 +80,9 @@ Fill
         </form>
         -->
 
-        <a href="{% url 'zipline_app:orders-update' order.id %}">Edit</a>
+        <a href="{% url 'zipline_app:orders-update' order.id %}" class='btn btn-default'>Edit</a>
+
+        {% endif %}
 
 {##########################################}
 <h2>History</h2>

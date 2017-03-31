@@ -89,10 +89,10 @@ class FillModelTests(TestCase):
     user = User.objects.create_user(username='john', email='jlennon@beatles.com', password=password)
     f1 = create_fill(days=-1, asset=self.a1a, fill_side=BUY, fill_qty_unsigned=1, fill_price=1, fill_text="fill 1", user=user)
 
-class FillViewsTests(TestCase):
+class FillGeneralViewsTests(TestCase):
     def setUp(self):
         self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-        myTestLogin(self.client)
+        self.user = myTestLogin(self.client)
 
     def test_list(self):
         url = reverse('zipline_app:fills-list')
@@ -186,3 +186,52 @@ class FillViewsTests(TestCase):
         # random fill shows up once in "successfully created..." and once in table body
         self.assertEqual(b''.join(list(response)).count(b"random fill"),2)
         self.assertEqual(b''.join(list(response)).count(b"john"),2)
+
+def url_permission(test, url, obj_id, expected_r1):
+  url = reverse(url, args=(obj_id,))
+
+  # note that this GET for a fills-delete or orders-delete
+  # redirects to a CONFIRM and hence doesnt delete the fill/order
+  response = test.client.get(url, follow=False)
+  test.assertEqual(response.status_code, expected_r1)
+
+  password='bla'
+  u2 = User.objects.create_user(username='ringo', email='ringo@beatles.com', password=password)
+  test.client.logout()
+  response = test.client.login(username=u2.username, password=password)
+  test.assertEqual(response.status_code, 200)
+
+  response = test.client.get(url, follow=False)
+  test.assertEqual(response.status_code, 403) # permission denied
+
+class FillDetailViewsTests(TestCase):
+  def setUp(self):
+    self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
+    self.user = myTestLogin(self.client)
+
+  def test_detail_edit_del_only_for_owner(self):
+    f1 = create_fill(fill_text="test fill", days=-1, asset=self.a1a, fill_side=SELL,  fill_qty_unsigned=10, fill_price=2, user=self.user)
+
+    url = reverse('zipline_app:fills-detail', args=(f1.id,))
+
+    response = self.client.get(url, follow=True)
+    self.assertContains(response, "Edit")
+    self.assertContains(response, "Delete")
+
+    password='bla'
+    u2 = User.objects.create_user(username='ringo', email='ringo@beatles.com', password=password)
+    self.client.logout()
+    self.client.login(username=u2.username, password=password)
+    self.assertEqual(response.status_code, 200)
+
+    response = self.client.get(url, follow=True)
+    self.assertNotContains(response, "Edit")
+    self.assertNotContains(response, "Delete")
+
+  def test_edit_only_for_owner(self):
+    f1 = create_fill(fill_text="test fill", days=-1, asset=self.a1a, fill_side=SELL,  fill_qty_unsigned=10, fill_price=2, user=self.user)
+    url_permission(self, 'zipline_app:fills-update', f1.id, 200)
+
+  def test_del_only_for_owner(self):
+    f1 = create_fill(fill_text="test fill", days=-1, asset=self.a1a, fill_side=SELL,  fill_qty_unsigned=10, fill_price=2, user=self.user)
+    url_permission(self, 'zipline_app:fills-delete', f1.id, 302)

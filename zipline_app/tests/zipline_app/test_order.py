@@ -6,7 +6,7 @@ from ...models.zipline_app.zipline_app import ZlModel
 from .test_zipline_app import create_asset, create_order, create_account, a1
 from ...models.zipline_app.fill import Fill
 from ...models.zipline_app.side import BUY, SELL, MARKET
-from .test_fill import create_fill_from_order
+from .test_fill import create_fill_from_order, url_permission
 from ...utils import myTestLogin
 from django.contrib.auth.models import User
 
@@ -158,3 +158,31 @@ class OrderDetailViewTests(TestCase):
       order.save()
       response = self.client.get(url, follow=True)
       self.assertContains(response, "Changed order_side from")
+
+    def test_detail_edit_del_only_for_owner(self):
+      o1 = create_order(order_text="test", days=-10, asset=self.a1a, order_side=BUY, amount_unsigned=10, account=self.acc1, user=self.user)
+
+      url = reverse('zipline_app:orders-detail', args=(o1.id,))
+
+      response = self.client.get(url, follow=True)
+      self.assertContains(response, "Edit")
+      self.assertContains(response, "Delete")
+
+      password='bla'
+      u2 = User.objects.create_user(username='ringo', email='ringo@beatles.com', password=password)
+      self.client.logout()
+      self.client.login(username=u2.username, password=password)
+      self.assertEqual(response.status_code, 200)
+
+      response = self.client.get(url, follow=True)
+      self.assertNotContains(response, "Edit")
+      self.assertNotContains(response, "Delete")
+
+
+    def test_edit_only_for_owner(self):
+      o1 = create_order(order_text="test", days=-10, asset=self.a1a, order_side=BUY, amount_unsigned=10, account=self.acc1, user=self.user)
+      url_permission(self, 'zipline_app:orders-update', o1.id, 200)
+
+    def test_del_only_for_owner(self):
+      o1 = create_order(order_text="test", days=-10, asset=self.a1a, order_side=BUY, amount_unsigned=10, account=self.acc1, user=self.user)
+      url_permission(self, 'zipline_app:orders-delete', o1.id, 302)
