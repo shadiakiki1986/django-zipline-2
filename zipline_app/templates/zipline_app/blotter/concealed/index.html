@@ -87,7 +87,6 @@
         {% include 'zipline_app/blotter/concealed/_sortable.html' with field_name='Time' field_sort='-pub_date' field_direction='up' %}
       </div>
       <div class="col-xs-1"><em>Placed by</em></div>
-      <div class="col-xs-1"><em>Given by</em></div>
       <div class="col-xs-2">
         {% include 'zipline_app/blotter/concealed/_sortable.html' with field_name='Client' field_sort='account__account_name' field_direction='down' %}
         <a href="#" id="search-account-btn"><span class="glyphicon glyphicon-search"></span></a>
@@ -120,6 +119,7 @@
         </script>
       </div>
       <div class="col-xs-1"><em>Price</em></div>
+      <div class="col-xs-1"><em>Validity</em></div>
       <div class="col-xs-2">
         <div class='row'>
           <div class='col-xs-4'><em>Order key</em></div>
@@ -141,20 +141,16 @@
         </div>
       {% endifchanged %}
 
-      <div class="row {% if order.filled == order.order_qty_signed %}text-muted{% endif %}">
+      <div class="row {% if order.filled == order.order_qty_signed or order.order_status == 'C' %}text-muted{% endif %}">
 
         {% include 'zipline_app/blotter/concealed/_orders.html' %}
       </div><!-- end row -->
 
+      {% if order.order_text %}
       <div class="row text-muted">
-        <div class="col-xs-6 text-left">{{ order.order_text }}</div>
-        <div class="col-xs-6 text-right">
-          {{order.order_validity}}
-          {% if order.order_validity == 'D' %}
-          ({{order.validity_date}})
-          {% endif %}
-        </div>
+        <div class="col-xs-12 text-left">{{ order.order_text }}</div>
       </div>
+      {% endif %}
 
     {% empty %}
       No orders are available.

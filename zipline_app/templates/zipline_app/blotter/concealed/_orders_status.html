@@ -1,3 +1,5 @@
+{% load humanize %}
+
 {% if order.dedicated_fill is not None %}
 
   <div class='row'>
@@ -13,7 +15,9 @@
   {% if order.filled == order.order_qty_signed %}
     Filled
   {% else %}
+    {% if order.order_status == 'C' and order.filled != 0 %}
     {{order.filled|intcomma}} / {{order.order_qty_signed}}
+    {% endif %}
 
     {% if order.order_status != 'C' %}
       <abbr title="Fill order #{{order.id}}">
@@ -42,7 +46,11 @@
   {% if order.order_status == 'C' %}
     <div class='row text-right'>
     {% if order.filled != order.order_qty_signed %}
+      {% if order.filled != 0 %}
       Partial
+      {% else %}
+      Cancelled
+      {% endif %}
     {% else %}
       Filled yet cancelled!
     {% endif %}

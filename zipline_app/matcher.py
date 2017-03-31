@@ -33,7 +33,8 @@ import zipline.utils.factory as zl_factory
 
 from zipline.utils.calendars import TradingCalendar
 from datetime import time
-from pytz import timezone
+from pytz import timezone as timezone_pytz
+from django.utils import timezone as timezone_django
 
 from zipline.utils.memoize import lazyval
 from pandas.tseries.offsets import CustomBusinessDay
@@ -60,7 +61,7 @@ class AlwaysOpenExchange(TradingCalendar):
 
     @property
     def tz(self):
-        return timezone("UTC")
+        return timezone_pytz("UTC")
 
     @property
     def open_time(self):
@@ -398,12 +399,16 @@ class Matcher:
   #
   # Execution of cancellation policy cancels all
   # https://github.com/quantopian/zipline/blob/3350227f44dcf36b6fe3c509dcc35fe512965183/zipline/finance/blotter.py#L238
-  def _cancel_expired(self, blotter, previous):
-    if previous is None:
-      return
-
+  def _cancel_expired(self, blotter):
     for asset, orders in iteritems(blotter.open_orders):
       for order in orders:
+        # cancel past day orders
+        if timezone_django.now().day != blotter.current_dt.day:
+          if order.validity is not None:
+            if order.validity['type']==ORDER_VALIDITY.DAY:
+              blotter.cancel(order.id)
+              continue
+
         # do not cancel orders not reached yet with the clock
         if order.dt > blotter.current_dt:
           continue
@@ -428,14 +433,12 @@ class Matcher:
     all_closed = []
     all_txns = []
     self._orders2blotter(orders,blotter)
-    previous = None
     for dt in all_minutes:
         #logger.debug("========================")
         dt = pd.Timestamp(dt, tz='utc')
         blotter.set_date(dt)
 
-        self._cancel_expired(blotter, previous)
-        previous = dt
+        self._cancel_expired(blotter)
 
         #self._orders2blotter(orders,blotter)
         #logger.debug("DQ1: %s" % (blotter.current_dt))

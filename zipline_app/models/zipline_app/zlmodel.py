@@ -14,12 +14,12 @@ import logging
 logger = logging.getLogger('zipline_app.models') #__name__)
 
 import json
-from ...matcher import factory as mmm_factory, Matcher as mmm_Matcher
+from ...matcher import factory as mmm_factory, Matcher as mmm_Matcher, ORDER_VALIDITY
 from functools import reduce
 
 from numpy import concatenate
 import pandas as pd
-from .side import LIMIT, MARKET, OPEN
+from .side import LIMIT, MARKET, OPEN, GTC, GTD, DAY
 
 # This is an adapter connecting the django model datastructures to the zipline datastructures
 class ZlModel:
@@ -101,6 +101,16 @@ class ZlModel:
 
       return fills2
 
+    @staticmethod
+    def validity_django2zipline(validity):
+      if validity==GTC:
+        return ORDER_VALIDITY.GTC
+      if validity==GTD:
+        return ORDER_VALIDITY.GTD
+      if validity==DAY:
+        return ORDER_VALIDITY.DAY
+      raise ValueError("Invalid validity: %s"%validity)
+
     # note that this method also edits existing orders
     @staticmethod
     def add_order(order):
@@ -129,7 +139,11 @@ class ZlModel:
         "dt": order.pub_date,
         "asset": order.asset.id,
         "amount": order.order_qty_signed(),
-        "style": style
+        "style": style,
+        "validity": {
+          "type": ZlModel.validity_django2zipline(order.order_validity),
+          "date": order.validity_date
+        }
       }
 
     @staticmethod

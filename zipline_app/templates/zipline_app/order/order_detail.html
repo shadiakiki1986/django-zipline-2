@@ -9,14 +9,14 @@ Order Details
 <ul>
   <li>Date: {{order.pub_date}}</li>
   <li>Asset: {{order.asset.asset_symbol}}</li>
-  <li>Type: {{order.order_type}}</li>
+  <li>Type: {{order.get_order_type_display}}</li>
   {% if order.order_type == 'L' %}
   <li>Limit price: {{order.limit_price}}</li>
   {% endif %}
-  <li>Side: {{order.order_side}}</li>
+  <li>Side: {{order.get_order_side_display}}</li>
   <li>Qty: {{order.order_qty_unsigned|intcomma}}</li>
   <li>Filled: <font color="red">{{order.filled|intcomma}}</font></li>
-  <li>Status: {{order.order_status}}</li>
+  <li>Status: {{order.get_order_status_display}}</li>
   <li>Account: {{order.account.account_symbol}}</li>
   <li>
     Dedicated fill:
@@ -31,7 +31,7 @@ Order Details
   <li>Comment: {% if order.order_text %}{{ order.order_text }}{% else %}None{% endif %}</li>
   <li>User: {{order.user.username}}</li>
   <li>
-    Validity: {{order.order_validity}}
+    Validity: {{order.get_order_validity_display}}
     {% if order.order_validity == 'D' %}
     ({{order.validity_date}})
     {% endif %}

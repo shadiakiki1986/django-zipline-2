@@ -11,6 +11,7 @@ from ...models.zipline_app.fill import Fill
 from ...models.zipline_app.asset import Asset
 from ...models.zipline_app.zipline_app import ZlModel
 from ...models.zipline_app.account import Account
+from ...models.zipline_app.side import OPEN
 
 from .order import OrderCreate
 from .fill import FillCreate
@@ -191,7 +192,7 @@ class BlotterEngineView(BlotterBaseView):
         drop_fill = context['latest_fill_list'].exclude(dedicated_to_order=None)
         drop_order_id = drop_fill.values_list('dedicated_to_order__id',flat=True)
         context['latest_fill_list'] = context['latest_fill_list'].filter(dedicated_to_order=None)
-        context['latest_order_list'] = context['latest_order_list'].exclude(id__in=drop_order_id)
+        context['latest_order_list'] = context['latest_order_list'].exclude(id__in=drop_order_id).filter(order_status=OPEN)
 
         return context
 
