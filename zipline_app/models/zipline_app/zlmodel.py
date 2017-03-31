@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from ...utils import md5_wrap
 from zipline.finance.execution import (
-#    LimitOrder,
+    LimitOrder,
     MarketOrder,
 #    StopLimitOrder,
 #    StopOrder,
@@ -103,21 +103,23 @@ class ZlModel:
 
     @staticmethod
     def add_order(order):
-      if order.order_type == LIMIT:
-        logger.debug("Limit orders not yet supported in engine. Skipping: %s",order)
-        return
-
       ZlModel.add_asset(order.asset)
 
       logger.debug("Add order %s" % order)
       if order.asset.id not in ZlModel.orders:
         ZlModel.orders[order.asset.id]={}
 
+      style = None
+      if order.order_type == LIMIT:
+        style = LimitOrder(order.limit_price)
+      else:
+        style = MarketOrder()
+
       ZlModel.orders[order.asset.id][order.id] = {
         "dt": order.pub_date,
         "asset": order.asset.id,
         "amount": order.order_qty_signed(),
-        "style": MarketOrder()
+        "style": style
       }
 
     @staticmethod
