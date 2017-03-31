@@ -5,7 +5,7 @@ from django.utils import timezone
 from ...models.zipline_app.zipline_app import ZlModel
 from .test_zipline_app import create_asset, create_order, create_account, a1
 from ...models.zipline_app.fill import Fill
-from ...models.zipline_app.side import BUY, SELL, MARKET, GTC
+from ...models.zipline_app.side import BUY, SELL, MARKET, GTC, GTD
 from .test_fill import create_fill_from_order, url_permission
 from ...utils import myTestLogin
 from django.contrib.auth.models import User
@@ -47,6 +47,13 @@ class OrderModelTests(TestCase):
       o1.order_side=SELL
       o1.save()
       self.assertEqual(o1.history().count(), 1)
+
+    def test_clean(self):
+      order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, order_qty_unsigned=10,   account=self.acc1)
+      order.order_validity = GTD
+      order.validity_date = timezone.now()
+      order.clean()
+      self.assertEqual(order.validity_date.hour, 23)
 
 class OrderGeneralViewsTests(TestCase):
     def setUp(self):

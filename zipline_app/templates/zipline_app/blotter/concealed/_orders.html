@@ -67,7 +67,7 @@
   <div class="col-xs-1">
     {{order.get_order_validity_display}}
     {% if order.order_validity == 'D' %}
-    ({{order.validity_date}})
+    ({{order.validity_date.date|date:'Y-m-d'}})
     {% endif %}
   </div>
 

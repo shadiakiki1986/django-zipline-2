@@ -21,12 +21,13 @@
       <div class="col-xs-1 text-right">ID</div>
       <div class="col-xs-2">Time</div>
       <div class="col-xs-1">Asset</div>
-      <div class="col-xs-1">Limit/Market</div>
+      <div class="col-xs-1">Limit price</div>
       <div class="col-xs-1">Side</div>
       <div class="col-xs-1 text-right">Qty</div>
       <div class="col-xs-1">Account</div>
-      <div class="col-xs-2">Comments</div>
+      <div class="col-xs-1">Comments</div>
       <div class="col-xs-1">User</div>
+      <div class="col-xs-1">Status</div>
       <div class="col-xs-1">Validity</div>
     </div>
 
@@ -46,17 +47,20 @@
         &nbsp;
         {% endif %}
       </div>
-      <div class="col-xs-1">{{ order.order_side }}</div>
+      <div class="col-xs-1">{{ order.get_order_side_display }}</div>
       <div class="col-xs-1 text-right">{{ order.order_qty_unsigned }}</div>
       <div class="col-xs-1">
         <a href="{% url 'zipline_app:accounts-detail' order.account.id %}">{{ order.account.account_symbol }}</a>
       </div>
-      <div class="col-xs-2">{{ order.order_text }}</div>
+      <div class="col-xs-1">{{ order.order_text }}</div>
       <div class="col-xs-1">{{ order.user.username }}</div>
       <div class="col-xs-1">
-        {{ order.order_validity }}
+        {{ order.get_order_status_display }}
+      </div>
+      <div class="col-xs-1">
+        {{ order.get_order_validity_display }}
         {% if order.order_validity == 'D' %}
-        ({{order.validity_date}})
+        ({{order.validity_date.date|date:'Y-m-d'}})
         {% endif %}
       </div>
     </div>

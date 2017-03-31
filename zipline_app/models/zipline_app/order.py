@@ -61,7 +61,8 @@ class AbstractOrder(models.Model):
     validity_date = models.DateTimeField(
       default=None,
       null=True,
-      blank=True
+      blank=True,
+      help_text='YYYY-MM-DD'
     )
 
     def diff(self, other):
@@ -138,6 +139,9 @@ class Order(AbstractOrder):
     def clean(self):
       # drop seconds from pub_date
       self.pub_date = chopSeconds(self.pub_date)
+      # validity_date: replace hours/mins/seconds with 23:59:59
+      if self.validity_date is not None:
+        self.validity_date = self.validity_date.replace(hour=23, minute=59, second=59)
 
     # access one-to-one reverse field
     # https://docs.djangoproject.com/en/1.10/topics/db/examples/one_to_one/
