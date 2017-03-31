@@ -20,7 +20,7 @@ class SignalProcessor:
   #  print("Signal: %s, %s" % ("post_init", sender.__name__))
 
   def post_save(sender, instance, **kwargs):
-    logger.debug("Signal: %s, %s" % ("post_save", sender))
+    logger.debug("Signal: %s, %s" % ("post_save", sender.__name__))
     if sender.__name__=="Fill": ZlModel.add_fill(instance)
     if sender.__name__=="Order":
       ZlModel.add_order(instance)

@@ -400,14 +400,21 @@ class Matcher:
   # Execution of cancellation policy cancels all
   # https://github.com/quantopian/zipline/blob/3350227f44dcf36b6fe3c509dcc35fe512965183/zipline/finance/blotter.py#L238
   def _cancel_expired(self, blotter):
+    #print('*'*100)
     for asset, orders in iteritems(blotter.open_orders):
-      for order in orders:
-        # cancel past day orders
+      order_ids = [order.id for order in orders]
+      #print('order ids', order_ids)
+      for order_id in order_ids:
+        order = blotter.orders[order_id]
+        # cancel past day orders .. necessary if the latest open order s in the past
+        logger.debug('0. look to cancel order %s, now: %s, blotter: %s, order: %s'%(order.id, timezone_django.now().day, blotter.current_dt.day, order.dt.day))
         if timezone_django.now().day != blotter.current_dt.day:
           if order.validity is not None:
             if order.validity['type']==ORDER_VALIDITY.DAY:
-              blotter.cancel(order.id)
-              continue
+              if order.dt.day != timezone_django.now().day:
+                logger.debug('1. will cancel order %s %s %s'%(order.id, timezone_django.now().day, blotter.current_dt.day))
+                blotter.cancel(order.id)
+                continue
 
         # do not cancel orders not reached yet with the clock
         if order.dt > blotter.current_dt:
@@ -421,10 +428,12 @@ class Matcher:
           continue
         if order.validity['type']==ORDER_VALIDITY.GTD:
           if order.validity['date'] < blotter.current_dt:
+            logger.debug('2. will cancel order %s'%order.id)
             blotter.cancel(order.id)
           continue
         if order.validity['type']==ORDER_VALIDITY.DAY:
           if order.dt.day != blotter.current_dt.day:
+            logger.debug('3. will cancel order %s'%order.id)
             blotter.cancel(order.id)
           continue
         raise ValueError("Invalid order validity type used: %s"%order.validity['type'])
@@ -433,8 +442,9 @@ class Matcher:
     all_closed = []
     all_txns = []
     self._orders2blotter(orders,blotter)
+    #print('all mins', all_minutes)
     for dt in all_minutes:
-        #logger.debug("========================")
+        logger.debug("======================== %s"%dt)
         dt = pd.Timestamp(dt, tz='utc')
         blotter.set_date(dt)
 
@@ -522,6 +532,7 @@ def factory(matcher: Matcher, fills_all: dict, orders_all: dict, assets: dict):
   all_unused={}
 
   for mySign in [-1,+1]:
+    logger.debug('matcher factory for sign: %s'%mySign)
     fills_sub, orders_sub = Matcher.filterBySign(mySign, fills_all, orders_all)
     # eventhough the orders/fills models contain their own floored-minute value,
     # flooring here again as a safety measure

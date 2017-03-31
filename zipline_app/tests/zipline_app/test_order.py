@@ -3,9 +3,10 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from ...models.zipline_app.zipline_app import ZlModel
+from ...models.zipline_app.order import Order
 from .test_zipline_app import create_asset, create_order, create_account, a1
 from ...models.zipline_app.fill import Fill
-from ...models.zipline_app.side import BUY, SELL, MARKET, GTC, GTD
+from ...models.zipline_app.side import BUY, SELL, MARKET, GTC, GTD, DAY, OPEN, CANCELLED
 from .test_fill import create_fill_from_order, url_permission
 from ...utils import myTestLogin
 from django.contrib.auth.models import User
@@ -54,6 +55,47 @@ class OrderModelTests(TestCase):
       order.validity_date = timezone.now()
       order.clean()
       self.assertEqual(order.validity_date.hour, 23)
+
+    def provider_validity(self, order_validity, validity_date, pub_date, user):
+      order = Order.objects.create(
+        order_text='test order',
+        pub_date=pub_date,
+        asset=self.a1a,
+        order_side=BUY,
+        order_qty_unsigned=10,
+        account=self.acc1,
+        user=user,
+        order_validity=order_validity,
+        validity_date=validity_date
+      )
+      order.refresh_from_db() # by the time the order is created, it could be cancelled
+      order.clean()
+      order.save()
+      return order
+
+    # assert that GTC order does not get instantly cancelled
+    def test_validity_GTC(self):
+      user = myTestLogin(self.client)
+      order = self.provider_validity(order_validity=GTC, validity_date=None, pub_date=timezone.now(), user=user)
+      order.refresh_from_db()
+      self.assertEqual(order.order_status,OPEN)
+
+    # assert that GTD order does not get instantly cancelled
+    def test_validity_GTD(self):
+      user = myTestLogin(self.client)
+      order = self.provider_validity(order_validity=GTD, validity_date=timezone.now(), pub_date=timezone.now(), user=user)
+      order.refresh_from_db()
+      self.assertEqual(order.order_status,OPEN)
+
+    # assert that DAY order does not get instantly cancelled
+    def test_validity_DAY_new_then_old(self):
+      user = myTestLogin(self.client)
+      o1 = self.provider_validity(order_validity=DAY, validity_date=None, pub_date=timezone.now(), user=user)
+      o2 = self.provider_validity(order_validity=DAY, validity_date=None, pub_date=timezone.now() + datetime.timedelta(days=-1), user=user)
+      o1.refresh_from_db()
+      o2.refresh_from_db()
+      self.assertEqual(o2.order_status,CANCELLED)
+      self.assertEqual(o1.order_status,OPEN)
 
 class OrderGeneralViewsTests(TestCase):
     def setUp(self):

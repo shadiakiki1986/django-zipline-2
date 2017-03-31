@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from ...utils import md5_wrap
+from ...utils import md5_wrap, chopSeconds
 from zipline.finance.execution import (
     LimitOrder,
     MarketOrder,
@@ -20,6 +20,7 @@ from functools import reduce
 from numpy import concatenate
 import pandas as pd
 from .side import LIMIT, MARKET, OPEN, GTC, GTD, DAY
+from django.core.cache import cache
 
 # This is an adapter connecting the django model datastructures to the zipline datastructures
 class ZlModel:
@@ -34,6 +35,7 @@ class ZlModel:
     assets={}
     zl_unused = {}
     all_minutes = []
+    lock = False
 
     @staticmethod
     def clear():
@@ -178,8 +180,8 @@ class ZlModel:
       if order.dedicated_fill() is not None and not force:
         return
 
-      logger.debug("Delete order %s" % order.id)
       if order.asset.id in ZlModel.orders:
+        logger.debug("Delete order %s" % order.id)
         ZlModel.orders[order.asset.id].pop(order.id, None)
         if not any(ZlModel.orders[order.asset.id]):
           ZlModel.orders.pop(order.asset.id, None)
@@ -214,23 +216,24 @@ class ZlModel:
           # since orders for 2 different accounts will have 2 different IDs anyway.
           # Also, order_text is not passed to the engine anyway
           md5_orders.append(
-            "%s, %s, %s, %s" % (
-              o2["dt"],
+            "%s, %s, %s, %s, %s" % (
+              chopSeconds(o2["dt"]), # use second-less timestamp to avoid re-run engine due to cleaning
               sid,
               o2["amount"],
-              "MarketOrder" # TODO get type when I support other types (in case order type was changed)
+              o2["style"].__class__.__name__, # use class name to avoid memory address changing => rerun engine
+              o2["validity"],
             )
           )
 
       md5_fills = []
       for sid, f1 in ZlModel.fills.items():
-        for dt, fill in f1.items():
+        for fill_id, fill in f1.items():
           md5_fills.append(
             "%s, %s, %s, %s" % (
               sid,
               fill["volume"],
               fill["close"],
-              dt
+              fill_id
             )
           )
           
@@ -245,13 +248,19 @@ class ZlModel:
     def update():
       if not ZlModel.db_ready():
         return
+      if ZlModel.lock:
+        logger.debug("ZlModel locked. Caching request to update")
+        cache.set('zl_update', True, None)
+        return
 
       md5 = ZlModel.calculate_md5()
+      #print('md5 vs md5', md5, ZlModel.md5)
       if ZlModel.md5==md5:
         logger.debug("Model unchanged .. not rerunning engine: "+md5)
         return
 
       logger.debug("Run matching engine: "+md5)
+      ZlModel.lock=True
 
       matcher = mmm_Matcher()
 
@@ -274,3 +283,10 @@ class ZlModel:
 
       # save md5 at the end to ensure re-run if error occured
       ZlModel.md5=md5
+      ZlModel.lock=False
+      logger.debug("end of run engine")
+      reUpdate = cache.get('zl_update')
+      if reUpdate is not None and reUpdate:
+        logger.debug('there was a request to update in the mean time')
+        cache.set('zl_update',False)
+        ZlModel.update()
