@@ -30,6 +30,12 @@ Order Details
   </li>
   <li>Comment: {% if order.order_text %}{{ order.order_text }}{% else %}None{% endif %}</li>
   <li>User: {{order.user.username}}</li>
+  <li>
+    Validity: {{order.order_validity}}
+    {% if order.order_validity == 'D' %}
+    ({{order.validity_date}})
+    {% endif %}
+  </li>
 </ul>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}

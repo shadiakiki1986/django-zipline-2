@@ -8,7 +8,7 @@ from django.urls import reverse
 from .asset import Asset
 from .account import Account
 from .zlmodel import ZlModel
-from .side import BUY, FILL_SIDE_CHOICES, validate_nonzero, MARKET, ORDER_TYPE_CHOICES, PositiveFloatFieldModel, ORDER_STATUS_CHOICES, OPEN, CANCELLED
+from .side import BUY, FILL_SIDE_CHOICES, validate_nonzero, MARKET, ORDER_TYPE_CHOICES, PositiveFloatFieldModel, ORDER_STATUS_CHOICES, OPEN, CANCELLED, ORDER_VALIDITY_CHOICES, GTC
 
 from numpy import average
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -52,12 +52,23 @@ class AbstractOrder(models.Model):
       default=OPEN,
       verbose_name="Status"
     )
+    order_validity = models.CharField(
+      max_length=1,
+      choices=ORDER_VALIDITY_CHOICES,
+      default=GTC,
+      verbose_name="Validity"
+    )
+    validity_date = models.DateTimeField(
+      default=None,
+      null=True,
+      blank=True
+    )
 
     def diff(self, other):
       if other is None:
         return []
       messages = []
-      attrs = ['order_text', 'pub_date', 'asset', 'order_qty_unsigned', 'account', 'order_side', 'order_type', 'limit_price', 'order_status']
+      attrs = ['order_text', 'pub_date', 'asset', 'order_qty_unsigned', 'account', 'order_side', 'order_type', 'limit_price', 'order_status', 'order_validity', 'validity_date']
       for attr in attrs:
         if getattr(self, attr) != getattr(other, attr):
           messages.append(
@@ -160,7 +171,9 @@ class Order(AbstractOrder):
         user = self.user,
         order_type = self.order_type,
         limit_price = self.limit_price,
-        order_status = self.order_status
+        order_status = self.order_status,
+        order_validity = self.order_validity,
+        validity_date = self.validity_date
       )
 
     # excluding the first entry with previous=None since this is available regardless of edits made

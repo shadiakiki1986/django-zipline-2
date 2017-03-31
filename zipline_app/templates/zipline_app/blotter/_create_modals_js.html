@@ -29,5 +29,17 @@ $(function() {
   // since default order_type = market, disable the limit price
   $("#orders-new input[name='limit_price']").prop("disabled", "disabled");
 
+  // order validity date disabled when order type != GTD
+  $("#orders-new select[name='order_validity']").change(function() {
+    if($(this).val()!="D") {
+      $("#orders-new input[name='validity_date']").prop("disabled", "disabled");
+    } else {
+      $("#orders-new input[name='validity_date']").prop("disabled", false);
+    }
+  });
+
+  // since default order_validity = GTC, disable the validity date
+  $("#orders-new input[name='validity_date']").prop("disabled", "disabled");
+
 });
 </script>

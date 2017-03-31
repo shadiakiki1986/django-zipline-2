@@ -146,11 +146,15 @@
         {% include 'zipline_app/blotter/concealed/_orders.html' %}
       </div><!-- end row -->
 
-      {% if order.order_text %}
-      <div class="row">
-        <div class="col-xs-12 text-muted text-left">{{ order.order_text }}</div>
+      <div class="row text-muted">
+        <div class="col-xs-6 text-left">{{ order.order_text }}</div>
+        <div class="col-xs-6 text-right">
+          {{order.order_validity}}
+          {% if order.order_validity == 'D' %}
+          ({{order.validity_date}})
+          {% endif %}
+        </div>
       </div>
-      {% endif %}
 
     {% empty %}
       No orders are available.

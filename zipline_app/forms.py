@@ -24,7 +24,7 @@ class OrderForm(forms.ModelForm):
     model=Order
     fields = [
       'pub_date', 'asset', 'order_side', 'order_qty_unsigned', 'account', 'order_text',
-      'order_type', 'limit_price',
+      'order_type', 'limit_price', 'order_validity', 'validity_date'
     ]
     widgets = {
       'asset': AssetModelSelect2Widget(),
