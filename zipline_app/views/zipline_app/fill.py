@@ -39,7 +39,7 @@ class FillDelete(generic.DeleteView):
   def get_success_url(self):
     messages.add_message(self.request, messages.INFO, "Successfully deleted fill: %s" % self.object)
     return redirect_index_or_local(self,'zipline_app:fills-list')
-  def get_object(self):
+  def get_object(self, *args, **kwargs):
     obj = super(FillDelete, self).get_object(*args, **kwargs)
     if not obj.user == self.request.user:
       raise PermissionDenied
@@ -66,7 +66,7 @@ class FillUpdateView(generic.UpdateView):
     messages.add_message(self.request, messages.INFO, "Successfully updated fill: %s" % self.object)
     return redirect_index_or_local(self,'zipline_app:fills-list')
 
-  def get_object(self):
+  def get_object(self, *args, **kwargs):
     obj = super(FillUpdateView, self).get_object(*args, **kwargs)
     if not obj.user == self.request.user:
       raise PermissionDenied

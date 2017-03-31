@@ -41,10 +41,12 @@ class OrderList(generic.ListView):
 class OrderDelete(generic.DeleteView):
   model = Order
   template_name = 'zipline_app/order/order_confirm_delete.html'
+
   def get_success_url(self):
     messages.add_message(self.request, messages.INFO, "Successfully deleted order: %s" % self.object)
     return redirect_index_or_local(self,'zipline_app:orders-list')
-  def get_object(self):
+
+  def get_object(self, *args, **kwargs):
     obj = super(OrderDelete, self).get_object(*args, **kwargs)
     if not obj.user == self.request.user:
       raise PermissionDenied
@@ -71,7 +73,7 @@ class OrderUpdateView(generic.UpdateView):
     local = reverse_lazy('zipline_app:orders-detail', args=(self.object.id,))
     return redirect_index_or_local(self, local)
 
-  def get_object(self):
+  def get_object(self, *args, **kwargs):
     obj = super(OrderUpdateView, self).get_object(*args, **kwargs)
     if not obj.user == self.request.user:
       raise PermissionDenied

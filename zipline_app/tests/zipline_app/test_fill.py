@@ -105,7 +105,7 @@ class FillGeneralViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_delete(self):
-        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=BUY, fill_qty_unsigned=20, fill_price=2)
+        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=BUY, fill_qty_unsigned=20, fill_price=2, user=self.user)
         url = reverse('zipline_app:fills-delete', args=(f1.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -120,20 +120,20 @@ class FillGeneralViewsTests(TestCase):
         self.assertContains(response,"Ensure this value is less than or equal to")
 
     def test_update_get(self):
-        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=BUY, fill_qty_unsigned=20, fill_price=2)
+        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=BUY, fill_qty_unsigned=20, fill_price=2, user=self.user)
         url = reverse('zipline_app:fills-update', args=(f1.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_post_wo_tt_order_key(self):
-        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=BUY, fill_qty_unsigned=20, fill_price=2)
+        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=BUY, fill_qty_unsigned=20, fill_price=2, user=self.user)
         url = reverse('zipline_app:fills-update', args=(f1.id,))
         f2={'pub_date':f1.pub_date, 'asset':f1.asset.id, 'fill_side': f1.fill_side, 'fill_qty_unsigned':4444, 'fill_price':f1.fill_price}
         response = self.client.post(url,f2)
         self.assertContains(response,"4444")
 
     def test_update_post_wi_tt_order_key(self):
-        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=BUY, fill_qty_unsigned=20, fill_price=2, tt_order_key='bla key')
+        f1 = create_fill(fill_text="test?",days=-30, asset=self.a1a, fill_side=BUY, fill_qty_unsigned=20, fill_price=2, tt_order_key='bla key', user=self.user)
         url = reverse('zipline_app:fills-update', args=(f1.id,))
         f1={'pub_date':f1.pub_date, 'asset':f1.asset.id, 'fill_side': f1.fill_side, 'fill_qty_unsigned':f1.fill_qty_unsigned, 'fill_price':f1.fill_price, 'tt_order_key':'foo key'}
         response = self.client.post(url,f1)
@@ -187,19 +187,18 @@ class FillGeneralViewsTests(TestCase):
         self.assertEqual(b''.join(list(response)).count(b"random fill"),2)
         self.assertEqual(b''.join(list(response)).count(b"john"),2)
 
-def url_permission(test, url, obj_id, expected_r1):
+def url_permission(test, url, obj_id):
   url = reverse(url, args=(obj_id,))
 
-  # note that this GET for a fills-delete or orders-delete
-  # redirects to a CONFIRM and hence doesnt delete the fill/order
+  # note that this GET for a fills-delete or orders-delete displays a CONFIRM and hence doesnt delete the fill/order
   response = test.client.get(url, follow=False)
-  test.assertEqual(response.status_code, expected_r1)
+  test.assertEqual(response.status_code, 200)
 
   password='bla'
   u2 = User.objects.create_user(username='ringo', email='ringo@beatles.com', password=password)
   test.client.logout()
   response = test.client.login(username=u2.username, password=password)
-  test.assertEqual(response.status_code, 200)
+  test.assertEqual(response, True)
 
   response = test.client.get(url, follow=False)
   test.assertEqual(response.status_code, 403) # permission denied
@@ -230,8 +229,8 @@ class FillDetailViewsTests(TestCase):
 
   def test_edit_only_for_owner(self):
     f1 = create_fill(fill_text="test fill", days=-1, asset=self.a1a, fill_side=SELL,  fill_qty_unsigned=10, fill_price=2, user=self.user)
-    url_permission(self, 'zipline_app:fills-update', f1.id, 200)
+    url_permission(self, 'zipline_app:fills-update', f1.id)
 
   def test_del_only_for_owner(self):
     f1 = create_fill(fill_text="test fill", days=-1, asset=self.a1a, fill_side=SELL,  fill_qty_unsigned=10, fill_price=2, user=self.user)
-    url_permission(self, 'zipline_app:fills-delete', f1.id, 302)
+    url_permission(self, 'zipline_app:fills-delete', f1.id)

@@ -93,7 +93,12 @@ class Order(AbstractOrder):
         return self.order_qty_signed()
       if self.id in ZlModel.zl_open_keyed:
         return ZlModel.zl_open_keyed[self.id].filled
-      return 0
+
+      # get from the fills function
+      # This works for cancelled orders with partial fills
+      # and for orders that are completely unfilled
+      sub = [txn["amount"] for txn in self.fills()]
+      return sum(sub)
 
     def fills(self):
       if self.dedicated_fill() is not None:

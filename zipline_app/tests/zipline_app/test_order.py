@@ -66,7 +66,7 @@ class OrderGeneralViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_delete(self):
-        o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=BUY, order_qty_unsigned=10, account=self.acc1)
+        o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=BUY, order_qty_unsigned=10, account=self.acc1, user=self.user)
 
         url = reverse('zipline_app:orders-delete', args=(self.a1a.id,))
         response = self.client.get(url)
@@ -120,7 +120,7 @@ class OrderDetailViewTests(TestCase):
     def setUp(self):
       self.acc1 = create_account(symbol="TEST01")
       self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-      myTestLogin(self.client)
+      self.user = myTestLogin(self.client)
 
     def test_detail_view_with_a_future_order(self):
         """
@@ -143,7 +143,7 @@ class OrderDetailViewTests(TestCase):
         self.assertContains(response, past_order.order_text)
 
     def test_update(self):
-        o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=BUY, order_qty_unsigned=10, account=self.acc1)
+        o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=BUY, order_qty_unsigned=10, account=self.acc1, user=self.user)
 
         url = reverse('zipline_app:orders-update', args=(self.a1a.id,))
         response = self.client.get(url)
@@ -181,8 +181,8 @@ class OrderDetailViewTests(TestCase):
 
     def test_edit_only_for_owner(self):
       o1 = create_order(order_text="test", days=-10, asset=self.a1a, order_side=BUY, order_qty_unsigned=10, account=self.acc1, user=self.user)
-      url_permission(self, 'zipline_app:orders-update', o1.id, 200)
+      url_permission(self, 'zipline_app:orders-update', o1.id)
 
     def test_del_only_for_owner(self):
       o1 = create_order(order_text="test", days=-10, asset=self.a1a, order_side=BUY, order_qty_unsigned=10, account=self.acc1, user=self.user)
-      url_permission(self, 'zipline_app:orders-delete', o1.id, 302)
+      url_permission(self, 'zipline_app:orders-delete', o1.id)

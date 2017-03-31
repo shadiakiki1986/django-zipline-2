@@ -5,6 +5,7 @@ from django.db import models
 # connecting signals
 #from django.db.backends.signals import connection_created
 from django.core.signals import request_started
+from .signals import order_cancelled
 
 class ZiplineAppConfig(AppConfig):
     name = 'zipline_app'

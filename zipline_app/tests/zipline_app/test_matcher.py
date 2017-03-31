@@ -1,7 +1,6 @@
 from django.test import TestCase
 import pandas as pd
-from ...matcher import factory as mmm_factory, Matcher as mmm_Matcher
-from ...matcher import reduce_concatenate
+from ...matcher import  factory as mmm_factory, Matcher as mmm_Matcher, reduce_concatenate, ORDER_VALIDITY
 from .test_zipline_app import a1,a2
 
 from zipline.finance.execution import (
@@ -451,3 +450,58 @@ class MatcherMethodTests(TestCase):
         self.assertEqual(1,len(open_orders[a2a]))
 
         self.assertEqual(unused[a1a],[-1,1])
+
+
+    def test_factory_orders_with_validity(self):
+        matcher = mmm_Matcher()
+
+        # Use same sid as for assets above
+        # NOT Multiplying by 1000 as documented in zipline/data/minute_bars.py#L419
+        MID_DATE_1 = pd.Timestamp('2013-01-07 17:01', tz='utc')
+        MID_DATE_2 = pd.Timestamp('2013-01-07 17:02', tz='utc')
+        MID_DATE_3 = pd.Timestamp('2013-01-07 17:03', tz='utc')
+        # seconds in below timestamp will be floored
+        MID_DATE_4 = pd.Timestamp('2017-02-13 05:13:23', tz='utc')
+        fills = {
+            1: pd.DataFrame({
+                "close": [3.5, 4.5, 4, 2.4],
+                "volume": [10, 5, 7, 1],
+                "dt": [MID_DATE_1,MID_DATE_2,MID_DATE_3,MID_DATE_4]
+            }).set_index("dt"),
+            2: pd.DataFrame({
+                "close": [3.5],
+                "volume": [1],
+                "dt": [MID_DATE_4]
+            }).set_index("dt")
+        }
+        #print("data: %s" % (fills))
+
+        MID_DATE_0 = pd.Timestamp('2013-01-07 17:00', tz='utc')
+        orders = {
+          1: {
+            1: {"dt": MID_DATE_0, "amount": 10, "style": MarketOrder(), "validity": None},
+            2: {"dt": MID_DATE_0, "amount": 10, "style": MarketOrder(), "validity": {"type": ORDER_VALIDITY.GTC, "date": None}},
+            3: {"dt": MID_DATE_0, "amount": 10, "style": MarketOrder(), "validity": {"type": ORDER_VALIDITY.GTD, "date": MID_DATE_3}},
+          },
+          2: {
+            4: {"dt": MID_DATE_0, "amount": 10, "style": MarketOrder(), "validity": {"type": ORDER_VALIDITY.DAY, "date": None}},
+          }
+        }
+
+        assets = {1: a1, 2: a2}
+
+        all_closed, all_txns, open_orders, unused, all_minutes = mmm_factory(matcher, fills, orders, assets)
+
+        self.assertEqual(2,len(all_closed))
+        self.assertEqual(4,len(all_txns))
+        self.assertEqual(0,len(open_orders))
+
+        # remaining order on asset 1 gets filled on MID_DATE_3 but not on MID_DATE_4 due to validity
+        sub = [txn['amount'] for txn in all_txns if txn['order_id']==3]
+        self.assertEqual(1,len(sub))
+        self.assertEqual(2,sub[0])
+
+
+        # remaining order on asset 2 does not get filled at all due to validity
+        sub = [txn['amount'] for txn in all_txns if txn['order_id']==4]
+        self.assertEqual(0,len(sub))

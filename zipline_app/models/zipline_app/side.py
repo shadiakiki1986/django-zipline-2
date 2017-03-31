@@ -65,3 +65,13 @@ ORDER_STATUS_CHOICES = (
   (REJECTED, 'Rejected'),
   (HELD, 'Held'),
 )
+
+# order validity
+GTC = 'C'
+GTD = 'D'
+DAY = '-'
+ORDER_VALIDITY_CHOICES = (
+  (GTC, 'GTC order'),
+  (GTD, 'GTD order'),
+  (DAY, 'Day order'),
+)

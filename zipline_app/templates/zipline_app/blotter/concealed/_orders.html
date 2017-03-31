@@ -82,11 +82,7 @@
       </div>
 
       <div class='col-xs-6 text-right'>
-        {% if order.order_status == 'C' %}
-          Cancelled
-        {% else %}
-          {% include '_orders_open.html' %}
-        {% endif %}
+        {% include '_orders_status.html' %}
       </div>
       <div class='col-xs-2'>&nbsp;</div>
     </div>

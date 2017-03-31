@@ -42,5 +42,8 @@ class SignalProcessor:
     ZlModel.update()
 
   def order_cancelled(sender, id, **kwargs):
-    Order.objects.get(id=id).cancel()
+    logger.debug("Order cancelled: %s"%id)
+    order = Order.objects.filter(id=id).first()
+    if order is not None:
+      order.cancel()
 

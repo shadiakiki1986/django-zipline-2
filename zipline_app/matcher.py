@@ -7,7 +7,7 @@ from zipline.finance.blotter import Blotter
 #slippage_func = FixedSlippage(spread=0.0)
 from zipline.finance.slippage import VolumeShareSlippage
 from zipline.finance.asset_restrictions import NoRestrictions
-from zipline.finance.cancel_policy import EODCancel
+from zipline.finance.cancel_policy import NeverCancel
 from zipline.gens.sim_engine import SESSION_END
 from zipline.finance.order import ORDER_STATUS
 
@@ -83,6 +83,53 @@ class AlwaysOpenExchange(TradingCalendar):
 #print('is open',aoe.is_open_on_minute(pd.Timestamp('2013-01-07 15:03:00+0000', tz='UTC')))
 register_calendar("AlwaysOpen",AlwaysOpenExchange())
 
+# order validity enum
+# similar to ORDER_STATUS: https://github.com/quantopian/zipline/blob/3350227f44dcf36b6fe3c509dcc35fe512965183/zipline/finance/order.py#L24
+from zipline.utils.enum import enum
+ORDER_VALIDITY = enum(
+  'GTC',
+  'GTD',
+  'DAY'
+)
+
+# my own blotter/order class to allow for order validity
+from zipline.finance.order import Order
+class MyOrder(Order):
+  def __init__(self, validity, *args, **kwargs):
+    super(MyOrder,self).__init__(*args, **kwargs)
+    self.validity = validity
+
+class MyBlotter(Blotter):
+  # Copied from original, with the difference of MyOrder instead of Order
+  # https://github.com/quantopian/zipline/blob/3350227f44dcf36b6fe3c509dcc35fe512965183/zipline/finance/blotter.py#L77
+  def order(self, sid, amount, style, order_id=None, validity=None):
+    if amount == 0:
+        # Don't bother placing orders for 0 shares.
+        return None
+    elif amount > self.max_shares:
+        # Arbitrary limit of 100 billion (US) shares will never be
+        # exceeded except by a buggy algorithm.
+        raise OverflowError("Can't order more than %d shares" %
+                            self.max_shares)
+
+    is_buy = (amount > 0)
+    order = MyOrder(
+        dt=self.current_dt,
+        sid=sid,
+        amount=amount,
+        stop=style.get_stop_price(is_buy),
+        limit=style.get_limit_price(is_buy),
+        id=order_id,
+        validity=validity
+    )
+
+    self.open_orders[order.sid].append(order)
+    self.orders[order.id] = order
+    self.new_orders.append(order)
+
+    return order.id
+
+########################
 class Matcher:
   def __init__(self):
     self.env = TradingEnvironment()
@@ -269,12 +316,12 @@ class Matcher:
       volume_limit=1,
       price_impact=0
     )
-    blotter = Blotter(
+    blotter = MyBlotter(
       data_frequency=self.sim_params.data_frequency,
       asset_finder=self.env.asset_finder,
       slippage_func=slippage_func,
       # https://github.com/quantopian/zipline/blob/3350227f44dcf36b6fe3c509dcc35fe512965183/tests/test_blotter.py#L136
-      cancel_policy=EODCancel()
+      cancel_policy=NeverCancel()
     )
     return blotter
 
@@ -313,7 +360,8 @@ class Matcher:
           sid=asset,
           amount=order["amount"],
           style=order["style"],
-          order_id = order["id"]
+          order_id = order["id"],
+          validity = None if "validity" not in order else order["validity"]
         )
 
     #print("Open orders: %s" % ({k.symbol: len(v) for k,v in iteritems(blotter.open_orders)}))
@@ -342,6 +390,40 @@ class Matcher:
 
     return bd
 
+  # Cannot use zipline cancellation policy based on order expiration type, expiration date, and current date because it will cancel all orders (and not filter based on type)
+  # Will use cancel orders one-by-one instead, with the NeverCancel being the default
+  #
+  # Definition of cancellation policies
+  # https://github.com/quantopian/zipline/blob/e1b27c45ae4b881e5416a5c50e8945232527ea59/zipline/finance/cancel_policy.py
+  #
+  # Execution of cancellation policy cancels all
+  # https://github.com/quantopian/zipline/blob/3350227f44dcf36b6fe3c509dcc35fe512965183/zipline/finance/blotter.py#L238
+  def _cancel_expired(self, blotter, previous):
+    if previous is None:
+      return
+
+    for asset, orders in iteritems(blotter.open_orders):
+      for order in orders:
+        # do not cancel orders not reached yet with the clock
+        if order.dt > blotter.current_dt:
+          continue
+
+        # treat orders without a validity as GTC orders
+        if order.validity is None:
+          continue
+
+        if order.validity['type']==ORDER_VALIDITY.GTC:
+          continue
+        if order.validity['type']==ORDER_VALIDITY.GTD:
+          if order.validity['date'] < blotter.current_dt:
+            blotter.cancel(order.id)
+          continue
+        if order.validity['type']==ORDER_VALIDITY.DAY:
+          if order.dt.day != blotter.current_dt.day:
+            blotter.cancel(order.id)
+          continue
+        raise ValueError("Invalid order validity type used: %s"%order.validity['type'])
+
   def match_orders_fills(self, blotter, bar_data, all_minutes, orders):
     all_closed = []
     all_txns = []
@@ -352,11 +434,7 @@ class Matcher:
         dt = pd.Timestamp(dt, tz='utc')
         blotter.set_date(dt)
 
-        if previous is not None:
-          if previous.day != dt.day:
-            # execute cancel policy
-            # https://github.com/quantopian/zipline/blob/3350227f44dcf36b6fe3c509dcc35fe512965183/tests/test_blotter.py#L153
-            blotter.execute_cancel_policy(SESSION_END)
+        self._cancel_expired(blotter, previous)
         previous = dt
 
         #self._orders2blotter(orders,blotter)
@@ -383,7 +461,8 @@ class Matcher:
         all_closed = numpy.concatenate((all_closed,closed_orders))
         all_txns = numpy.concatenate((all_txns, new_transactions))
 
-    for order in blotter.orders:
+    # https://github.com/quantopian/zipline/blob/3350227f44dcf36b6fe3c509dcc35fe512965183/tests/test_blotter.py#L154
+    for order in blotter.orders.values():
       if order.status==ORDER_STATUS.CANCELLED:
         order_cancelled.send(sender=None, id=order.id)
 
