@@ -60,11 +60,11 @@
         <span>Market order</span>
       {% else %}
         <span title="{% if order.dedicated_fill is None %}Average price{% else %}Market price{% endif %}">
-          {{order.avgPrice|floatformat:"2"|intcomma}}
+          {{order.avgPrice|floatformat:"5"|intcomma}}
         </span>
       {% endif %}
     {% else %}
-    <span title="Limit price">{{order.limit_price|floatformat:"2"|intcomma}}</span>
+    <span title="Limit price">{{order.limit_price|floatformat:"5"|intcomma}}</span>
     {% endif %}
   </div>
 
