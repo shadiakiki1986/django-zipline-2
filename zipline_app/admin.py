@@ -9,11 +9,11 @@ from .models.zipline_app.zipline_app import Fill, Order, Account, Asset
 
 class OrderAdmin(admin.ModelAdmin):
     fieldSets = [
-        (None,               {'fields': ['order_text', 'asset', 'order_side', 'amount_unsigned']}),
+        (None,               {'fields': ['order_text', 'asset', 'order_side', 'order_qty_unsigned']}),
         ('Date information', {'fields': ['pub_date']}),
     ]
     #inlines = [AssetInline]
-    list_display = ('order_text', 'pub_date', 'was_published_recently', 'asset', 'order_side', 'amount_unsigned')
+    list_display = ('order_text', 'pub_date', 'was_published_recently', 'asset', 'order_side', 'order_qty_unsigned')
     list_filter = ['pub_date']
     search_fields = ['order_text', 'asset.asset_symbol']
 

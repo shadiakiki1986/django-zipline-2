@@ -40,7 +40,7 @@ class DownloadBuilder:
         'Client Name':order.account.account_symbol,
         'Side':order.order_side,
         'Order Type':'-',
-        'Qty':order.amount_unsigned,
+        'Qty':order.order_qty_unsigned,
         'Security Name':order.asset.asset_symbol,
         'Quote':order.avgPrice(),
         'Order nbr':'-' if order.dedicated_fill() is None else order.dedicated_fill().tt_order_key,

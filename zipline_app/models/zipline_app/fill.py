@@ -69,7 +69,7 @@ class Fill(models.Model):
         errors = {}
         if self.fill_side!=self.dedicated_to_order.order_side:
           errors['fill_side']=_('Dedicated fill side doesnt match with order')
-        if self.fill_qty_unsigned!=self.dedicated_to_order.amount_unsigned:
+        if self.fill_qty_unsigned!=self.dedicated_to_order.order_qty_unsigned:
           errors['fill_qty_unsigned']=_('Dedicated fill qty doesnt match with order')
         if self.asset!=self.dedicated_to_order.asset:
           errors['asset']=_('Dedicated fill asset doesnt match with order')

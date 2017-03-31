@@ -14,7 +14,7 @@ def create_fill_from_order(order, fill_text, fill_price, tt_order_key="", user=N
       pub_date=order.pub_date,
       asset=order.asset,
       fill_side=order.order_side,
-      fill_qty_unsigned=order.amount_unsigned,
+      fill_qty_unsigned=order.order_qty_unsigned,
       fill_price=fill_price,
       tt_order_key=tt_order_key,
       dedicated_to_order=order,
@@ -28,28 +28,28 @@ class FillModelTests(TestCase):
     self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
 
   def test_clean_invalid_dedicated_order_qty(self):
-    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, amount_unsigned=10,   account=self.acc                          )
+    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, order_qty_unsigned=10,   account=self.acc                          )
     with self.assertRaises(ValidationError):
       f1 = create_fill(    fill_text="test fill",     days=-1, asset=self.a1a, fill_side=BUY,  fill_qty_unsigned=20, fill_price=2,     dedicated_to_order=order)
 
   def test_clean_invalid_dedicated_order_side(self):
-    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, amount_unsigned=10,   account=self.acc                          )
+    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, order_qty_unsigned=10,   account=self.acc                          )
     with self.assertRaises(ValidationError):
       f1 = create_fill(    fill_text="test fill",     days=-1, asset=self.a1a, fill_side=SELL,  fill_qty_unsigned=10, fill_price=2,     dedicated_to_order=order)
 
   def test_clean_invalid_dedicated_order_asset(self):
-    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, amount_unsigned=10,   account=self.acc                          )
+    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, order_qty_unsigned=10,   account=self.acc                          )
     a2a = create_asset(a2["symbol"],a2["exchange"],a2["name"])
     with self.assertRaises(ValidationError):
       f1 = create_fill(    fill_text="test fill",     days=-1, asset=a2a, fill_side=BUY,  fill_qty_unsigned=10, fill_price=2,     dedicated_to_order=order)
 
   def test_clean_invalid_dedicated_order_pub_date(self):
-    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, amount_unsigned=10,   account=self.acc                          )
+    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, order_qty_unsigned=10,   account=self.acc                          )
     with self.assertRaises(ValidationError):
       f1 = create_fill(    fill_text="test fill",     days=-30, asset=self.a1a, fill_side=BUY,  fill_qty_unsigned=10, fill_price=2,     dedicated_to_order=order)
 
   def test_clean_valid_dedicated_order(self):
-    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, amount_unsigned=10,   account=self.acc                          )
+    order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, order_qty_unsigned=10,   account=self.acc                          )
     f1 = create_fill_from_order( order=order, fill_text="test fill", fill_price=22, tt_order_key="test key")
 
   # two opposite fills  within the same minute with the same quantities
@@ -58,15 +58,15 @@ class FillModelTests(TestCase):
   # grouped_close = grouped.apply(lambda g: numpy.average(g['close'],weights=g['volume']))
   def test_two_opposite_fills_same_minute(self):
     qty = 10
-    o_l = create_order(order_text="buy order",  days=-1,  asset=self.a1a, order_side=BUY,  amount_unsigned=qty,   account=self.acc)
-    o_s = create_order(order_text="sell order", days=-1,  asset=self.a1a, order_side=SELL, amount_unsigned=qty,   account=self.acc)
+    o_l = create_order(order_text="buy order",  days=-1,  asset=self.a1a, order_side=BUY,  order_qty_unsigned=qty,   account=self.acc)
+    o_s = create_order(order_text="sell order", days=-1,  asset=self.a1a, order_side=SELL, order_qty_unsigned=qty,   account=self.acc)
     f_l = create_fill_from_order(order=o_l, fill_text="test fill buy", fill_price=2)
     f_s = create_fill_from_order(order=o_s, fill_text="test fill sell", fill_price=2)
 
   def test_dedicated_fill_with_earlier_open_fill(self):
-    o1 = create_order(order_text="random order 1", days=-1,  asset=self.a1a, order_side=BUY, amount_unsigned=10,   account=self.acc)
-    o2 = create_order(order_text="random order 2", days=-2,  asset=self.a1a, order_side=BUY, amount_unsigned=20,   account=self.acc)
-    o3 = create_order(order_text="random order 3", days=-3,  asset=self.a1a, order_side=BUY, amount_unsigned=30,   account=self.acc)
+    o1 = create_order(order_text="random order 1", days=-1,  asset=self.a1a, order_side=BUY, order_qty_unsigned=10,   account=self.acc)
+    o2 = create_order(order_text="random order 2", days=-2,  asset=self.a1a, order_side=BUY, order_qty_unsigned=20,   account=self.acc)
+    o3 = create_order(order_text="random order 3", days=-3,  asset=self.a1a, order_side=BUY, order_qty_unsigned=30,   account=self.acc)
     f1 = create_fill_from_order(order=o1, fill_price=1, fill_text="fill 1")
 
     self.assertEqual(o1.amount_signed(), o1.filled())
@@ -80,7 +80,7 @@ class FillModelTests(TestCase):
     self.assertTrue(o1.id in ZlModel.zl_open_keyed)
 
   def test_dedicated_fill_delete(self):
-    o1 = create_order(order_text="random order 1", days=-1,  asset=self.a1a, order_side=BUY, amount_unsigned=10,   account=self.acc)
+    o1 = create_order(order_text="random order 1", days=-1,  asset=self.a1a, order_side=BUY, order_qty_unsigned=10,   account=self.acc)
     f1 = create_fill_from_order(order=o1, fill_price=1, fill_text="fill 1")
     f1.delete()
 
@@ -155,7 +155,7 @@ class FillGeneralViewsTests(TestCase):
 
     def test_new_fill_dedicated_to_order(self):
         acc = create_account("test acc")
-        o1 = create_order(order_text="test", days=-10, asset=self.a1a, order_side=BUY, amount_unsigned=10, account=acc)
+        o1 = create_order(order_text="test", days=-10, asset=self.a1a, order_side=BUY, order_qty_unsigned=10, account=acc)
         o1.clean()
         o1.save()
 
@@ -164,7 +164,7 @@ class FillGeneralViewsTests(TestCase):
           'pub_date':o1.pub_date.replace(hour=o1.pub_date.hour+2).strftime('%Y-%m-%d %H:%M'),
           'asset':o1.asset.id,
           'fill_side': o1.order_side,
-          'fill_qty_unsigned':o1.amount_unsigned,
+          'fill_qty_unsigned':o1.order_qty_unsigned,
           'fill_price':1,
           'dedicated_to_order':o1.id
         }

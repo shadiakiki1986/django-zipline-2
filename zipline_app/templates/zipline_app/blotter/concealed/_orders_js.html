@@ -8,7 +8,7 @@ $(function() {
         'order_side': $(this).attr('data-order-order_side'),
         'order_type': $(this).attr('data-order-order_type'),
         'limit_price': $(this).attr('data-order-limit_price'),
-        'amount_unsigned': $(this).attr('data-order-amount_unsigned'),
+        'order_qty_unsigned': $(this).attr('data-order-order_qty_unsigned'),
         'asset-id': $(this).attr('data-order-asset-id'),
         'asset-str': $(this).attr('data-order-asset-str'),
       };
@@ -16,7 +16,7 @@ $(function() {
       // set the default values to the data-... attributes above
       $('#fills-new input[name="pub_date"]').val(data['pub_date']);
       $('#fills-new select[name="fill_side"]').val(data['order_side']);
-      $('#fills-new input[name="fill_qty_unsigned"]').val(data['amount_unsigned']);
+      $('#fills-new input[name="fill_qty_unsigned"]').val(data['order_qty_unsigned']);
 
       $newOption = $("<option class='extra-dyn'></option>").val(data['asset-id']).text(data['asset-str']);
       $('#fills-new select[name="asset"]').append($newOption).trigger('change');
@@ -33,7 +33,7 @@ $(function() {
       form=$('#fills-new').find('form');
       $('<input/>', {type:'hidden', class:'extra-dyn', name:'pub_date',          value:data['pub_date']       }).appendTo(form);
       $('<input/>', {type:'hidden', class:'extra-dyn', name:'fill_side',         value:data['order_side']     }).appendTo(form);
-      $('<input/>', {type:'hidden', class:'extra-dyn', name:'fill_qty_unsigned', value:data['amount_unsigned']}).appendTo(form);
+      $('<input/>', {type:'hidden', class:'extra-dyn', name:'fill_qty_unsigned', value:data['order_qty_unsigned']}).appendTo(form);
       $('<input/>', {type:'hidden', class:'extra-dyn', name:'asset',             value:data['asset-id']       }).appendTo(form);
 
       // dedicated to order is a hidden field

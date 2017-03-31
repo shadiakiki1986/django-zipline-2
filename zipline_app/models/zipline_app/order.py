@@ -21,7 +21,7 @@ class AbstractOrder(models.Model):
     order_text = models.CharField(max_length=200, blank=True)
     pub_date = models.DateTimeField('date published',default=now_minute)
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
-    amount_unsigned = models.PositiveIntegerField(
+    order_qty_unsigned = models.PositiveIntegerField(
       default=0,
       validators=[MaxValueValidator(1000000), validate_nonzero],
       verbose_name="Qty"
@@ -51,7 +51,7 @@ class AbstractOrder(models.Model):
       if other is None:
         return []
       messages = []
-      attrs = ['order_text', 'pub_date', 'asset', 'amount_unsigned', 'account', 'order_side', 'order_type', 'limit_price']
+      attrs = ['order_text', 'pub_date', 'asset', 'order_qty_unsigned', 'account', 'order_side', 'order_type', 'limit_price']
       for attr in attrs:
         if getattr(self, attr) != getattr(other, attr):
           messages.append(
@@ -70,10 +70,10 @@ class AbstractOrder(models.Model):
 
 class Order(AbstractOrder):
     def amount_signed(self):
-      return self.amount_unsigned * (+1 if self.order_side==BUY else -1)
+      return self.order_qty_unsigned * (+1 if self.order_side==BUY else -1)
 
     def __str__(self):
-        return "%s, %s, %s (%s, %s)" % (self.asset.asset_symbol, self.order_side, self.amount_unsigned, self.account.account_symbol, self.order_text)
+        return "%s, %s, %s (%s, %s)" % (self.asset.asset_symbol, self.order_side, self.order_qty_unsigned, self.account.account_symbol, self.order_text)
 
     def was_published_recently(self):
         now = timezone.now()
@@ -143,7 +143,7 @@ class Order(AbstractOrder):
         order_text = self.order_text,
         pub_date = self.pub_date,
         asset = self.asset,
-        amount_unsigned = self.amount_unsigned,
+        order_qty_unsigned = self.order_qty_unsigned,
         account = self.account,
         order_side = self.order_side,
         user = self.user,

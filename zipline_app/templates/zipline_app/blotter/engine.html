@@ -24,7 +24,7 @@
           <td width="10%">{{order.asset.asset_symbol}}</td>
           <td width="10%"><font color="red">{{order.filled|intcomma}}</font></td>
           <td width=" 5%">{{order.order_side}}</td>
-          <td width="10%">{{order.amount_unsigned|intcomma}}</td>
+          <td width="10%">{{order.order_qty_unsigned|intcomma}}</td>
           <td width="10%">{{order.account.account_symbol}}</td>
           <td width="10%"><font color="red">{{order.avgPrice|floatformat:"2"|intcomma}}</font></td>
           <td width="10%" nowrap>{{ order.order_text }}</td>

@@ -34,7 +34,7 @@
         {% endif %}
       </div>
       <div class="col-xs-1">{{ order.order_side }}</div>
-      <div class="col-xs-1 text-right">{{ order.amount_unsigned }}</div>
+      <div class="col-xs-1 text-right">{{ order.order_qty_unsigned }}</div>
       <div class="col-xs-2">
         <a href="{% url 'zipline_app:accounts-detail' order.account.id %}">{{ order.account.account_symbol }}</a>
       </div>

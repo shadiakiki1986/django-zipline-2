@@ -41,7 +41,7 @@
   <div class="col-xs-1">
     <div class='row'>
       {{order.order_side}}
-      <span class='pull-right'>{{order.amount_unsigned|intcomma}}</span>
+      <span class='pull-right'>{{order.order_qty_unsigned|intcomma}}</span>
     </div>
   </div>
 
@@ -112,7 +112,7 @@
               data-order-order_side="{{order.order_side}}"
               data-order-order_type="{{order.order_type}}"
               data-order-limit_price="{{order.limit_price}}"
-              data-order-amount_unsigned="{{order.amount_unsigned}}"
+              data-order-order_qty_unsigned="{{order.order_qty_unsigned}}"
               data-order-asset-id="{{order.asset.id}}"
               data-order-asset-str="{{order.asset.str}}"
             >

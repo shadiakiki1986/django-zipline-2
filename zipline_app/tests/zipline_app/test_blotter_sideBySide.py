@@ -14,14 +14,14 @@ class BlotterSideBySideViewsTests(TestCase):
     myTestLogin(self.client)
 
   def test_one_order(self):
-    order = create_order(order_text="random order",days=-1, asset=self.ass, order_side=BUY, amount_unsigned=10, account=self.acc)
+    order = create_order(order_text="random order",days=-1, asset=self.ass, order_side=BUY, order_qty_unsigned=10, account=self.acc)
     url = reverse('zipline_app:blotter-sideBySide')
     response = self.client.get(url, follow=True)
     self.assertContains(response, "random order")
 
   def test_two_orders(self):
-    o_l = create_order(order_text="buy order", days=-1, asset=self.ass, order_side=BUY,  amount_unsigned=10, account=self.acc)
-    o_s = create_order(order_text="sell order",days=-1, asset=self.ass, order_side=SELL, amount_unsigned=10, account=self.acc)
+    o_l = create_order(order_text="buy order", days=-1, asset=self.ass, order_side=BUY,  order_qty_unsigned=10, account=self.acc)
+    o_s = create_order(order_text="sell order",days=-1, asset=self.ass, order_side=SELL, order_qty_unsigned=10, account=self.acc)
 
     url = reverse('zipline_app:blotter-sideBySide')
     response = self.client.get(url, follow=True)

@@ -13,7 +13,7 @@ Order Details
   <li>Limit price: {{order.limit_price}}</li>
   {% endif %}
   <li>Side: {{order.order_side}}</li>
-  <li>Qty: {{order.amount_unsigned|intcomma}}</li>
+  <li>Qty: {{order.order_qty_unsigned|intcomma}}</li>
   <li>Filled: <font color="red">{{order.filled|intcomma}}</font></li>
   <li>Date: {{order.pub_date}}</li>
   <li>Account: {{order.account.account_symbol}}</li>

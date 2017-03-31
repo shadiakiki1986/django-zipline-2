@@ -35,7 +35,7 @@ class AssetModelTests(TestCase):
   def test_delete_fail(self):
     acc1 = create_account("test acc")
     a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])
-    o1 = create_order(order_text="test?",days=-1, asset=a1a, order_side=BUY, amount_unsigned=10, account=acc1)
+    o1 = create_order(order_text="test?",days=-1, asset=a1a, order_side=BUY, order_qty_unsigned=10, account=acc1)
 
     with self.assertRaises(ValueError):
       a1a.delete()
