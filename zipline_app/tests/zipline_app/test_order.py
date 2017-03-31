@@ -5,7 +5,7 @@ from django.utils import timezone
 from ...models.zipline_app.zipline_app import ZlModel
 from .test_zipline_app import create_asset, create_order, create_account, a1
 from ...models.zipline_app.fill import Fill
-from ...models.zipline_app.side import BUY, SHORT, MARKET
+from ...models.zipline_app.side import BUY, SELL, MARKET
 from .test_fill import create_fill_from_order
 from ...utils import myTestLogin
 from django.contrib.auth.models import User
@@ -19,13 +19,13 @@ class OrderModelTests(TestCase):
     def test_buy(self):
         o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=BUY, amount_unsigned=10, account=self.acc1)
 
-    def test_short(self):
-        o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=SHORT, amount_unsigned=10, account=self.acc1)
+    def test_sell(self):
+        o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=SELL, amount_unsigned=10, account=self.acc1)
 
     def test_signed(self):
         o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=BUY, amount_unsigned=10, account=self.acc1)
         self.assertEqual(o1.amount_signed(), 10)
-        o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=SHORT, amount_unsigned=10, account=self.acc1)
+        o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=SELL, amount_unsigned=10, account=self.acc1)
         self.assertEqual(o1.amount_signed(), -10)
 
     def test_dedicated_fill(self):
@@ -44,7 +44,7 @@ class OrderModelTests(TestCase):
     def test_history(self):
       o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=BUY, amount_unsigned=10, account=self.acc1)
       self.assertEqual(o1.history().count(), 0)
-      o1.order_side=SHORT
+      o1.order_side=SELL
       o1.save()
       self.assertEqual(o1.history().count(), 1)
 
@@ -154,7 +154,7 @@ class OrderDetailViewTests(TestCase):
       url = reverse('zipline_app:orders-detail', args=(order.id,))
       response = self.client.get(url, follow=True)
       self.assertContains(response, "No history")
-      order.order_side=SHORT
+      order.order_side=SELL
       order.save()
       response = self.client.get(url, follow=True)
       self.assertContains(response, "Changed order_side from")

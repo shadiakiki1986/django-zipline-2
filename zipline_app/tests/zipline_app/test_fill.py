@@ -2,7 +2,7 @@ from django.test import TestCase
 from .test_zipline_app import create_fill, create_asset, a1, create_order, create_account, a2
 from django.urls import reverse
 from ...models.zipline_app.fill import Fill
-from ...models.zipline_app.side import BUY, SHORT
+from ...models.zipline_app.side import BUY, SELL
 from ...models.zipline_app.zipline_app import ZlModel
 from django.core.exceptions import ValidationError
 from ...utils import myTestLogin
@@ -35,7 +35,7 @@ class FillModelTests(TestCase):
   def test_clean_invalid_dedicated_order_side(self):
     order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, amount_unsigned=10,   account=self.acc                          )
     with self.assertRaises(ValidationError):
-      f1 = create_fill(    fill_text="test fill",     days=-1, asset=self.a1a, fill_side=SHORT,  fill_qty_unsigned=10, fill_price=2,     dedicated_to_order=order)
+      f1 = create_fill(    fill_text="test fill",     days=-1, asset=self.a1a, fill_side=SELL,  fill_qty_unsigned=10, fill_price=2,     dedicated_to_order=order)
 
   def test_clean_invalid_dedicated_order_asset(self):
     order = create_order(order_text="random order", days=-1,  asset=self.a1a, order_side=BUY, amount_unsigned=10,   account=self.acc                          )
@@ -59,9 +59,9 @@ class FillModelTests(TestCase):
   def test_two_opposite_fills_same_minute(self):
     qty = 10
     o_l = create_order(order_text="buy order",  days=-1,  asset=self.a1a, order_side=BUY,  amount_unsigned=qty,   account=self.acc)
-    o_s = create_order(order_text="short order", days=-1,  asset=self.a1a, order_side=SHORT, amount_unsigned=qty,   account=self.acc)
+    o_s = create_order(order_text="sell order", days=-1,  asset=self.a1a, order_side=SELL, amount_unsigned=qty,   account=self.acc)
     f_l = create_fill_from_order(order=o_l, fill_text="test fill buy", fill_price=2)
-    f_s = create_fill_from_order(order=o_s, fill_text="test fill short", fill_price=2)
+    f_s = create_fill_from_order(order=o_s, fill_text="test fill sell", fill_price=2)
 
   def test_dedicated_fill_with_earlier_open_fill(self):
     o1 = create_order(order_text="random order 1", days=-1,  asset=self.a1a, order_side=BUY, amount_unsigned=10,   account=self.acc)

@@ -3,7 +3,7 @@ from .test_zipline_app import create_account, create_asset, create_order, a1, cr
 from django.urls import reverse
 from ...models.zipline_app.fill import Fill
 from ...models.zipline_app.zipline_app import ZlModel
-from ...models.zipline_app.side import BUY, SHORT
+from ...models.zipline_app.side import BUY, SELL
 from .test_fill import create_fill_from_order
 from io import BytesIO
 import pandas as pd

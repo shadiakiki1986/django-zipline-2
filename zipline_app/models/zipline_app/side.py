@@ -1,8 +1,8 @@
 BUY = 'B'
-SHORT = 'S'
+SELL = 'S'
 FILL_SIDE_CHOICES = (
   (BUY, 'Buy'),
-  (SHORT, 'Short')
+  (SELL, 'Sell')
 )
 
 # Django docs: writing validators
