@@ -19,7 +19,7 @@ from functools import reduce
 
 from numpy import concatenate
 import pandas as pd
-from .side import LIMIT
+from .side import LIMIT, MARKET, OPEN
 
 # This is an adapter connecting the django model datastructures to the zipline datastructures
 class ZlModel:
@@ -101,8 +101,15 @@ class ZlModel:
 
       return fills2
 
+    # note that this method also edits existing orders
     @staticmethod
     def add_order(order):
+      if order.order_status != OPEN:
+        logger.debug("Not adding non-open order %s" % order)
+        # check if already added before and status changed
+        ZlModel.delete_order(order, True)
+        return
+
       ZlModel.add_asset(order.asset)
 
       logger.debug("Add order %s" % order)
@@ -113,7 +120,10 @@ class ZlModel:
       if order.order_type == LIMIT:
         style = LimitOrder(order.limit_price)
       else:
-        style = MarketOrder()
+        if order.order_type == MARKET:
+          style = MarketOrder()
+        else:
+          raise ValueError('Unsupported order type: %s'%order.order_type)
 
       ZlModel.orders[order.asset.id][order.id] = {
         "dt": order.pub_date,

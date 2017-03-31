@@ -11,7 +11,7 @@ class ZiplineAppConfig(AppConfig):
 
     # https://chriskief.com/2014/02/28/django-1-7-signals-appconfig/
     def ready(self):
-      from .signals import SignalProcessor
+      from .signalProcessor import SignalProcessor
       senders=("zipline_app.Order", "zipline_app.Fill", "zipline_app.Asset")
       for sender in senders:
         #models.signals.post_init.connect(SignalProcessor.post_init, sender=sender)
@@ -22,3 +22,6 @@ class ZiplineAppConfig(AppConfig):
       # eventhough this is supposed to run only once, I am seeing it run twice,
       # but twice is still better than at each reload
       request_started.connect(SignalProcessor.ready)
+
+      #
+      order_cancelled.connect(SignalProcessor.order_cancelled)

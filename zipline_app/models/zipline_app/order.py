@@ -8,7 +8,7 @@ from django.urls import reverse
 from .asset import Asset
 from .account import Account
 from .zlmodel import ZlModel
-from .side import BUY, FILL_SIDE_CHOICES, validate_nonzero, MARKET, ORDER_TYPE_CHOICES, PositiveFloatFieldModel
+from .side import BUY, FILL_SIDE_CHOICES, validate_nonzero, MARKET, ORDER_TYPE_CHOICES, PositiveFloatFieldModel, ORDER_STATUS_CHOICES, OPEN, CANCELLED
 
 from numpy import average
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -46,12 +46,18 @@ class AbstractOrder(models.Model):
       null=True,
       blank=True
     )
+    order_status = models.CharField(
+      max_length=1,
+      choices=ORDER_STATUS_CHOICES,
+      default=OPEN,
+      verbose_name="Status"
+    )
 
     def diff(self, other):
       if other is None:
         return []
       messages = []
-      attrs = ['order_text', 'pub_date', 'asset', 'order_qty_unsigned', 'account', 'order_side', 'order_type', 'limit_price']
+      attrs = ['order_text', 'pub_date', 'asset', 'order_qty_unsigned', 'account', 'order_side', 'order_type', 'limit_price', 'order_status']
       for attr in attrs:
         if getattr(self, attr) != getattr(other, attr):
           messages.append(
@@ -149,11 +155,16 @@ class Order(AbstractOrder):
         user = self.user,
         order_type = self.order_type,
         limit_price = self.limit_price,
+        order_status = self.order_status
       )
 
     # excluding the first entry with previous=None since this is available regardless of edits made
     def history(self):
       return self.orderhistory_set.exclude(previous=None).order_by('-ed_date')
+
+    def cancel(self):
+      self.order_status = CANCELLED
+      self.save()
 
 #####################
 # Model History in Django

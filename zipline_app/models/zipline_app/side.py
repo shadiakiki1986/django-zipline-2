@@ -51,4 +51,17 @@ class PositiveFloatFieldModel(models.FloatField):
     defaults.update(kwargs)
     return super(PositiveFloatFieldModel, self).formfield(**defaults)
 
-
+# order status
+# https://github.com/quantopian/zipline/blob/master/zipline/finance/order.py#L24
+OPEN = 'O'
+FILLED = 'F'
+CANCELLED = 'C'
+REJECTED = 'R'
+HELD = 'H'
+ORDER_STATUS_CHOICES = (
+  (OPEN, 'Open'),
+  (FILLED, 'Filled'),
+  (CANCELLED, 'Cancelled'),
+  (REJECTED, 'Rejected'),
+  (HELD, 'Held'),
+)

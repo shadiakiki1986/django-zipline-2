@@ -7,6 +7,7 @@
 
 Order Details
 <ul>
+  <li>Date: {{order.pub_date}}</li>
   <li>Asset: {{order.asset.asset_symbol}}</li>
   <li>Type: {{order.order_type}}</li>
   {% if order.order_type == 'L' %}
@@ -15,7 +16,7 @@ Order Details
   <li>Side: {{order.order_side}}</li>
   <li>Qty: {{order.order_qty_unsigned|intcomma}}</li>
   <li>Filled: <font color="red">{{order.filled|intcomma}}</font></li>
-  <li>Date: {{order.pub_date}}</li>
+  <li>Status: {{order.order_status}}</li>
   <li>Account: {{order.account.account_symbol}}</li>
   <li>
     Dedicated fill:

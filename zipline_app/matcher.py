@@ -7,6 +7,9 @@ from zipline.finance.blotter import Blotter
 #slippage_func = FixedSlippage(spread=0.0)
 from zipline.finance.slippage import VolumeShareSlippage
 from zipline.finance.asset_restrictions import NoRestrictions
+from zipline.finance.cancel_policy import EODCancel
+from zipline.gens.sim_engine import SESSION_END
+from zipline.finance.order import ORDER_STATUS
 
 # try to use a data portal
 from zipline.data.data_portal import DataPortal
@@ -37,6 +40,8 @@ from pandas.tseries.offsets import CustomBusinessDay
 
 import logging
 logger = logging.getLogger("zipline_app") # __name__)
+
+from .signals import order_cancelled
 
 def reduce_concatenate(list_of_lists):
   return reduce(
@@ -267,7 +272,9 @@ class Matcher:
     blotter = Blotter(
       data_frequency=self.sim_params.data_frequency,
       asset_finder=self.env.asset_finder,
-      slippage_func=slippage_func
+      slippage_func=slippage_func,
+      # https://github.com/quantopian/zipline/blob/3350227f44dcf36b6fe3c509dcc35fe512965183/tests/test_blotter.py#L136
+      cancel_policy=EODCancel()
     )
     return blotter
 
@@ -339,10 +346,19 @@ class Matcher:
     all_closed = []
     all_txns = []
     self._orders2blotter(orders,blotter)
+    previous = None
     for dt in all_minutes:
         #logger.debug("========================")
         dt = pd.Timestamp(dt, tz='utc')
         blotter.set_date(dt)
+
+        if previous is not None:
+          if previous.day != dt.day:
+            # execute cancel policy
+            # https://github.com/quantopian/zipline/blob/3350227f44dcf36b6fe3c509dcc35fe512965183/tests/test_blotter.py#L153
+            blotter.execute_cancel_policy(SESSION_END)
+        previous = dt
+
         #self._orders2blotter(orders,blotter)
         #logger.debug("DQ1: %s" % (blotter.current_dt))
         #logger.debug("DQ6: %s" % blotter.open_orders)
@@ -366,6 +382,10 @@ class Matcher:
 
         all_closed = numpy.concatenate((all_closed,closed_orders))
         all_txns = numpy.concatenate((all_txns, new_transactions))
+
+    for order in blotter.orders:
+      if order.status==ORDER_STATUS.CANCELLED:
+        order_cancelled.send(sender=None, id=order.id)
 
     return all_closed, all_txns
 
