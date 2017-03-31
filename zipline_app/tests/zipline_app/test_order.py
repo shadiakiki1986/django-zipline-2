@@ -24,9 +24,9 @@ class OrderModelTests(TestCase):
 
     def test_signed(self):
         o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=BUY, order_qty_unsigned=10, account=self.acc1)
-        self.assertEqual(o1.amount_signed(), 10)
+        self.assertEqual(o1.order_qty_signed(), 10)
         o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=SELL, order_qty_unsigned=10, account=self.acc1)
-        self.assertEqual(o1.amount_signed(), -10)
+        self.assertEqual(o1.order_qty_signed(), -10)
 
     def test_dedicated_fill(self):
         o1 = create_order(order_text="test?",days=-1, asset=self.a1a, order_side=BUY, order_qty_unsigned=10, account=self.acc1)

@@ -91,15 +91,15 @@
         </div>
         {% endif %}
 
-        {% if order.filled == order.amount_signed and order.dedicated_fill is None %}
+        {% if order.filled == order.order_qty_signed and order.dedicated_fill is None %}
         <div class='row'>
           Filled
         </div>
         {% endif %}
 
-        {% if order.filled != order.amount_signed %}
+        {% if order.filled != order.order_qty_signed %}
         <div class='row text-right'>
-          {{order.filled|intcomma}} / {{order.amount_signed}}
+          {{order.filled|intcomma}} / {{order.order_qty_signed}}
 
           <abbr title="Fill order #{{order.id}}">
             <button

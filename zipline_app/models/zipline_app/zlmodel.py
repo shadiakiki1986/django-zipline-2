@@ -116,7 +116,7 @@ class ZlModel:
       ZlModel.orders[order.asset.id][order.id] = {
         "dt": order.pub_date,
         "asset": order.asset.id,
-        "amount": order.amount_signed(),
+        "amount": order.order_qty_signed(),
         "style": MarketOrder()
       }
 

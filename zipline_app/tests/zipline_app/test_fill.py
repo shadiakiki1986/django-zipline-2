@@ -69,7 +69,7 @@ class FillModelTests(TestCase):
     o3 = create_order(order_text="random order 3", days=-3,  asset=self.a1a, order_side=BUY, order_qty_unsigned=30,   account=self.acc)
     f1 = create_fill_from_order(order=o1, fill_price=1, fill_text="fill 1")
 
-    self.assertEqual(o1.amount_signed(), o1.filled())
+    self.assertEqual(o1.order_qty_signed(), o1.filled())
     self.assertEqual(o3.filled(),0)
 
     # check that o1 is not in the open orders of ZlModel

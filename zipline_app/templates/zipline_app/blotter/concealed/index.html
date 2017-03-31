@@ -141,7 +141,7 @@
         </div>
       {% endifchanged %}
 
-      <div class="row {% if order.filled == order.amount_signed %}text-muted{% endif %}">
+      <div class="row {% if order.filled == order.order_qty_signed %}text-muted{% endif %}">
 
         {% include 'zipline_app/blotter/concealed/_orders.html' %}
       </div><!-- end row -->

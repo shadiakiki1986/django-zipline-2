@@ -94,9 +94,9 @@ class BlotterBaseView(generic.ListView):
     def fills_required_per_asset(self):
       fills = {}
       for order in self.get_orders():
-        if order.filled()!=order.amount_signed():
+        if order.filled()!=order.order_qty_signed():
           if order.asset not in fills: fills[order.asset]=0
-          fills[order.asset]+=order.amount_signed() - order.filled()
+          fills[order.asset]+=order.order_qty_signed() - order.filled()
       return fills
 
 class BlotterSideBySideView(BlotterBaseView):

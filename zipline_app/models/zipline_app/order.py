@@ -69,7 +69,7 @@ class AbstractOrder(models.Model):
 
 
 class Order(AbstractOrder):
-    def amount_signed(self):
+    def order_qty_signed(self):
       return self.order_qty_unsigned * (+1 if self.order_side==BUY else -1)
 
     def __str__(self):
@@ -84,7 +84,7 @@ class Order(AbstractOrder):
         return self.dedicated_fill().fill_qty_signed()
 
       if self.id in ZlModel.zl_closed_keyed:
-        return self.amount_signed()
+        return self.order_qty_signed()
       if self.id in ZlModel.zl_open_keyed:
         return ZlModel.zl_open_keyed[self.id].filled
       return 0
