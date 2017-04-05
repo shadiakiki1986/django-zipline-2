@@ -36,8 +36,14 @@ Reference
 * [creating an admin user](https://docs.djangoproject.com/en/1.10/intro/tutorial02/#creating-an-admin-user)
 
 ## Usage
+To serve the web app
 ```bash
 python3 manage.py runserver 0.0.0.0:8000
+```
+
+To import marketflow accounts/assets
+```bash
+python3 manage.py importMarketflow --debug
 ```
 
 ## Testing
