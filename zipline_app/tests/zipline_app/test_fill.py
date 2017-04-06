@@ -7,6 +7,7 @@ from ...models.zipline_app.zipline_app import ZlModel
 from django.core.exceptions import ValidationError
 from ...utils import myTestLogin
 from django.contrib.auth.models import User
+from django.utils.timezone import get_current_timezone
 
 def create_fill_from_order(order, fill_text, fill_price, tt_order_key="", user=None):
     return Fill.objects.create(
@@ -161,7 +162,7 @@ class FillGeneralViewsTests(TestCase):
 
         url = reverse('zipline_app:fills-new')
         f1={
-          'pub_date':o1.pub_date.replace(hour=o1.pub_date.hour+2).strftime('%Y-%m-%d %H:%M'),
+          'pub_date':o1.pub_date.astimezone(get_current_timezone()).strftime('%Y-%m-%d %H:%M'),
           'asset':o1.asset.id,
           'fill_side': o1.order_side,
           'fill_qty_unsigned':o1.order_qty_unsigned,
