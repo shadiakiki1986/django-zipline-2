@@ -1,0 +1,29 @@
+{% load humanize %}
+
+Order Details
+
+Date: {{order.pub_date}}
+Asset: {{order.asset.asset_symbol}}
+Type: {{order.get_order_type_display}}
+{% if order.order_type == 'L' %}
+Limit price: {{order.limit_price}}
+{% endif %}
+Side: {{order.get_order_side_display}}
+Qty: {{order.order_qty_unsigned|intcomma}}
+Filled: {{order.filled|intcomma}}
+Status: {{order.get_order_status_display}}
+Account: {{order.account.account_symbol}}
+
+Dedicated fill:
+{% if order.dedicated_fill is not None %}
+#{{order.dedicated_fill.id}}
+{% else %}
+None
+{% endif %}
+Comment: {% if order.order_text %}{{ order.order_text }}{% else %}None{% endif %}
+User: {{order.user.username}}
+Validity: {{order.get_order_validity_display}}
+{% if order.order_validity == 'D' %}
+({{order.validity_date}})
+{% endif %}
+Comments: {{ order.order_text }}

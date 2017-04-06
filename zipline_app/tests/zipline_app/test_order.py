@@ -10,6 +10,7 @@ from ...models.zipline_app.side import BUY, SELL, MARKET, GTC, GTD, DAY, OPEN, C
 from .test_fill import create_fill_from_order, url_permission
 from ...utils import myTestLogin
 from django.contrib.auth.models import User
+from django.core.mail import outbox
 
 class OrderModelTests(TestCase):
     def setUp(self):
@@ -96,6 +97,13 @@ class OrderModelTests(TestCase):
       o2.refresh_from_db()
       self.assertEqual(o2.order_status,CANCELLED)
       self.assertEqual(o1.order_status,OPEN)
+
+    # https://docs.djangoproject.com/en/1.10/topics/testing/tools/#email-services
+    def test_create_order_sends_email(self):
+      user = myTestLogin(self.client)
+      o1 = self.provider_validity(order_validity=DAY, validity_date=None, pub_date=timezone.now(), user=user)
+      print('before assert')
+      self.assertEqual(len(outbox), 1)
 
 class OrderGeneralViewsTests(TestCase):
     def setUp(self):

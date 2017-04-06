@@ -3,40 +3,8 @@
 {% load bootstrap3 %}
 
 {% block content %}
-<h1>{{ order.order_text }}</h1>
 
-Order Details
-<ul>
-  <li>Date: {{order.pub_date}}</li>
-  <li>Asset: {{order.asset.asset_symbol}}</li>
-  <li>Type: {{order.get_order_type_display}}</li>
-  {% if order.order_type == 'L' %}
-  <li>Limit price: {{order.limit_price}}</li>
-  {% endif %}
-  <li>Side: {{order.get_order_side_display}}</li>
-  <li>Qty: {{order.order_qty_unsigned|intcomma}}</li>
-  <li>Filled: <font color="red">{{order.filled|intcomma}}</font></li>
-  <li>Status: {{order.get_order_status_display}}</li>
-  <li>Account: {{order.account.account_symbol}}</li>
-  <li>
-    Dedicated fill:
-    {% if order.dedicated_fill is not None %}
-    <a href="{% url 'zipline_app:fills-detail' order.dedicated_fill.id %}">
-      #{{order.dedicated_fill.id}}
-    </a>
-    {% else %}
-    None
-    {% endif %}
-  </li>
-  <li>Comment: {% if order.order_text %}{{ order.order_text }}{% else %}None{% endif %}</li>
-  <li>User: {{order.user.username}}</li>
-  <li>
-    Validity: {{order.get_order_validity_display}}
-    {% if order.order_validity == 'D' %}
-    ({{order.validity_date}})
-    {% endif %}
-  </li>
-</ul>
+{% include 'zipline_app/order/_order_detail.html' %}
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
