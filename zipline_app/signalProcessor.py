@@ -44,7 +44,7 @@ class SignalProcessor:
         if len(recipients)==0:
           logger.error("No users with emails to receive")
         res = send_mail(
-          subject = "New order #%s (%s x %s)" % (instance.id, instance.order_qty_signed(), instance.asset.asset_name),
+          subject = settings.EMAIL_SUBJECT_PREFIX + "New order #%s (%s x %s)" % (instance.id, instance.order_qty_signed(), instance.asset.asset_name),
           message = message_plain,
           from_email = settings.DEFAULT_FROM_EMAIL,
           recipient_list = recipients,
