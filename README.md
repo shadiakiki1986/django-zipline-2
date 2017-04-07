@@ -46,6 +46,23 @@ To import marketflow accounts/assets
 python3 manage.py importMarketflow --debug
 ```
 
+## Environment variables required
+For importing from marketflow sql server
+
+    export PYMSSQL_SERVER=...
+    export PYMSSQL_PORT=...
+    export PYMSSQL_USERNAME=...
+    export PYMSSQL_PASSWORD=...
+    export PYMSSQL_DB=...
+
+For sending email through a SMTP server with NTLM authentication
+
+    export DEFAULT_FROM_EMAIL=from@email.com
+    export EMAIL_HOST=smtp.mail.server.com
+    export EMAIL_PORT=123
+    export EMAIL_HOST_USER=domain\\user
+    export EMAIL_HOST_PASSWORD=oasswird
+
 ## Testing
 ```bash
 pew workon DJANGO_ZIPLINE
