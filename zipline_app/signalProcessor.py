@@ -27,7 +27,7 @@ class SignalProcessor:
   #def post_init(sender, **kwargs):
   #  print("Signal: %s, %s" % ("post_init", sender.__name__))
 
-  def email_instance(self, key, template_txt, template_html, subject):
+  def email_instance(key, instance, template_txt, template_html, subject):
     ctx = { key: instance, 'domain': settings.BASE_URL }
     message_plain = render_to_string(template_txt, ctx)
     message_html = get_template(template_html).render(Context(ctx))
@@ -52,15 +52,16 @@ class SignalProcessor:
       ZlModel.add_fill(instance)
       if created:
         subject = None
-        if fill.dedicated_to_order is not None:
-          subject = "New fill #%s (fills order #%s)" % (fill.id, fill.dedicated_to_order.id)
+        if instance.dedicated_to_order is not None:
+          subject = "New fill #%s (fills order #%s)" % (instance.id, instance.dedicated_to_order.id)
         else:
           subject = "New fill #%s (%s x %s)" % (instance.id, instance.fill_qty_signed(), instance.asset.asset_name)
 
-        self.email_instance(
+        SignalProcessor.email_instance(
           'fill',
+          instance,
           'zipline_app/email_fill_plain.txt',
-          'zipline_app/order/_fill_detail.html',
+          'zipline_app/fill/_fill_detail.html',
           subject
         )
 
@@ -69,8 +70,9 @@ class SignalProcessor:
       instance.append_history()
       logger.debug("post_save order %s"%created)
       if created:
-        self.email_instance(
+        SignalProcessor.email_instance(
           'order',
+          instance,
           'zipline_app/email_order_plain.txt',
           'zipline_app/order/_order_detail.html',
           "New order #%s (%s x %s)" % (instance.id, instance.order_qty_signed(), instance.asset.asset_name)
