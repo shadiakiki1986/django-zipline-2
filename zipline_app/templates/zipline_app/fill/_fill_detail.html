@@ -15,3 +15,12 @@
   </li>
   <li>Comment: {% if fill.fill_text %}{{ fill.fill_text }}{% else %}None{% endif %}</li>
 </ul>
+
+{% if domain %}
+<p>
+  Published in
+  <a href="{{domain}}{% url 'zipline_app:blotter-concealed' %}">blotter</a>
+  /
+  <a href="{{ domain }}{% url 'zipline_app:fills-detail' fill.id %}">fill #{{fill.id}}</a>
+</p>
+{% endif %}

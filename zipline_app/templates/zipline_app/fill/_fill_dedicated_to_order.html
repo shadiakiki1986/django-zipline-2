@@ -1,5 +1,5 @@
 {% if fill.dedicated_to_order is not None %}
-<a href="{% url 'zipline_app:orders-detail' fill.dedicated_to_order.id %}">#{{ fill.dedicated_to_order.id }}</a>
+<a href="{{domain}}{% url 'zipline_app:orders-detail' fill.dedicated_to_order.id %}">#{{ fill.dedicated_to_order.id }}</a>
 {% else %}
 -
 {% endif %}
