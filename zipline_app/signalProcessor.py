@@ -36,7 +36,7 @@ class SignalProcessor:
       instance.append_history()
       logger.debug("post_save order %s"%created)
       if created:
-        ctx = { 'order': instance }
+        ctx = { 'order': instance, 'domain': settings.BASE_URL }
         message_plain = render_to_string('zipline_app/email_order_plain.txt', ctx)
         message_html = get_template('zipline_app/order/_order_detail.html').render(Context(ctx))
         recipients = User.objects.exclude(email='').values_list('email', flat=True)

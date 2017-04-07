@@ -62,6 +62,7 @@ For sending email through a SMTP server with NTLM authentication
     export EMAIL_PORT=123
     export EMAIL_HOST_USER=domain\\user
     export EMAIL_HOST_PASSWORD=oasswird
+    export BASE_URL=http://blotter.com # just for email footer link
 
 ## Testing
 ```bash
