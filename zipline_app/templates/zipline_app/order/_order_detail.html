@@ -24,7 +24,6 @@
     None
     {% endif %}
   </li>
-  <li>Comment: {% if order.order_text %}{{ order.order_text }}{% else %}None{% endif %}</li>
   <li>User: {{order.user.username}}</li>
   <li>
     Validity: {{order.get_order_validity_display}}
@@ -32,7 +31,7 @@
     ({{order.validity_date}})
     {% endif %}
   </li>
-  <li>Comments: {{ order.order_text }}</li>
+  <li>Comment: {% if order.order_text %}{{ order.order_text }}{% else %}None{% endif %}</li>
 </ul>
 
 {% if domain %}
