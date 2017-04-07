@@ -1,6 +1,6 @@
 # Copied from https://www.pythondiary.com/tutorials/django-ntlm-smtp-auth.html
 from django.core.mail.backends.smtp import EmailBackend
-from ntlm.smtp import ntlm_authenticate
+from ntlm3.smtp import ntlm_authenticate
 import smtplib
 from django.core.mail.utils import DNS_NAME
 
