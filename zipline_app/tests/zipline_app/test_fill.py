@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from ...utils import myTestLogin
 from django.contrib.auth.models import User
 from django.utils.timezone import get_current_timezone
+from django.core import mail
 
 def create_fill_from_order(order, fill_text, fill_price, tt_order_key="", user=None):
     return Fill.objects.create(
