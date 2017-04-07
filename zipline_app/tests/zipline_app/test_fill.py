@@ -90,6 +90,14 @@ class FillModelTests(TestCase):
     user = User.objects.create_user(username='john', email='jlennon@beatles.com', password=password)
     f1 = create_fill(days=-1, asset=self.a1a, fill_side=BUY, fill_qty_unsigned=1, fill_price=1, fill_text="fill 1", user=user)
 
+  # https://docs.djangoproject.com/en/1.10/topics/testing/tools/#email-services
+  def test_create_fill_sends_email(self):
+    user = myTestLogin(self.client)
+    f1 = create_fill(days=-1, asset=self.a1a, fill_side=BUY, fill_qty_unsigned=1, fill_price=1, fill_text="fill 1", user=user)
+    self.assertEqual(len(mail.outbox), 1)
+    self.assertTrue("New fill" in mail.outbox[0].subject)
+
+
 class FillGeneralViewsTests(TestCase):
     def setUp(self):
         self.a1a = create_asset(a1["symbol"],a1["exchange"],a1["name"])

@@ -1,0 +1,12 @@
+{% load humanize %}
+
+Fill Details
+
+Date: {{fill.pub_date}}
+Asset: {{fill.asset.asset_symbol}}
+Side: {{fill.get_fill_side_display}}
+Qty: {{fill.fill_qty_unsigned|intcomma}}
+Price: {{fill.fill_price}}
+TT order key: {% if fill.tt_order_key %}{{fill.tt_order_key}}{% else %}None{% endif %}
+Dedicated to order: {% if fill.dedicated_to_order is not None %}Order #{{ fill.dedicated_to_order.id }}{% else %}None{% endif %}
+Comment: {% if fill.fill_text %}{{ fill.fill_text }}{% else %}None{% endif %}

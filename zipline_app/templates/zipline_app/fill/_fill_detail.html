@@ -1,0 +1,17 @@
+{% load humanize %}
+{# note that this template is also used in the email, so probably not a good idea to use bootstrap here? Maybe if needed I'll split this into two files, one for the email and another for the UI #}
+
+<h2>Fill Details</h2>
+<ul>
+  <li>Date: {{fill.pub_date}}</li>
+  <li>Asset: {{fill.asset.asset_symbol}}</li>
+  <li>Side: {{fill.get_fill_side_display}}</li>
+  <li>Qty: {{fill.fill_qty_unsigned|intcomma}}</li>
+  <li>Price: {{fill.fill_price}}</li>
+  <li>TT order key: {% if fill.tt_order_key %}{{fill.tt_order_key}}{% else %}None{% endif %}</li>
+  <li>
+    Dedicated to order:
+    {% include 'zipline_app/fill/_fill_dedicated_to_order.html' %}
+  </li>
+  <li>Comment: {% if fill.fill_text %}{{ fill.fill_text }}{% else %}None{% endif %}</li>
+</ul>

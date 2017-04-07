@@ -27,32 +27,55 @@ class SignalProcessor:
   #def post_init(sender, **kwargs):
   #  print("Signal: %s, %s" % ("post_init", sender.__name__))
 
+  def email_instance(self, key, template_txt, template_html, subject):
+    ctx = { key: instance, 'domain': settings.BASE_URL }
+    message_plain = render_to_string(template_txt, ctx)
+    message_html = get_template(template_html).render(Context(ctx))
+    recipients = User.objects.exclude(email='').values_list('email', flat=True)
+    logger.debug("recipients: %s"%', '.join(recipients))
+    #if len(recipients)==0:
+    #  logger.error("No users with emails to receive")
+    res = send_mail(
+      subject = settings.EMAIL_SUBJECT_PREFIX + subject,
+      message = message_plain,
+      from_email = settings.DEFAULT_FROM_EMAIL,
+      recipient_list = recipients,
+      html_message = message_html
+    )
+    if res==0:
+      logger.debug("Failed to send email")
+
   def post_save(sender, instance, created, **kwargs):
     logger.debug("Signal: %s, %s" % ("post_save", sender.__name__))
+
     if sender.__name__=="Fill":
       ZlModel.add_fill(instance)
+      if created:
+        subject = None
+        if fill.dedicated_to_order is not None:
+          subject = "New fill #%s (fills order #%s)" % (fill.id, fill.dedicated_to_order.id)
+        else:
+          subject = "New fill #%s (%s x %s)" % (instance.id, instance.fill_qty_signed(), instance.asset.asset_name)
+
+        self.email_instance(
+          'fill',
+          'zipline_app/email_fill_plain.txt',
+          'zipline_app/order/_fill_detail.html',
+          subject
+        )
+
     if sender.__name__=="Order":
       ZlModel.add_order(instance)
       instance.append_history()
       logger.debug("post_save order %s"%created)
       if created:
-        ctx = { 'order': instance, 'domain': settings.BASE_URL }
-        message_plain = render_to_string('zipline_app/email_order_plain.txt', ctx)
-        message_html = get_template('zipline_app/order/_order_detail.html').render(Context(ctx))
-        recipients = User.objects.exclude(email='').values_list('email', flat=True)
-        logger.debug("recipients: %s"%', '.join(recipients))
-        #if len(recipients)==0:
-        #  logger.error("No users with emails to receive")
-        res = send_mail(
-          subject = settings.EMAIL_SUBJECT_PREFIX + "New order #%s (%s x %s)" % (instance.id, instance.order_qty_signed(), instance.asset.asset_name),
-          message = message_plain,
-          from_email = settings.DEFAULT_FROM_EMAIL,
-          recipient_list = recipients,
-          html_message = message_html
+        self.email_instance(
+          'order',
+          'zipline_app/email_order_plain.txt',
+          'zipline_app/order/_order_detail.html',
+          "New order #%s (%s x %s)" % (instance.id, instance.order_qty_signed(), instance.asset.asset_name)
         )
-        logger.debug('res %s'%res)
-        if res==0:
-          logger.debug("Failed to send email")
+
     ZlModel.update()
 
   def post_delete(sender, instance, **kwargs):

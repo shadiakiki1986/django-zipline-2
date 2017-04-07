@@ -4,20 +4,7 @@
 
 {% block content %}
 
-Fill Details
-<ul>
-  <li>Date: {{fill.pub_date}}</li>
-  <li>Asset: {{fill.asset.asset_symbol}}</li>
-  <li>Side: {{fill.get_fill_side_display}}</li>
-  <li>Qty: {{fill.fill_qty_unsigned|intcomma}}</li>
-  <li>Price: {{fill.fill_price}}</li>
-  <li>TT order key: {% if fill.tt_order_key %}{{fill.tt_order_key}}{% else %}None{% endif %}</li>
-  <li>
-    Dedicated to order:
-    {% include 'zipline_app/fill/_fill_dedicated_to_order.html' %}
-  </li>
-  <li>Comment: {% if fill.fill_text %}{{ fill.fill_text }}{% else %}None{% endif %}</li>
-</ul>
+{% include 'zipline_app/fill/_fill_detail.html' %}
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
