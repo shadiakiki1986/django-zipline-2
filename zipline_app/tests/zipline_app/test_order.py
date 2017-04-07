@@ -103,7 +103,7 @@ class OrderModelTests(TestCase):
       user = myTestLogin(self.client)
       o1 = self.provider_validity(order_validity=DAY, validity_date=None, pub_date=timezone.now(), user=user)
       self.assertEqual(len(mail.outbox), 1)
-      self.assertTrue(mail.outbox[0].subject.startswith("New order"))
+      self.assertTrue("New order" in mail.outbox[0].subject)
 
 class OrderGeneralViewsTests(TestCase):
     def setUp(self):

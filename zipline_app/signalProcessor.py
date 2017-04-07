@@ -41,8 +41,8 @@ class SignalProcessor:
         message_html = get_template('zipline_app/order/_order_detail.html').render(Context(ctx))
         recipients = User.objects.exclude(email='').values_list('email', flat=True)
         logger.debug("recipients: %s"%', '.join(recipients))
-        if len(recipients)==0:
-          logger.error("No users with emails to receive")
+        #if len(recipients)==0:
+        #  logger.error("No users with emails to receive")
         res = send_mail(
           subject = settings.EMAIL_SUBJECT_PREFIX + "New order #%s (%s x %s)" % (instance.id, instance.order_qty_signed(), instance.asset.asset_name),
           message = message_plain,
