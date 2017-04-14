@@ -21,6 +21,7 @@ Also check [CHANGELOG](CHANGELOG.md)
 
 ## Installation
 ```bash
+sudo apt-get install g++ freetds-dev
 pew new DJANGO_ZIPLINE
 pip3 install -r requirements.txt # Django datetime zipline
 ```
