@@ -23,7 +23,7 @@
     <div class="col-xs-3"><div class="row">{% bootstrap_field field=form.order_text placeholder="some comments" %}</div></div>
   </div>
   {% endcomment %}
-  {% if source %}<input type="hidden" name="source" value="{{source}} />{% endif %}
+  {% if source %}<input type="hidden" name="source" value="{{source}}" />{% endif %}
     <div class="col-xs-1">{% bootstrap_button content="Save" icon="star" button_type="submit" button_class="btn-primary" %}</div>
 </form>
 </div>
