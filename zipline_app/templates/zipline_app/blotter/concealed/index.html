@@ -12,7 +12,8 @@
 
   {# {% include 'zipline_app/blotter/concealed/_extras.html' %} #}
 
-  {% if sort is not None or filter_account is not None or filter_asset is not None %}
+<br>
+  {% if anyFilterOrSort %}
   <div class='row alert'>
     <b>
 
@@ -70,6 +71,7 @@
     </b>
   </div>
 
+  <!-- javascript for anchor above to delete filtering -->
   <script type="text/javascript">
     $("a[name='delete-param']").click(function() {
       // Mozilla URLSearchParams

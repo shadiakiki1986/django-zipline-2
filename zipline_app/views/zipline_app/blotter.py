@@ -169,6 +169,9 @@ class BlotterConcealedView(BlotterBaseView):
 
         return context
 
+    def anyFilterOrSort(self):
+      return ( sort is not None and sort != '-pub_date' ) or filter_account is not None or filter_asset is not None
+
 class BlotterEngineView(BlotterBaseView):
     template_name = 'zipline_app/blotter/engine.html'
     source="blotter-engine"
