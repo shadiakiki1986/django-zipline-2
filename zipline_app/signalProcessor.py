@@ -10,14 +10,7 @@ from .models.zipline_app.account import Account
 from .models.zipline_app.order import Order
 from .models.zipline_app.zlmodel import ZlModel
 from .models.zipline_app.fill import Fill
-
-# render template to email body
-# https://godjango.com/19-using-templates-for-sending-emails/
-from  django.core.mail import send_mail
-from django.template.loader import render_to_string, get_template
-from django.template import Context
-from django.contrib.auth.models import User
-from django.conf import settings
+from .utils import email_ctx
 
 # https://docs.djangoproject.com/en/1.11/topics/signals/#connecting-receiver-functions
 #from django.core.signals import request_started
@@ -26,24 +19,6 @@ from django.conf import settings
 class SignalProcessor:
   #def post_init(sender, **kwargs):
   #  print("Signal: %s, %s" % ("post_init", sender.__name__))
-
-  def email_instance(key, instance, template_txt, template_html, subject):
-    ctx = { key: instance, 'domain': settings.BASE_URL }
-    message_plain = render_to_string(template_txt, ctx)
-    message_html = get_template(template_html).render(Context(ctx))
-    recipients = User.objects.exclude(email='').values_list('email', flat=True)
-    logger.debug("recipients: %s"%', '.join(recipients))
-    #if len(recipients)==0:
-    #  logger.error("No users with emails to receive")
-    res = send_mail(
-      subject = settings.EMAIL_SUBJECT_PREFIX + subject,
-      message = message_plain,
-      from_email = settings.DEFAULT_FROM_EMAIL,
-      recipient_list = recipients,
-      html_message = message_html
-    )
-    if res==0:
-      logger.debug("Failed to send email")
 
   def post_save(sender, instance, created, **kwargs):
     logger.debug("Signal: %s, %s" % ("post_save", sender.__name__))
@@ -57,12 +32,12 @@ class SignalProcessor:
         else:
           subject = "New fill #%s (%s x %s)" % (instance.id, instance.fill_qty_signed(), instance.asset.asset_name)
 
-        SignalProcessor.email_instance(
-          'fill',
-          instance,
+        email_ctx(
+          {'fill': instance},
           'zipline_app/email_fill_plain.txt',
           'zipline_app/fill/_fill_detail.html',
-          subject
+          subject,
+          logger
         )
 
     if sender.__name__=="Order":
@@ -70,12 +45,13 @@ class SignalProcessor:
       instance.append_history()
       logger.debug("post_save order %s"%created)
       if created:
-        SignalProcessor.email_instance(
-          'order',
-          instance,
+        subject = "New order #%s (%s x %s)" % (instance.id, instance.order_qty_signed(), instance.asset.asset_name)
+        email_ctx(
+          {'order': instance},
           'zipline_app/email_order_plain.txt',
           'zipline_app/order/_order_detail.html',
-          "New order #%s (%s x %s)" % (instance.id, instance.order_qty_signed(), instance.asset.asset_name)
+          subject,
+          logger
         )
 
     ZlModel.update()

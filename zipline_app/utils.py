@@ -38,3 +38,30 @@ def getenv_or_fail(envName: str):
   if value is None:
     raise Exception("Environment variable undefined: '%s'" % envName)
   return value
+
+# render template to email body
+# https://godjango.com/19-using-templates-for-sending-emails/
+from  django.core.mail import send_mail
+from django.template.loader import render_to_string, get_template
+from django.template import Context
+from django.conf import settings
+
+def email_ctx(ctx, template_txt, template_html, subject, logger):
+  ctx['domain'] = settings.BASE_URL
+  message_plain = render_to_string(template_txt, ctx)
+  message_html = get_template(template_html).render(Context(ctx))
+  recipients = User.objects.exclude(email='').values_list('email', flat=True)
+  logger.debug("recipients: %s"%', '.join(recipients))
+  if len(recipients)==0:
+    logger.debug("No users with emails to receive")
+    return
+  res = send_mail(
+    subject = settings.EMAIL_SUBJECT_PREFIX + subject,
+    message = message_plain,
+    from_email = settings.DEFAULT_FROM_EMAIL,
+    recipient_list = recipients,
+    html_message = message_html
+  )
+  if res==0:
+    logger.debug("Failed to send email")
+

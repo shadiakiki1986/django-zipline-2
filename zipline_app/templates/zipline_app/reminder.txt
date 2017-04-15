@@ -1,0 +1,9 @@
+{% load humanize %}
+
+{{pending|length}} pending order{{num_pending|pluralize}}
+
+{% for order in pending %}
+{{order.id}}: {{order.get_order_side_display}} {{order.order_qty_unsigned|intcomma}} {{order.asset.asset_name}} {% if order.order_text %}({{ order.order_text }}){% endif %}
+{% endfor %}
+
+Published at {{domain}}{% url 'zipline_app:blotter-concealed' %}
