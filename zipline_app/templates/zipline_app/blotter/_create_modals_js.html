@@ -48,5 +48,17 @@ $(function() {
   $("#orders-new input[name='validity_date']").prop("disabled", "disabled");
   $("#orders-new input[name='validity_date']").val('');
 
+  // upon submit, hide form to avoid user clicking multiple times on save buttons in case of slow connections
+  $("#orders-new form").submit(function(e) {
+    $("#orders-new").hide();
+    $("#saving").html("Saving order...");
+    $("#saving").show();
+  });
+  $("#fills-new form").submit(function(e) {
+    $("#fills-new").hide();
+    $("#saving").html("Saving fill...");
+    $("#saving").show();
+  });
+
 });
 </script>
