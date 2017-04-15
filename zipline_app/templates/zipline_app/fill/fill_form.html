@@ -26,5 +26,15 @@
 </div>
 </div>
 
+<!-- disable the submit button when the form is submitted to avoid having the user clicking multiple times during page reload (and hence submitting duplicates) -->
+<script type="text/javascript">
+$(function() {
+  $("form").submit(function(e) {
+    $("button[type='submit']").prop("disabled","disabled");
+    $("button[type='submit']").html("Saving fill...");
+  });
+});
+</script>
+
 {{ form.media.js }}
 {% endblock %}
