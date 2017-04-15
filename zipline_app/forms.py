@@ -8,6 +8,7 @@ from django import forms
 # Override a Django generic class-based view widget
 # http://stackoverflow.com/a/27322032/4126114
 class FillForm(forms.ModelForm):
+  source=forms.CharField(required=False, widget = forms.HiddenInput())
   class Meta:
     model=Fill
     fields = [
@@ -19,7 +20,7 @@ class FillForm(forms.ModelForm):
     }
 
 class OrderForm(forms.ModelForm):
-  source=forms.CharField(required=False)
+  source=forms.CharField(required=False, widget = forms.HiddenInput())
   class Meta:
     model=Order
     fields = [
