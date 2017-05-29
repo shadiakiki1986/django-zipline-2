@@ -28,12 +28,14 @@ class Command(BaseCommand):
     with MfManager() as mfMan:
       total = mfMan.assetsCount()
       logger.debug("Django import assets: %s"%total)
-      counter = 0
-      progress = progressbar.ProgressBar(maxval=total).start()
+      if options['debug']:
+        counter = 0
+        progress = progressbar.ProgressBar(maxval=total).start()
       for assetMf in mfMan.assetsList():
-        counter+=1
-        if counter % 100 == 0:
-          progress.update(counter)
+        if options['debug']:
+          counter+=1
+          if counter % 100 == 0:
+            progress.update(counter)
   
         # get/create entity/row/case
         #logger.debug("get or create: %s"%asset['TIT_COD'])
@@ -53,17 +55,20 @@ class Command(BaseCommand):
             assetDj.save()
             logger.debug("Updated asset: %s"%assetDj)
 
-      progress.finish()
+      if options['debug']:
+        progress.finish()
   
   
       total = mfMan.accountsCount()
       logger.debug("Django import accounts: %s"%total)
-      counter = 0
-      progress = progressbar.ProgressBar(maxval=total).start()
+      if options['debug']:
+        counter = 0
+        progress = progressbar.ProgressBar(maxval=total).start()
       for accountMf in mfMan.accountsList():
-        counter+=1
-        if counter % 100 == 0:
-          progress.update(counter)
+        if options['debug']:
+          counter+=1
+          if counter % 100 == 0:
+            progress.update(counter)
   
         # get/create entity/row/case
         accountDj = Account.objects.filter(
@@ -81,4 +86,5 @@ class Command(BaseCommand):
             accountDj.save()
             logger.debug("Updated account: %s"%accountDj)
 
-      progress.finish()
+      if options['debug']:
+        progress.finish()
