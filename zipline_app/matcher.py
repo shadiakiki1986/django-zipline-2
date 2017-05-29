@@ -131,9 +131,10 @@ class MyBlotter(Blotter):
     return order.id
 
 ########################
+load_nothing = lambda a,b,c: (None, None)
 class Matcher:
   def __init__(self):
-    self.env = TradingEnvironment()
+    self.env = TradingEnvironment(load=load_nothing)
 
     # prepare for data portal
     # from zipline/tests/test_finance.py#L238
