@@ -1,4 +1,4 @@
-# django-zipline [![Build Status](https://travis-ci.org/shadiakiki1986/django-zipline.svg?branch=master)](https://travis-ci.org/shadiakiki1986/django-zipline)
+# django-zipline-2 [![Build Status](https://travis-ci.org/shadiakiki1986/django-zipline-2.svg?branch=master)](https://travis-ci.org/shadiakiki1986/django-zipline-2)
 (WIP)  A Django app that wraps the Zipline library
 
 At the time of this writing (2017-02-16),
@@ -8,6 +8,12 @@ so that this library can easily be extended to include more zipline objects alon
 
 If there are lingering references to `blotter-finance` in the code or docs,
 it's because that's what I named the project at first.
+
+EDIT 2017-06-19: The original `django-zipline` project was renamed to [https://github.com/shadiakiki1986/ffa-blotter](ffa-blotter)
+with the aim of dropping the zipline engine from it.
+This project was forked from the original project in order to maintain the work done on integrating the zipline engine for a blotter.
+Furthermore, I renamed this to `django-zipline-2` to avoid mistakenly reaching this from a github redirect on `django-zipline`
+(which should redirect to `ffa-blotter`)
 
 ## Features
 Version 0.0.1
